@@ -1,0 +1,71 @@
+name: Render apps
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+      - uses: azure/setup-helm@v5
+        with:
+          version: v3.19.0
+      - uses: imranismail/setup-kustomize@v3
+        with:
+          kustomize-version: 5.8.1
+
+      - name: Render all apps
+        shell: bash
+        run: |
+          scratch=$(mktemp -d)
+          trap 'rm -rf "$scratch"' EXIT
+          cp -R apps "$scratch/apps"
+          mkdir -p "$scratch/generated"
+          touch "$scratch/generated/.gitkeep"
+
+          for source in "$scratch/apps/"*; do
+            [[ -d "$source" ]] || continue
+            app=${source##*/}
+            mkdir -p "$scratch/generated/$app"
+            kustomize build "$source" --enable-helm --helm-kube-version 1.35.0 \
+              > "$scratch/generated/$app/manifests.yaml"
+          done
+
+          # Replace outputs only after every app renders successfully.
+          rm -rf generated
+          mv "$scratch/generated" generated
+
+      - name: Commit generated manifests to the PR
+        if: >-
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          github.actor != 'dependabot[bot]'
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'chore: render app manifests'
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          file_pattern: generated/
+
+      - name: Check generated manifests for read-only PRs
+        if: >-
+          github.event.pull_request.head.repo.full_name != github.repository ||
+          github.actor == 'dependabot[bot]'
+        shell: bash
+        run: |
+          if [[ -n "$(git status --porcelain -- generated/)" ]]; then
+            echo '::error::This PR has a read-only token. Render and commit generated manifests to its source branch.'
+            exit 1
+          fi
