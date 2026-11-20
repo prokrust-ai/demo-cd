@@ -29,13 +29,13 @@ global:
       podIdentityAgentEnabled: false
   oidc:
     enabled: true
-    revision: 3
+    revision: 4
     sessionSecret: prokrust-browser-sessions
     providerEgressCIDRs:
     - 35.254.118.132/32
     allowArtifactHostInspection: true
     providers:
-      ory:
+      sso:
         issuer: https://auth.prokrust.ai/
         clientId: prokrust-demo
         clientSecret:

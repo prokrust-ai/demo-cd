@@ -10,6 +10,7 @@ The Application uses manual sync. Adapt these settings when using another cluste
 Browser access uses `https://demo.prokrust.ai`, the existing `traefik/external`
 Gateway (`websecure` listener), and OIDC/session Secrets `prokrust-demo-ory`
 and `prokrust-browser-sessions`. Workflow links use the existing `/argo` endpoint.
+Register `https://demo.prokrust.ai/auth/callback/sso` as the OIDC client's redirect URI.
 Configure HTTP-to-HTTPS redirection globally on Traefik's `web` entrypoint to port 443.
 
 See the [chart configuration](https://github.com/prokrust-ai/helm-charts/tree/main/charts/prokrust-system).
