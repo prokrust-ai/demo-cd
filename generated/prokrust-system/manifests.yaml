@@ -5,6 +5,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-3"
   labels:
     app.kubernetes.io/part-of: prokrust
+    secrets.prokrust.io/aws-demo: "true"
   name: prokrust-system
 ---
 apiVersion: v1
@@ -14,14 +15,16 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
   name: prokrust-lease-bootstrap-11c50d8075
-  namespace: kube-system
+  namespace: argocd
 ---
 apiVersion: v1
 automountServiceAccountToken: true
 imagePullSecrets:
-- name: prokrust-registry
+- name: harbor-reader
 kind: ServiceAccount
 metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
@@ -31,9 +34,11 @@ metadata:
 apiVersion: v1
 automountServiceAccountToken: true
 imagePullSecrets:
-- name: prokrust-registry
+- name: harbor-reader
 kind: ServiceAccount
 metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
@@ -43,9 +48,11 @@ metadata:
 apiVersion: v1
 automountServiceAccountToken: true
 imagePullSecrets:
-- name: prokrust-registry
+- name: harbor-reader
 kind: ServiceAccount
 metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
@@ -310,7 +317,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prokrust-lease-bootstrap-11c50d8075
-  namespace: kube-system
+  namespace: argocd
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -353,7 +360,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prokrust-lease-bootstrap-11c50d8075
-  namespace: kube-system
+  namespace: argocd
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -419,7 +426,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
   name: prokrust-lease-bootstrap-11c50d8075
-  namespace: kube-system
+  namespace: argocd
 ---
 apiVersion: v1
 data:
@@ -451,6 +458,9 @@ metadata:
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
   ports:
   - name: metrics
     port: 8082
@@ -465,6 +475,9 @@ metadata:
   name: prokrust-license-webhook
   namespace: prokrust-system
 spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
   ports:
   - name: https
     port: 443
@@ -478,6 +491,9 @@ metadata:
   name: prokrust-runtime-startup
   namespace: prokrust-system
 spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
   ports:
   - name: https
     port: 443
@@ -496,6 +512,9 @@ metadata:
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
   ports:
   - name: http
     port: 8080
@@ -528,6 +547,7 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: prokrust-application-controller
         app.kubernetes.io/part-of: prokrust
+        prokrust.ai/aws-auth: "true"
     spec:
       automountServiceAccountToken: true
       containers:
@@ -541,12 +561,16 @@ spec:
           value: "false"
         - name: PROKRUST_CONNECTORS_ENABLED
           value: "false"
+        - name: AWS_REGION
+          value: us-west-2
+        - name: AWS_DEFAULT_REGION
+          value: us-west-2
         - name: PROKRUST_SERVING_ENABLED
           value: "false"
         - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
           value: inherit
         - name: PROKRUST_NETWORK_FAMILY
-          value: IPv4
+          value: IPv6
         - name: PROKRUST_LICENSE_WORKLOAD_METRICS
           value: "false"
         - name: PROKRUST_LICENSE_WORKLOAD_METRICS_MAX_OWNERS
@@ -554,17 +578,19 @@ spec:
         - name: PROKRUST_STARTUP_TLS_SECRET
           value: prokrust-runtime-startup-tls
         - name: PROKRUST_LICENSE_METRICS_ADDRESS
-          value: 0.0.0.0:8082
+          value: '[::]:8082'
         - name: RP_PRODUCER_PROVENANCE
           value: '{"batchPredictor":{"images":["ar.prokrust.io/prokrust/batch-predictor@sha256:1a84f9abc224c765b8e947b55fe5d6ef38553f5505b0df4d56f87f572a6e1544"],"version":"0.11.0-rc.1"},"dataJob":{"images":["ar.prokrust.io/prokrust/data-job@sha256:65bfb6fbb828df79a48b9baeca3d721072bd26319135591083b06011e1957581"],"version":"0.13.0-rc.1"},"trainer":{"images":["ar.prokrust.io/prokrust/trainer-cuda@sha256:7697b034af65d75e9e22ace78e1de2ffe8902257c701b8b511c9f48a1719eac1","ar.prokrust.io/prokrust/trainer@sha256:6f500c234cc66450e4b7e2a61c4c7f25f5f7f0f0b60d187805a6f2d9386777b7"],"version":"0.11.0-rc.1"}}'
+        - name: PROKRUST_ARGO_CONTROLLER_USERNAME
+          value: system:serviceaccount:argo:argo
         - name: PROKRUST_WORKFLOW_SCHEDULING_PROFILE
           value: standard
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: PROKRUST_WORKFLOW_IMAGE_PULL_SECRETS
-          value: '[{"name":"prokrust-registry"}]'
+          value: '[{"name":"harbor-reader"}]'
         - name: PROKRUST_ARGO_EXECUTOR_IMAGE
-          value: ar.prokrust.io/prokrust/argoexec@sha256:bfd67ca65831d95d1e0b59ecf986c2679036411911e06c947e61a9267cedf1bf
+          value: quay.io/argoproj/argoexec@sha256:ec2a867c2db200d33acda0e9141898070266c1f678bb995bd08cea68ace89c40
         - name: RP_POD_NAMESPACE
           valueFrom:
             fieldRef:
@@ -573,12 +599,20 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: RP_ARTIFACT_AWS_IDENTITY_PROVIDER
+          value: irsa
+        - name: RP_ARTIFACT_AWS_ROLE_ARN
+          value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         - name: RP_ARTIFACT_AUTH_MODE
-          value: mounted-secret
-        - name: RP_ARTIFACT_ACCESS_KEY_ID_FILE
-          value: /var/run/prokrust/credentials/access-key-id
-        - name: RP_ARTIFACT_SECRET_ACCESS_KEY_FILE
-          value: /var/run/prokrust/credentials/secret-access-key
+          value: workload-identity
         image: ar.prokrust.io/prokrust/operator@sha256:ec6347ce0adc30524bdd67f2f378f0c05d28e905b1e80f453dc57eefb345ae5e
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -625,9 +659,6 @@ spec:
         - mountPath: /var/run/prokrust-startup-tls
           name: startup-tls
           readOnly: true
-        - mountPath: /var/run/prokrust/credentials
-          name: artifact-credentials
-          readOnly: true
       nodeSelector:
         kubernetes.io/arch: arm64
       securityContext:
@@ -657,15 +688,6 @@ spec:
       - emptyDir:
           sizeLimit: 64Mi
         name: tmp
-      - name: artifact-credentials
-        secret:
-          defaultMode: 288
-          items:
-          - key: AWS_ACCESS_KEY_ID
-            path: access-key-id
-          - key: AWS_SECRET_ACCESS_KEY
-            path: secret-access-key
-          secretName: prokrust-artifact-credentials
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -691,6 +713,7 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: prokrust-ballista-cluster-controller
         app.kubernetes.io/part-of: prokrust
+        prokrust.ai/aws-auth: "true"
     spec:
       automountServiceAccountToken: true
       containers:
@@ -702,8 +725,14 @@ spec:
         env:
         - name: PROKRUST_CONNECTORS_ENABLED
           value: "false"
+        - name: AWS_REGION
+          value: us-west-2
+        - name: AWS_DEFAULT_REGION
+          value: us-west-2
+        - name: RP_ARTIFACT_AUTH_MODE
+          value: workload-identity
         - name: PROKRUST_NETWORK_FAMILY
-          value: IPv4
+          value: IPv6
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: RP_POD_NAMESPACE
@@ -714,6 +743,18 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: RP_ARTIFACT_AWS_IDENTITY_PROVIDER
+          value: irsa
+        - name: RP_ARTIFACT_AWS_ROLE_ARN
+          value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         image: ar.prokrust.io/prokrust/operator@sha256:ec6347ce0adc30524bdd67f2f378f0c05d28e905b1e80f453dc57eefb345ae5e
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -792,16 +833,31 @@ spec:
         app.kubernetes.io/component: api
         app.kubernetes.io/name: prokrust-web-api
         app.kubernetes.io/part-of: prokrust
+        prokrust.ai/aws-auth: "true"
     spec:
       automountServiceAccountToken: true
       containers:
       - env:
         - name: PROKRUST_WEB_API_BIND
-          value: 0.0.0.0:8080
+          value: '[::]:8080'
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: PROKRUST_SYSTEM_NAMESPACE
           value: prokrust-system
+        - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: RP_ARTIFACT_AUTH_MODE
+          value: workload-identity
+        - name: RP_ARTIFACT_AWS_IDENTITY_PROVIDER
+          value: irsa
+        - name: RP_ARTIFACT_AWS_ROLE_ARN
+          value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         image: ar.prokrust.io/prokrust/web-api@sha256:ec18dbcd4bf94c9186cca930d126516cd58a57548948a88385187f38014b3fb5
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -1165,7 +1221,7 @@ metadata:
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
     argocd.argoproj.io/sync-wave: "-1"
   name: prokrust-lease-bootstrap-11c50d8075
-  namespace: kube-system
+  namespace: argocd
 spec:
   activeDeadlineSeconds: 120
   backoffLimit: 2
@@ -1333,9 +1389,15 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
   name: prokrust-lease-bootstrap-11c50d8075
-  namespace: kube-system
+  namespace: argocd
 spec:
-  egress: []
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
   ingress: []
   podSelector:
     matchLabels:
@@ -1356,6 +1418,29 @@ spec:
   podSelector: {}
   policyTypes:
   - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.2
+  name: prokrust-aws-auth
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f70:4000::/56
+  podSelector:
+    matchLabels:
+      prokrust.ai/aws-auth: "true"
+  policyTypes:
   - Egress
 ---
 apiVersion: networking.k8s.io/v1
@@ -1392,10 +1477,47 @@ spec:
       podSelector:
         matchLabels:
           k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
   podSelector:
     matchLabels:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: prokrust-ballista-cluster-controller
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.2
+  name: prokrust-gcp-control-plane-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/name
+      operator: In
+      values:
+      - prokrust-application-controller
+      - prokrust-ballista-cluster-controller
+      - prokrust-web-api
+      - ballista-gate
   policyTypes:
   - Egress
 ---
@@ -1434,7 +1556,13 @@ metadata:
   name: prokrust-license-webhook-ingress
   namespace: prokrust-system
 spec:
-  ingress: []
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae00::/56
+    ports:
+    - port: 8443
+      protocol: TCP
   podSelector:
     matchLabels:
       app.kubernetes.io/name: prokrust-application-controller
@@ -1464,6 +1592,20 @@ spec:
       podSelector:
         matchLabels:
           k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae10::41fe/128
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae20::beb5/128
   podSelector:
     matchLabels:
       app.kubernetes.io/component: controller
@@ -1523,6 +1665,28 @@ spec:
       podSelector:
         matchLabels:
           k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae10::41fe/128
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae20::beb5/128
   ingress:
   - from:
     - podSelector:
@@ -1536,6 +1700,24 @@ spec:
       app.kubernetes.io/name: prokrust-web-api
   policyTypes:
   - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: web-api-0.24.0-rc.1
+  name: prokrust-web-api-aws-auth
+  namespace: prokrust-system
+spec:
+  egress: null
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+      prokrust.ai/aws-auth: "true"
+  policyTypes:
   - Egress
 ---
 apiVersion: platform.prokrust.ai/v1beta1
