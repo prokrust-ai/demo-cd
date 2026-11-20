@@ -1,6 +1,0 @@
-apiVersion: v1
-data:
-  message: PR rendering verification
-kind: ConfigMap
-metadata:
-  name: render-check-4chm8m44f6
