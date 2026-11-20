@@ -202,6 +202,36 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  name: prokrust-oidc-reader-7dce348e5449e57d
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-web-api
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-oidc-reader-f233d028189cfb85
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-web-api
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
   name: prokrust-profile-clock-reader
   namespace: prokrust-system
 rules:
@@ -256,6 +286,20 @@ rules:
   - namespaces
   verbs:
   - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-prokrust-oidc-target-namespaces
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - thelook-ecommerce
+  resources:
+  - namespaces
+  verbs:
+  - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -336,6 +380,34 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  name: prokrust-oidc-reader-7dce348e5449e57d
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-oidc-reader-7dce348e5449e57d
+subjects:
+- kind: ServiceAccount
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-oidc-reader-f233d028189cfb85
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-oidc-reader-f233d028189cfb85
+subjects:
+- kind: ServiceAccount
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
   name: prokrust-profile-clock-reader
   namespace: prokrust-system
 roleRef:
@@ -389,6 +461,19 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-prokrust-oidc-target-namespaces
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-prokrust-oidc-target-namespaces
+subjects:
+- kind: ServiceAccount
+  name: prokrust-web-api
   namespace: prokrust-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -448,6 +533,33 @@ metadata:
   namespace: prokrust-system
 ---
 apiVersion: v1
+data:
+  auth.toml: |
+    revision = 3
+    installationNamespace = "prokrust-system"
+    redisUrlFile = "/var/run/prokrust/browser/redis-url"
+    artifactHost = { namespace = "prokrust-system", serviceAccount = "prokrust-web-api" }
+    [[targets]]
+    namespace = "thelook-ecommerce"
+    serviceAccount = "prokrust-demo-reviewer"
+    installationReports = false
+    [[targets]]
+    namespace = "thelook-ecommerce"
+    serviceAccount = "prokrust-ui-admin"
+    installationReports = false
+    [oidc.providers.ory]
+    issuer = "https://auth.prokrust.ai/"
+    clientId = "prokrust-demo"
+    scopes = ["openid","email","profile"]
+    claims = ["prokrust.ai/role"]
+    clientSecretFile = "/var/run/prokrust/browser/ory/client-secret"
+immutable: true
+kind: ConfigMap
+metadata:
+  name: prokrust-oidc-3
+  namespace: prokrust-system
+---
+apiVersion: v1
 kind: Service
 metadata:
   labels:
@@ -501,6 +613,39 @@ spec:
   publishNotReadyAddresses: true
   selector:
     app.kubernetes.io/name: prokrust-application-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prokrust-session-redis
+  namespace: prokrust-system
+spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  selector:
+    app.kubernetes.io/name: prokrust-session-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prokrust-session-redis-headless
+  namespace: prokrust-system
+spec:
+  clusterIP: None
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  selector:
+    app.kubernetes.io/name: prokrust-session-redis
 ---
 apiVersion: v1
 kind: Service
@@ -823,12 +968,14 @@ metadata:
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: prokrust-web-api
   template:
     metadata:
+      annotations:
+        prokrust.ai/auth-revision: "3"
       labels:
         app.kubernetes.io/component: api
         app.kubernetes.io/name: prokrust-web-api
@@ -842,6 +989,12 @@ spec:
           value: '[::]:8080'
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
+        - name: PROKRUST_UI_ORIGIN
+          value: https://demo.prokrust.ai
+        - name: PROKRUST_AUTH_CONFIG
+          value: /etc/prokrust/auth.toml
+        - name: PROKRUST_ARGO_UI_BASE_URL
+          value: https://demo.prokrust.ai/argo
         - name: PROKRUST_SYSTEM_NAMESPACE
           value: prokrust-system
         - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAMESPACE
@@ -889,6 +1042,13 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust
+          name: oidc-config
+          readOnly: true
+        - mountPath: /var/run/prokrust/browser
+          name: oidc-secrets
+          readOnly: true
       nodeSelector:
         kubernetes.io/arch: arm64
       securityContext:
@@ -904,6 +1064,132 @@ spec:
         key: kubernetes.io/arch
         operator: Equal
         value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-oidc-3
+        name: oidc-config
+      - name: oidc-secrets
+        projected:
+          defaultMode: 288
+          sources:
+          - secret:
+              items:
+              - key: redis-url
+                path: redis-url
+              name: prokrust-browser-sessions
+          - secret:
+              items:
+              - key: client-secret
+                path: ory/client-secret
+              name: prokrust-demo-ory
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prokrust-session-redis
+  namespace: prokrust-system
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-session-redis
+  serviceName: prokrust-session-redis-headless
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/auth-revision: "3"
+      labels:
+        app.kubernetes.io/name: prokrust-session-redis
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - args:
+        - --bind
+        - '::'
+        - --protected-mode
+        - "yes"
+        - --aclfile
+        - /run/prokrust-redis/users.acl
+        - --dir
+        - /data
+        - --appendonly
+        - "yes"
+        - --appendfsync
+        - always
+        - --maxmemory
+        - 192mb
+        - --maxmemory-policy
+        - noeviction
+        command:
+        - redis-server
+        image: docker.io/library/redis:8.8-alpine@sha256:ab669f1420eaa05360a417b24f3bd210c9272e2c79a4bb35d3e50b4bfd50dbee
+        livenessProbe:
+          periodSeconds: 10
+          tcpSocket:
+            port: redis
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        readinessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: redis
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /run/prokrust-redis
+          name: auth
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - name: auth
+        secret:
+          defaultMode: 288
+          items:
+          - key: users.acl
+            path: users.acl
+          secretName: prokrust-browser-sessions
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: gp3
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
@@ -1383,6 +1669,67 @@ metadata:
 spec:
   selfSigned: {}
 ---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo-browser
+  namespace: prokrust-system
+spec:
+  hostnames:
+  - demo.prokrust.ai
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: external
+    namespace: traefik
+    sectionName: websecure
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: prokrust-web-api
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /
+    - path:
+        type: PathPrefix
+        value: /ui
+    - path:
+        type: PathPrefix
+        value: /auth
+    - path:
+        type: RegularExpression
+        value: ^/prokrust\.
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo-redirect
+  namespace: prokrust-system
+spec:
+  hostnames:
+  - demo.prokrust.ai
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: external
+    namespace: traefik
+    sectionName: web
+  rules:
+  - filters:
+    - requestRedirect:
+        port: 443
+        scheme: https
+        statusCode: 301
+      type: RequestRedirect
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -1645,6 +1992,28 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: prokrust-session-redis
+  namespace: prokrust-system
+spec:
+  egress: []
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-web-api
+    ports:
+    - port: 6379
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-session-redis
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
@@ -1719,6 +2088,56 @@ spec:
       prokrust.ai/aws-auth: "true"
   policyTypes:
   - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-web-api-oidc-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 6379
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-session-redis
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 35.254.118.132/32
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-web-api-traefik-ingress
+  namespace: prokrust-system
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: traefik
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: traefik-proxy-traefik
+          app.kubernetes.io/name: traefik
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+  policyTypes:
+  - Ingress
 ---
 apiVersion: platform.prokrust.ai/v1beta1
 kind: LicenseActivation
