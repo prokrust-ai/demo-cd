@@ -1,21 +1,56 @@
 leaseBootstrap:
   mode: argo
+  namespace: argocd
 
 global:
+  awsRegion: us-west-2
+  networkFamily: IPv6
+  workloadPlacementProfile: arm64
   imagePullSecrets:
-    - name: prokrust-registry
+    - name: harbor-reader
   networkPolicy:
-    # Set the Kubernetes API Service and endpoint CIDRs/ports before syncing.
-    apiServerEndpoints: []
+    apiServerEndpoints:
+      - cidr: fd8e:1cf8:6673::1/128
+        port: 443
     artifactStore:
-      # Set the artifact store destination CIDRs (HTTPS).
-      cidrs: []
+      cidrs:
+        - 2600:1f13:db0:ae10::41fe/128
+        - 2600:1f13:db0:ae20::beb5/128
+      podSelector: {}
+      port: 443
+    gcpAuth:
+      enabled: true
+      metadataEndpoints: []
+      googleApiCIDRs:
+        - 2001:4860:4840::/45
+        - 2607:f8b0::/32
+    awsAuth:
+      enabled: true
+      stsCIDRs: []
+      podIdentityAgentEnabled: false
 
 licensing:
+  argoExecutorImage: quay.io/argoproj/argoexec@sha256:ec2a867c2db200d33acda0e9141898070266c1f678bb995bd08cea68ace89c40
   credentialSecret: prokrust-license-credential
   webhook:
-    # Set the control-plane source CIDRs used for admission webhook calls.
-    apiServerIngressCIDRs: []
+    apiServerIngressCIDRs:
+      - 2600:1f13:db0:ae00::/56
 
 artifactCredentials:
-  existingSecret: prokrust-artifact-credentials
+  authMode: workload-identity
+  workloadIdentity:
+    provider: IRSA
+    roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+
+web-api:
+  webApi:
+    artifactWorkloadIdentity:
+      provider: IRSA
+      roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+
+workflowIntegrity:
+  argoControllerUsername: system:serviceaccount:argo:argo
+
+awsAuth:
+  stsNetworkCIDRs:
+    - 2600:1f70:4000::/56
