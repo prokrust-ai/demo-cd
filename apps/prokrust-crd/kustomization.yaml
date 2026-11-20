@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: prokrust-crds
+    repo: oci://ar.prokrust.io/charts
+    version: 0.23.0-rc.1
+    releaseName: prokrust-crd
+    includeCRDs: true
+    valuesFile: values.yaml
