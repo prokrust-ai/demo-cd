@@ -535,7 +535,7 @@ metadata:
 apiVersion: v1
 data:
   auth.toml: |
-    revision = 3
+    revision = 4
     installationNamespace = "prokrust-system"
     redisUrlFile = "/var/run/prokrust/browser/redis-url"
     artifactHost = { namespace = "prokrust-system", serviceAccount = "prokrust-web-api" }
@@ -547,16 +547,16 @@ data:
     namespace = "thelook-ecommerce"
     serviceAccount = "prokrust-ui-admin"
     installationReports = false
-    [oidc.providers.ory]
+    [oidc.providers.sso]
     issuer = "https://auth.prokrust.ai/"
     clientId = "prokrust-demo"
     scopes = ["openid","email","profile"]
     claims = ["prokrust.ai/role"]
-    clientSecretFile = "/var/run/prokrust/browser/ory/client-secret"
+    clientSecretFile = "/var/run/prokrust/browser/sso/client-secret"
 immutable: true
 kind: ConfigMap
 metadata:
-  name: prokrust-oidc-3
+  name: prokrust-oidc-4
   namespace: prokrust-system
 ---
 apiVersion: v1
@@ -975,7 +975,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/auth-revision: "3"
+        prokrust.ai/auth-revision: "4"
       labels:
         app.kubernetes.io/component: api
         app.kubernetes.io/name: prokrust-web-api
@@ -1066,7 +1066,7 @@ spec:
         value: arm64
       volumes:
       - configMap:
-          name: prokrust-oidc-3
+          name: prokrust-oidc-4
         name: oidc-config
       - name: oidc-secrets
         projected:
@@ -1080,7 +1080,7 @@ spec:
           - secret:
               items:
               - key: client-secret
-                path: ory/client-secret
+                path: sso/client-secret
               name: prokrust-demo-ory
 ---
 apiVersion: apps/v1
@@ -1100,7 +1100,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/auth-revision: "3"
+        prokrust.ai/auth-revision: "4"
       labels:
         app.kubernetes.io/name: prokrust-session-redis
     spec:
