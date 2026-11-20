@@ -1,56 +1,85 @@
 leaseBootstrap:
   mode: argo
   namespace: argocd
-
 global:
   awsRegion: us-west-2
   networkFamily: IPv6
   workloadPlacementProfile: arm64
   imagePullSecrets:
-    - name: harbor-reader
+  - name: harbor-reader
   networkPolicy:
     apiServerEndpoints:
-      - cidr: fd8e:1cf8:6673::1/128
-        port: 443
+    - cidr: fd8e:1cf8:6673::1/128
+      port: 443
     artifactStore:
       cidrs:
-        - 2600:1f13:db0:ae10::41fe/128
-        - 2600:1f13:db0:ae20::beb5/128
+      - 2600:1f13:db0:ae10::41fe/128
+      - 2600:1f13:db0:ae20::beb5/128
       podSelector: {}
       port: 443
     gcpAuth:
       enabled: true
       metadataEndpoints: []
       googleApiCIDRs:
-        - 2001:4860:4840::/45
-        - 2607:f8b0::/32
+      - 2001:4860:4840::/45
+      - 2607:f8b0::/32
     awsAuth:
       enabled: true
       stsCIDRs: []
       podIdentityAgentEnabled: false
-
+  oidc:
+    enabled: true
+    revision: 3
+    sessionSecret: prokrust-browser-sessions
+    providerEgressCIDRs:
+    - 35.254.118.132/32
+    allowArtifactHostInspection: true
+    providers:
+      ory:
+        issuer: https://auth.prokrust.ai/
+        clientId: prokrust-demo
+        clientSecret:
+          name: prokrust-demo-ory
+          key: client-secret
+        scopes:
+        - openid
+        - email
+        - profile
+        claims:
+        - prokrust.ai/role
+    targets:
+    - namespace: thelook-ecommerce
+      serviceAccount: prokrust-demo-reviewer
+      installationReports: false
+    - namespace: thelook-ecommerce
+      serviceAccount: prokrust-ui-admin
+      installationReports: false
+    redis:
+      image: docker.io/library/redis:8.8-alpine@sha256:ab669f1420eaa05360a417b24f3bd210c9272e2c79a4bb35d3e50b4bfd50dbee
+      storage: 2Gi
+      storageClassName: gp3
 licensing:
   argoExecutorImage: quay.io/argoproj/argoexec@sha256:ec2a867c2db200d33acda0e9141898070266c1f678bb995bd08cea68ace89c40
   credentialSecret: prokrust-license-credential
   webhook:
     apiServerIngressCIDRs:
-      - 2600:1f13:db0:ae00::/56
-
+    - 2600:1f13:db0:ae00::/56
 artifactCredentials:
   authMode: workload-identity
   workloadIdentity:
     provider: IRSA
     roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-
 web-api:
   webApi:
     artifactWorkloadIdentity:
       provider: IRSA
       roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-
+    enabled: true
+    replicas: 2
+    browserOrigin: https://demo.prokrust.ai
+    argoUiBaseUrl: https://demo.prokrust.ai/argo
 workflowIntegrity:
   argoControllerUsername: system:serviceaccount:argo:argo
-
 awsAuth:
   stsNetworkCIDRs:
-    - 2600:1f70:4000::/56
+  - 2600:1f70:4000::/56

@@ -3,6 +3,8 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - httproute.yaml
+  - network-policy.yaml
 
 helmCharts:
   - name: prokrust-system
