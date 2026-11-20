@@ -1692,17 +1692,8 @@ spec:
       weight: 1
     matches:
     - path:
-        type: Exact
+        type: PathPrefix
         value: /
-    - path:
-        type: PathPrefix
-        value: /ui
-    - path:
-        type: PathPrefix
-        value: /auth
-    - path:
-        type: RegularExpression
-        value: ^/prokrust\.
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
