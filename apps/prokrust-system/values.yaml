@@ -1,0 +1,21 @@
+leaseBootstrap:
+  mode: argo
+
+global:
+  imagePullSecrets:
+    - name: prokrust-registry
+  networkPolicy:
+    # Set the Kubernetes API Service and endpoint CIDRs/ports before syncing.
+    apiServerEndpoints: []
+    artifactStore:
+      # Set the artifact store destination CIDRs (HTTPS).
+      cidrs: []
+
+licensing:
+  credentialSecret: prokrust-license-credential
+  webhook:
+    # Set the control-plane source CIDRs used for admission webhook calls.
+    apiServerIngressCIDRs: []
+
+artifactCredentials:
+  existingSecret: prokrust-artifact-credentials

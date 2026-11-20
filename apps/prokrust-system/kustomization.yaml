@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+
+helmCharts:
+  - name: prokrust-system
+    repo: oci://ar.prokrust.io/charts
+    version: 0.22.0-rc.2
+    releaseName: prokrust-system
+    namespace: prokrust-system
+    valuesFile: values.yaml
