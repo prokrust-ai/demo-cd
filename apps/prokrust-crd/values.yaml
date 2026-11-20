@@ -1,0 +1,8 @@
+features:
+  connectors:
+    synthetic: true
+    s3: true
+    gcs: true
+    bigquery: true
+    iceberg: true
+    paimon: true
