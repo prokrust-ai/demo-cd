@@ -1704,32 +1704,6 @@ spec:
         type: RegularExpression
         value: ^/prokrust\.
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: demo-redirect
-  namespace: prokrust-system
-spec:
-  hostnames:
-  - demo.prokrust.ai
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: external
-    namespace: traefik
-    sectionName: web
-  rules:
-  - filters:
-    - requestRedirect:
-        port: 443
-        scheme: https
-        statusCode: 301
-      type: RequestRedirect
-    matches:
-    - path:
-        type: PathPrefix
-        value: /
----
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
