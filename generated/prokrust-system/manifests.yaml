@@ -518,7 +518,7 @@ data:
   ballista.chartVersion: 0.4.0
   ballista.version: 0.4.0
   batch-predictor.version: 0.11.0-rc.1
-  compositionVersion: 0.22.0-rc.2
+  compositionVersion: 0.22.0-rc.3
   data-job.version: 0.13.0-rc.1
   serving.version: 0.11.0-rc.2
   trainer.version: 0.11.0-rc.1
@@ -528,7 +528,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -566,7 +566,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -676,7 +676,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -734,8 +734,6 @@ spec:
           value: arm64
         - name: PROKRUST_WORKFLOW_IMAGE_PULL_SECRETS
           value: '[{"name":"harbor-reader"}]'
-        - name: PROKRUST_ARGO_EXECUTOR_IMAGE
-          value: quay.io/argoproj/argoexec@sha256:ec2a867c2db200d33acda0e9141898070266c1f678bb995bd08cea68ace89c40
         - name: RP_POD_NAMESPACE
           valueFrom:
             fieldRef:
@@ -758,7 +756,7 @@ spec:
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         - name: RP_ARTIFACT_AUTH_MODE
           value: workload-identity
-        image: ar.prokrust.io/prokrust/operator@sha256:ec6347ce0adc30524bdd67f2f378f0c05d28e905b1e80f453dc57eefb345ae5e
+        image: ar.prokrust.io/prokrust/operator@sha256:f0600f2a0552970b788327760f5841688d142d08574edc499b71eb9c02195e8c
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -842,7 +840,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -900,7 +898,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/operator@sha256:ec6347ce0adc30524bdd67f2f378f0c05d28e905b1e80f453dc57eefb345ae5e
+        image: ar.prokrust.io/prokrust/operator@sha256:f0600f2a0552970b788327760f5841688d142d08574edc499b71eb9c02195e8c
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1669,32 +1667,6 @@ metadata:
 spec:
   selfSigned: {}
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: demo-browser
-  namespace: prokrust-system
-spec:
-  hostnames:
-  - demo.prokrust.ai
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: external
-    namespace: traefik
-    sectionName: websecure
-  rules:
-  - backendRefs:
-    - group: ""
-      kind: Service
-      name: prokrust-web-api
-      port: 8080
-      weight: 1
-    matches:
-    - path:
-        type: PathPrefix
-        value: /
----
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -1738,7 +1710,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -1761,7 +1733,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -1808,7 +1780,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -1887,7 +1859,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -2080,37 +2052,13 @@ spec:
   policyTypes:
   - Egress
 ---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: prokrust-web-api-traefik-ingress
-  namespace: prokrust-system
-spec:
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: traefik
-      podSelector:
-        matchLabels:
-          app.kubernetes.io/instance: traefik-proxy-traefik
-          app.kubernetes.io/name: traefik
-    ports:
-    - port: 8080
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: prokrust-web-api
-  policyTypes:
-  - Ingress
----
 apiVersion: platform.prokrust.ai/v1beta1
 kind: LicenseActivation
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.2
+    helm.sh/chart: prokrust-system-0.22.0-rc.3
   name: default
   namespace: prokrust-system
 spec:
