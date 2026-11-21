@@ -59,7 +59,6 @@ global:
       storage: 2Gi
       storageClassName: gp3
 licensing:
-  argoExecutorImage: quay.io/argoproj/argoexec@sha256:ec2a867c2db200d33acda0e9141898070266c1f678bb995bd08cea68ace89c40
   credentialSecret: prokrust-license-credential
   webhook:
     apiServerIngressCIDRs:

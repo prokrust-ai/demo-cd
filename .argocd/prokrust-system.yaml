@@ -4,7 +4,7 @@ metadata:
   name: prokrust-system
   namespace: argocd
 spec:
-  project: default
+  project: prokrust
   source:
     repoURL: https://github.com/prokrust-ai/demo-cd.git
     targetRevision: main

@@ -3,13 +3,11 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
-  - httproute.yaml
-  - network-policy.yaml
 
 helmCharts:
   - name: prokrust-system
     repo: oci://ar.prokrust.io/charts
-    version: 0.22.0-rc.2
+    version: 0.22.0-rc.3
     releaseName: prokrust-system
     namespace: prokrust-system
     valuesFile: values.yaml
