@@ -56,7 +56,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.24.0-rc.1
+    helm.sh/chart: web-api-0.25.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 ---
@@ -518,17 +518,17 @@ data:
   ballista.chartVersion: 0.4.0
   ballista.version: 0.4.0
   batch-predictor.version: 0.11.0-rc.1
-  compositionVersion: 0.22.0-rc.3
+  compositionVersion: 0.22.0-rc.4
   data-job.version: 0.13.0-rc.1
   serving.version: 0.11.0-rc.2
   trainer.version: 0.11.0-rc.1
-  web-api.version: 0.24.0-rc.1
+  web-api.version: 0.25.0-rc.1
 kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -566,7 +566,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -653,7 +653,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.24.0-rc.1
+    helm.sh/chart: web-api-0.25.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -676,7 +676,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -840,7 +840,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -962,7 +962,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-web-api
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.24.0-rc.1
+    helm.sh/chart: web-api-0.25.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -1009,7 +1009,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/web-api@sha256:ec18dbcd4bf94c9186cca930d126516cd58a57548948a88385187f38014b3fb5
+        image: ar.prokrust.io/prokrust/web-api@sha256:657bd5212fa4e799acf9c26b897b26a33c01a3c6cc1b58cfa90564176fa13e62
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1710,7 +1710,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -1733,7 +1733,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -1780,7 +1780,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -1859,7 +1859,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -1954,7 +1954,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.24.0-rc.1
+    helm.sh/chart: web-api-0.25.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2014,7 +2014,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.24.0-rc.1
+    helm.sh/chart: web-api-0.25.0-rc.1
   name: prokrust-web-api-aws-auth
   namespace: prokrust-system
 spec:
@@ -2058,7 +2058,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.3
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
   name: default
   namespace: prokrust-system
 spec:
