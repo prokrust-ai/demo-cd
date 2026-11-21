@@ -36,6 +36,7 @@ jobs:
           cp -R apps "$scratch/apps"
           mkdir -p "$scratch/generated"
           touch "$scratch/generated/.gitkeep"
+          cp .argocd/*.yaml "$scratch/generated/"
 
           for source in "$scratch/apps/"*; do
             [[ -d "$source" ]] || continue
