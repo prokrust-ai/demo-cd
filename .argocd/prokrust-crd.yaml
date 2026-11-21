@@ -10,7 +10,6 @@ spec:
     targetRevision: main
     path: generated/prokrust-crd
     directory:
-      recurse: false
       include: '*.yaml'
   destination:
     server: https://kubernetes.default.svc
