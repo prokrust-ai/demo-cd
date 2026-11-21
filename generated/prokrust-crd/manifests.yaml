@@ -16,7 +16,6 @@ spec:
     kind: ArtifactStore
     plural: artifactstores
     singular: artifactstore
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -658,7 +657,6 @@ spec:
     kind: BallistaCluster
     plural: ballistaclusters
     singular: ballistacluster
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -1508,7 +1506,6 @@ spec:
     kind: Graph
     plural: graphs
     singular: graph
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -1841,7 +1838,6 @@ spec:
     kind: GraphSnapshot
     plural: graphsnapshots
     singular: graphsnapshot
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -2678,7 +2674,6 @@ spec:
     kind: InferenceEndpoint
     plural: inferenceendpoints
     singular: inferenceendpoint
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -3443,7 +3438,6 @@ spec:
     kind: LicenseActivation
     plural: licenseactivations
     singular: licenseactivation
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -3604,7 +3598,6 @@ spec:
     kind: Model
     plural: models
     singular: model
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -4216,7 +4209,6 @@ spec:
     kind: PerformanceCapture
     plural: performancecaptures
     singular: performancecapture
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -4528,7 +4520,6 @@ spec:
     kind: PredictionQuery
     plural: predictionqueries
     singular: predictionquery
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -4889,7 +4880,6 @@ spec:
     kind: PredictionRun
     plural: predictionruns
     singular: predictionrun
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -6170,7 +6160,6 @@ spec:
     kind: ProkrustAccessBinding
     plural: prokrustaccessbindings
     singular: prokrustaccessbinding
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -6251,7 +6240,6 @@ spec:
     kind: ProkrustPolicy
     plural: prokrustpolicies
     singular: prokrustpolicy
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -7602,7 +7590,6 @@ spec:
     kind: SnapshotBuild
     plural: snapshotbuilds
     singular: snapshotbuild
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -8398,7 +8385,6 @@ spec:
     kind: SnapshotPreparation
     plural: snapshotpreparations
     singular: snapshotpreparation
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -9397,7 +9383,6 @@ spec:
     kind: TableProfile
     plural: tableprofiles
     singular: tableprofile
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -9522,7 +9507,6 @@ spec:
     kind: Table
     plural: tables
     singular: table
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -10278,7 +10262,6 @@ spec:
     kind: TableSnapshot
     plural: tablesnapshots
     singular: tablesnapshot
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -10930,7 +10913,6 @@ spec:
     kind: TrainingRun
     plural: trainingruns
     singular: trainingrun
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -12190,7 +12172,6 @@ spec:
     kind: TrainingStudy
     plural: trainingstudies
     singular: trainingstudy
-  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
