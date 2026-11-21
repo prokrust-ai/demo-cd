@@ -4,7 +4,7 @@ metadata:
   name: prokrust-crd
   namespace: argocd
 spec:
-  project: default
+  project: prokrust
   source:
     repoURL: https://github.com/prokrust-ai/demo-cd.git
     targetRevision: main
@@ -14,6 +14,7 @@ spec:
       include: '*.yaml'
   destination:
     server: https://kubernetes.default.svc
+    namespace: prokrust-system
   syncPolicy:
     automated:
       prune: true
