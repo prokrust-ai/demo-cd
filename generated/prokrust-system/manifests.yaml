@@ -1,0 +1,2648 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+  labels:
+    app.kubernetes.io/part-of: prokrust
+    secrets.prokrust.io/aws-demo: "true"
+  name: prokrust-system
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: argocd
+---
+apiVersion: v1
+automountServiceAccountToken: true
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: v1
+automountServiceAccountToken: true
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+---
+apiVersion: v1
+automountServiceAccountToken: true
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: web-api-0.25.0-rc.1
+  name: prokrust-web-api
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-application-controller
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - coordination.k8s.io
+  resourceNames:
+  - prokrust-application-controller
+  resources:
+  - leases
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - delete
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-application-controller
+  - prokrust-ballista-cluster-controller
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-license-credential
+  - prokrust-installation-identity
+  - prokrust-license-entitlement
+  - prokrust-runtime-startup-tls
+  - prokrust-license-challenge
+  resources:
+  - secrets
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - configmaps
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-license-entitlement
+  - prokrust-license-challenge
+  resources:
+  - secrets
+  verbs:
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-license-ledger
+  - prokrust-license-installation-usage
+  - prokrust-profile-clock
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - coordination.k8s.io
+  resourceNames:
+  - prokrust-ballista-cluster-controller
+  resources:
+  - leases
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+- apiGroups:
+  - coordination.k8s.io
+  resourceNames:
+  - prokrust-application-controller
+  - prokrust-ballista-cluster-controller
+  resources:
+  - leases
+  verbs:
+  - get
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-license-activation
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - licenseactivations
+  verbs:
+  - get
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - licenseactivations/status
+  verbs:
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-oidc-reader-7dce348e5449e57d
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-web-api
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-oidc-reader-f233d028189cfb85
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-web-api
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-profile-clock-reader
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-profile-clock
+  resources:
+  - configmaps
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075-schema
+rules:
+- apiGroups:
+  - apiextensions.k8s.io
+  resourceNames:
+  - licenseactivations.platform.prokrust.ai
+  - prokrustaccessbindings.platform.prokrust.ai
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-prokrust-namespace-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-prokrust-namespace-enrollment
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-prokrust-oidc-target-namespaces
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - thelook-ecommerce
+  resources:
+  - namespaces
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-prokrust-startup-tokenreview
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-application-controller
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-application-controller
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-ballista-cluster-controller
+subjects:
+- kind: ServiceAccount
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-lease-bootstrap-11c50d8075
+subjects:
+- kind: ServiceAccount
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: argocd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-license-activation
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-license-activation
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-oidc-reader-7dce348e5449e57d
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-oidc-reader-7dce348e5449e57d
+subjects:
+- kind: ServiceAccount
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-oidc-reader-f233d028189cfb85
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-oidc-reader-f233d028189cfb85
+subjects:
+- kind: ServiceAccount
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-profile-clock-reader
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-profile-clock-reader
+subjects:
+- kind: ServiceAccount
+  name: prokrust-web-api
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075-schema
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-lease-bootstrap-11c50d8075-schema
+subjects:
+- kind: ServiceAccount
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: argocd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-prokrust-namespace-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-prokrust-namespace-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+- kind: ServiceAccount
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-prokrust-namespace-enrollment
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-prokrust-namespace-enrollment
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-prokrust-oidc-target-namespaces
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-prokrust-oidc-target-namespaces
+subjects:
+- kind: ServiceAccount
+  name: prokrust-web-api
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-prokrust-startup-tokenreview
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-prokrust-startup-tokenreview
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  leases.yaml: |
+    ---
+    apiVersion: coordination.k8s.io/v1
+    kind: Lease
+    metadata:
+      name: prokrust-application-controller
+      namespace: prokrust-system
+    spec: {}
+    ---
+    apiVersion: coordination.k8s.io/v1
+    kind: Lease
+    metadata:
+      name: prokrust-ballista-cluster-controller
+      namespace: prokrust-system
+    spec: {}
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: argocd
+---
+apiVersion: v1
+data:
+  ballista.chartVersion: 0.4.0
+  ballista.version: 0.4.0
+  batch-predictor.version: 0.11.0-rc.1
+  compositionVersion: 0.22.0-rc.4
+  data-job.version: 0.13.0-rc.1
+  serving.version: 0.11.0-rc.2
+  trainer.version: 0.11.0-rc.1
+  web-api.version: 0.25.0-rc.1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-component-versions
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  auth.toml: |
+    revision = 4
+    installationNamespace = "prokrust-system"
+    redisUrlFile = "/var/run/prokrust/browser/redis-url"
+    artifactHost = { namespace = "prokrust-system", serviceAccount = "prokrust-web-api" }
+    [[targets]]
+    namespace = "thelook-ecommerce"
+    serviceAccount = "prokrust-demo-reviewer"
+    installationReports = false
+    [[targets]]
+    namespace = "thelook-ecommerce"
+    serviceAccount = "prokrust-ui-admin"
+    installationReports = false
+    [oidc.providers.sso]
+    issuer = "https://auth.prokrust.ai/"
+    clientId = "prokrust-demo"
+    scopes = ["openid","email","profile"]
+    claims = ["prokrust.ai/role"]
+    clientSecretFile = "/var/run/prokrust/browser/sso/client-secret"
+immutable: true
+kind: ConfigMap
+metadata:
+  name: prokrust-oidc-4
+  namespace: prokrust-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prokrust-license-metrics
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-license-metrics
+  namespace: prokrust-system
+spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: metrics
+    port: 8082
+    targetPort: license-metrics
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: prokrust-application-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prokrust-license-webhook
+  namespace: prokrust-system
+spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: https
+    port: 443
+    targetPort: license-webhook
+  selector:
+    app.kubernetes.io/name: prokrust-application-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prokrust-runtime-startup
+  namespace: prokrust-system
+spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: https
+    port: 443
+    targetPort: startup
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: prokrust-application-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prokrust-session-redis
+  namespace: prokrust-system
+spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  selector:
+    app.kubernetes.io/name: prokrust-session-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prokrust-session-redis-headless
+  namespace: prokrust-system
+spec:
+  clusterIP: None
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  selector:
+    app.kubernetes.io/name: prokrust-session-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: web-api-0.25.0-rc.1
+  name: prokrust-web-api
+  namespace: prokrust-system
+spec:
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: prokrust-web-api
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prokrust-application-controller
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-application-controller
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-application-controller
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/name: prokrust-application-controller
+        app.kubernetes.io/part-of: prokrust
+        prokrust.ai/aws-auth: "true"
+    spec:
+      automountServiceAccountToken: true
+      containers:
+      - args:
+        - --role
+        - application
+        - --namespace
+        - $(RP_POD_NAMESPACE)
+        env:
+        - name: RP_PROFILING_ENABLED
+          value: "false"
+        - name: PROKRUST_CONNECTORS_ENABLED
+          value: "false"
+        - name: AWS_REGION
+          value: us-west-2
+        - name: AWS_DEFAULT_REGION
+          value: us-west-2
+        - name: PROKRUST_SERVING_ENABLED
+          value: "false"
+        - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
+          value: inherit
+        - name: PROKRUST_NETWORK_FAMILY
+          value: IPv6
+        - name: PROKRUST_LICENSE_WORKLOAD_METRICS
+          value: "false"
+        - name: PROKRUST_LICENSE_WORKLOAD_METRICS_MAX_OWNERS
+          value: "1000"
+        - name: PROKRUST_STARTUP_TLS_SECRET
+          value: prokrust-runtime-startup-tls
+        - name: PROKRUST_LICENSE_METRICS_ADDRESS
+          value: '[::]:8082'
+        - name: RP_PRODUCER_PROVENANCE
+          value: '{"batchPredictor":{"images":["ar.prokrust.io/prokrust/batch-predictor@sha256:1a84f9abc224c765b8e947b55fe5d6ef38553f5505b0df4d56f87f572a6e1544"],"version":"0.11.0-rc.1"},"dataJob":{"images":["ar.prokrust.io/prokrust/data-job@sha256:65bfb6fbb828df79a48b9baeca3d721072bd26319135591083b06011e1957581"],"version":"0.13.0-rc.1"},"trainer":{"images":["ar.prokrust.io/prokrust/trainer-cuda@sha256:7697b034af65d75e9e22ace78e1de2ffe8902257c701b8b511c9f48a1719eac1","ar.prokrust.io/prokrust/trainer@sha256:6f500c234cc66450e4b7e2a61c4c7f25f5f7f0f0b60d187805a6f2d9386777b7"],"version":"0.11.0-rc.1"}}'
+        - name: PROKRUST_ARGO_CONTROLLER_USERNAME
+          value: system:serviceaccount:argo:argo
+        - name: PROKRUST_WORKFLOW_SCHEDULING_PROFILE
+          value: standard
+        - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
+          value: arm64
+        - name: PROKRUST_WORKFLOW_IMAGE_PULL_SECRETS
+          value: '[{"name":"harbor-reader"}]'
+        - name: RP_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: RP_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: RP_ARTIFACT_AWS_IDENTITY_PROVIDER
+          value: irsa
+        - name: RP_ARTIFACT_AWS_ROLE_ARN
+          value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+        - name: RP_ARTIFACT_AUTH_MODE
+          value: workload-identity
+        image: ar.prokrust.io/prokrust/operator@sha256:f0600f2a0552970b788327760f5841688d142d08574edc499b71eb9c02195e8c
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: health
+          periodSeconds: 10
+        name: operator
+        ports:
+        - containerPort: 8081
+          name: health
+        - containerPort: 8443
+          name: license-webhook
+        - containerPort: 8444
+          name: startup
+        - containerPort: 8082
+          name: license-metrics
+        readinessProbe:
+          httpGet:
+            path: /availablez
+            port: health
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            ephemeral-storage: 512Mi
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 128Mi
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp
+        - mountPath: /var/run/prokrust-webhook
+          name: license-webhook-tls
+          readOnly: true
+        - mountPath: /var/run/prokrust-startup-tls
+          name: startup-tls
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-application-controller
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - name: startup-tls
+        secret:
+          defaultMode: 288
+          secretName: prokrust-runtime-startup-tls
+      - name: license-webhook-tls
+        secret:
+          defaultMode: 288
+          secretName: prokrust-license-webhook-tls
+      - emptyDir:
+          sizeLimit: 64Mi
+        name: tmp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prokrust-ballista-cluster-controller
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-ballista-cluster-controller
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/name: prokrust-ballista-cluster-controller
+        app.kubernetes.io/part-of: prokrust
+        prokrust.ai/aws-auth: "true"
+    spec:
+      automountServiceAccountToken: true
+      containers:
+      - args:
+        - --role
+        - ballista-cluster
+        - --namespace
+        - $(RP_POD_NAMESPACE)
+        env:
+        - name: PROKRUST_CONNECTORS_ENABLED
+          value: "false"
+        - name: AWS_REGION
+          value: us-west-2
+        - name: AWS_DEFAULT_REGION
+          value: us-west-2
+        - name: RP_ARTIFACT_AUTH_MODE
+          value: workload-identity
+        - name: PROKRUST_NETWORK_FAMILY
+          value: IPv6
+        - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
+          value: arm64
+        - name: RP_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: RP_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_CONTROLLER_SERVICE_ACCOUNT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: RP_ARTIFACT_AWS_IDENTITY_PROVIDER
+          value: irsa
+        - name: RP_ARTIFACT_AWS_ROLE_ARN
+          value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+        image: ar.prokrust.io/prokrust/operator@sha256:f0600f2a0552970b788327760f5841688d142d08574edc499b71eb9c02195e8c
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: health
+          periodSeconds: 10
+        name: operator
+        ports:
+        - containerPort: 8081
+          name: health
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: health
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            ephemeral-storage: 512Mi
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 128Mi
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-ballista-cluster-controller
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - emptyDir:
+          sizeLimit: 64Mi
+        name: tmp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prokrust-web-api
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: web-api-0.25.0-rc.1
+  name: prokrust-web-api
+  namespace: prokrust-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/auth-revision: "4"
+      labels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/name: prokrust-web-api
+        app.kubernetes.io/part-of: prokrust
+        prokrust.ai/aws-auth: "true"
+    spec:
+      automountServiceAccountToken: true
+      containers:
+      - env:
+        - name: PROKRUST_WEB_API_BIND
+          value: '[::]:8080'
+        - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
+          value: arm64
+        - name: PROKRUST_UI_ORIGIN
+          value: https://demo.prokrust.ai
+        - name: PROKRUST_AUTH_CONFIG
+          value: /etc/prokrust/auth.toml
+        - name: PROKRUST_ARGO_UI_BASE_URL
+          value: https://demo.prokrust.ai/argo
+        - name: PROKRUST_SYSTEM_NAMESPACE
+          value: prokrust-system
+        - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: RP_ARTIFACT_AUTH_MODE
+          value: workload-identity
+        - name: RP_ARTIFACT_AWS_IDENTITY_PROVIDER
+          value: irsa
+        - name: RP_ARTIFACT_AWS_ROLE_ARN
+          value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+        image: ar.prokrust.io/prokrust/web-api@sha256:657bd5212fa4e799acf9c26b897b26a33c01a3c6cc1b58cfa90564176fa13e62
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 10
+        name: web-api
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            ephemeral-storage: 512Mi
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 128Mi
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust
+          name: oidc-config
+          readOnly: true
+        - mountPath: /var/run/prokrust/browser
+          name: oidc-secrets
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        fsGroup: 65532
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-web-api
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-oidc-4
+        name: oidc-config
+      - name: oidc-secrets
+        projected:
+          defaultMode: 288
+          sources:
+          - secret:
+              items:
+              - key: redis-url
+                path: redis-url
+              name: prokrust-browser-sessions
+          - secret:
+              items:
+              - key: client-secret
+                path: sso/client-secret
+              name: prokrust-demo-ory
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prokrust-session-redis
+  namespace: prokrust-system
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-session-redis
+  serviceName: prokrust-session-redis-headless
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/auth-revision: "4"
+      labels:
+        app.kubernetes.io/name: prokrust-session-redis
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - args:
+        - --bind
+        - '::'
+        - --protected-mode
+        - "yes"
+        - --aclfile
+        - /run/prokrust-redis/users.acl
+        - --dir
+        - /data
+        - --appendonly
+        - "yes"
+        - --appendfsync
+        - always
+        - --maxmemory
+        - 192mb
+        - --maxmemory-policy
+        - noeviction
+        command:
+        - redis-server
+        image: docker.io/library/redis:8.8-alpine@sha256:ab669f1420eaa05360a417b24f3bd210c9272e2c79a4bb35d3e50b4bfd50dbee
+        livenessProbe:
+          periodSeconds: 10
+          tcpSocket:
+            port: redis
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        readinessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: redis
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /run/prokrust-redis
+          name: auth
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - name: auth
+        secret:
+          defaultMode: 288
+          items:
+          - key: users.acl
+            path: users.acl
+          secretName: prokrust-browser-sessions
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: gp3
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-prokrust-ballista-capacity
+spec:
+  failurePolicy: Fail
+  matchConditions:
+  - expression: (object != null && object.metadata.name == 'prokrust-ballista-capacity')
+      || (oldObject != null && oldObject.metadata.name == 'prokrust-ballista-capacity')
+    name: protected-capacity-ledger
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - configmaps
+  validations:
+  - expression: request.userInfo.username in ['system:serviceaccount:prokrust-system:prokrust-application-controller',
+      'system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller']
+      || (request.operation == 'DELETE' && request.userInfo.username in ['system:serviceaccount:kube-system:generic-garbage-collector',
+      'system:kube-controller-manager'])
+    message: Only the application and Ballista controllers may write capacity state.
+  - expression: request.operation == 'DELETE' || (has(object.data) && size(object.data)
+      == 1 && 'capacity.json' in object.data && size(object.data['capacity.json'])
+      <= 524288 && !has(object.binaryData) && (!has(object.immutable) || !object.immutable)
+      && has(object.metadata.ownerReferences) && size(object.metadata.ownerReferences)
+      == 1 && object.metadata.ownerReferences[0].apiVersion == 'platform.prokrust.ai/v1beta1'
+      && object.metadata.ownerReferences[0].kind == 'BallistaCluster' && object.metadata.ownerReferences[0].name
+      == 'default')
+    message: Capacity state must be bounded and owned by the workspace's BallistaCluster.
+  - expression: request.operation != 'UPDATE' || (object.metadata.uid == oldObject.metadata.uid
+      && object.metadata.resourceVersion == oldObject.metadata.resourceVersion &&
+      object.metadata.ownerReferences == oldObject.metadata.ownerReferences)
+    message: Capacity updates require exact identity and resource-version comparison.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-prokrust-gcp-deployments
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+  validations:
+  - expression: |-
+      (!variables.objectProtected && !variables.oldObjectProtected) || (request.operation == 'UPDATE' &&
+
+        request.userInfo.username in ['system:kube-controller-manager', 'system:serviceaccount:kube-system:deployment-controller', 'system:serviceaccount:kube-system:generic-garbage-collector'] &&
+        object.spec.template == oldObject.spec.template && object.metadata.ownerReferences == oldObject.metadata.ownerReferences) ||
+      (has(object.metadata.ownerReferences) && object.metadata.ownerReferences.exists(r, r.controller && (
+
+        (r.apiVersion == 'platform.prokrust.ai/v1beta1' && r.kind == 'BallistaCluster' &&
+          request.userInfo.username == "system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller") ||
+        (r.apiVersion == 'serving.kserve.io/v1beta1' && r.kind == 'InferenceService' &&
+          request.userInfo.username == "system:serviceaccount:kserve:kserve-controller-manager"))))
+    message: Deployments using a reserved direct runtime identity require their trusted
+      Ballista or KServe controller.
+  variables:
+  - expression: |-
+      ((has(object.spec.template.spec.serviceAccountName) && object.spec.template.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime"]) ||
+
+       (has(object.spec.template.spec.serviceAccount) && object.spec.template.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime"]) ||
+       (has(object.spec.template.spec.volumes) && object.spec.template.spec.volumes.exists(v,
+         (has(v.configMap) && v.configMap.name.startsWith('prokrust-gcp-config-')) ||
+         (has(v.projected) && v.projected.sources.exists(s, has(s.configMap) && s.configMap.name.startsWith('prokrust-gcp-config-'))))))
+    name: objectProtected
+  - expression: |-
+      request.operation == 'UPDATE' && ((has(oldObject.spec.template.spec.serviceAccountName) && oldObject.spec.template.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime"]) ||
+
+       (has(oldObject.spec.template.spec.serviceAccount) && oldObject.spec.template.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime"]) ||
+       (has(oldObject.spec.template.spec.volumes) && oldObject.spec.template.spec.volumes.exists(v,
+         (has(v.configMap) && v.configMap.name.startsWith('prokrust-gcp-config-')) ||
+         (has(v.projected) && v.projected.sources.exists(s, has(s.configMap) && s.configMap.name.startsWith('prokrust-gcp-config-'))))))
+    name: oldObjectProtected
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-prokrust-gcp-snapshots
+spec:
+  failurePolicy: Fail
+  matchConditions:
+  - expression: (object != null && has(object.metadata.name) && object.metadata.name.startsWith('prokrust-gcp-config-'))
+      || (oldObject != null && has(oldObject.metadata.name) && oldObject.metadata.name.startsWith('prokrust-gcp-config-'))
+    name: frozen-cloud-config
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - configmaps
+  validations:
+  - expression: 'request.operation == ''CREATE'' ? (has(object.metadata.ownerReferences)
+      && size(object.metadata.ownerReferences) == 1 && ((object.metadata.ownerReferences[0].kind
+      == ''InferenceEndpoint'' && request.userInfo.username == ''system:serviceaccount:prokrust-system:prokrust-application-controller'')
+      || (object.metadata.ownerReferences[0].kind == ''BallistaCluster'' && request.userInfo.username
+      == ''system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller'')))
+      : request.operation == ''DELETE'' && request.userInfo.username in [''system:serviceaccount:kube-system:generic-garbage-collector'',
+      ''system:kube-controller-manager'']'
+    message: Frozen GCP snapshots are created only by Operator and deleted only by
+      owner garbage collection; updates are forbidden.
+  - expression: request.operation == 'DELETE' || (has(object.immutable) && object.immutable
+      && has(object.data) && size(object.data) == 2 && 'config.json' in object.data
+      && 'identity.json' in object.data && size(object.data['config.json']) <= 524288
+      && size(object.data['identity.json']) <= 16384 && has(object.metadata.ownerReferences)
+      && size(object.metadata.ownerReferences) == 1 && object.metadata.ownerReferences[0].kind
+      in ['BallistaCluster', 'InferenceEndpoint'])
+    message: Frozen GCP snapshots must be bounded immutable owner-bound configuration
+      records.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-prokrust-reserved-serving
+spec:
+  failurePolicy: Fail
+  matchConditions:
+  - expression: |-
+      false || (has(dyn(object).spec.predictor) &&
+
+        ((has(dyn(object).spec.predictor.serviceAccountName) && dyn(object).spec.predictor.serviceAccountName == 'prokrust-kserve-runtime') ||
+         (has(dyn(object).spec.predictor.serviceAccount) && dyn(object).spec.predictor.serviceAccount == 'prokrust-kserve-runtime')))
+      || (has(dyn(object).spec.transformer) &&
+
+        ((has(dyn(object).spec.transformer.serviceAccountName) && dyn(object).spec.transformer.serviceAccountName == 'prokrust-kserve-runtime') ||
+         (has(dyn(object).spec.transformer.serviceAccount) && dyn(object).spec.transformer.serviceAccount == 'prokrust-kserve-runtime')))
+      || (has(dyn(object).spec.explainer) &&
+
+        ((has(dyn(object).spec.explainer.serviceAccountName) && dyn(object).spec.explainer.serviceAccountName == 'prokrust-kserve-runtime') ||
+         (has(dyn(object).spec.explainer.serviceAccount) && dyn(object).spec.explainer.serviceAccount == 'prokrust-kserve-runtime')))
+      || (request.operation == 'UPDATE' && has(dyn(oldObject).spec.predictor) &&
+
+        ((has(dyn(oldObject).spec.predictor.serviceAccountName) && dyn(oldObject).spec.predictor.serviceAccountName == 'prokrust-kserve-runtime') ||
+         (has(dyn(oldObject).spec.predictor.serviceAccount) && dyn(oldObject).spec.predictor.serviceAccount == 'prokrust-kserve-runtime')))
+      || (request.operation == 'UPDATE' && has(dyn(oldObject).spec.transformer) &&
+
+        ((has(dyn(oldObject).spec.transformer.serviceAccountName) && dyn(oldObject).spec.transformer.serviceAccountName == 'prokrust-kserve-runtime') ||
+         (has(dyn(oldObject).spec.transformer.serviceAccount) && dyn(oldObject).spec.transformer.serviceAccount == 'prokrust-kserve-runtime')))
+      || (request.operation == 'UPDATE' && has(dyn(oldObject).spec.explainer) &&
+
+        ((has(dyn(oldObject).spec.explainer.serviceAccountName) && dyn(oldObject).spec.explainer.serviceAccountName == 'prokrust-kserve-runtime') ||
+         (has(dyn(oldObject).spec.explainer.serviceAccount) && dyn(oldObject).spec.explainer.serviceAccount == 'prokrust-kserve-runtime')))
+    name: reserved-serving-account
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - serving.kserve.io
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - inferenceservices
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (request.operation == 'UPDATE' &&
+
+        request.userInfo.username == "system:serviceaccount:kserve:kserve-controller-manager" &&
+        dyn(object).spec == dyn(oldObject).spec && object.metadata.ownerReferences == oldObject.metadata.ownerReferences) ||
+      (request.userInfo.username == "system:serviceaccount:prokrust-system:prokrust-application-controller" &&
+
+        has(object.metadata.ownerReferences) && object.metadata.ownerReferences.exists(r,
+          r.apiVersion == 'ml.prokrust.ai/v1beta1' && r.kind == 'InferenceEndpoint' && r.controller))
+    message: InferenceServices using the reserved KServe account require the application
+      controller.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-prokrust-workflow-anchor
+spec:
+  failurePolicy: Fail
+  matchConditions:
+  - expression: (object != null && has(object.metadata.name) && object.metadata.name.startsWith('prokrust-workflow-plan-'))
+      || (oldObject != null && has(oldObject.metadata.name) && oldObject.metadata.name.startsWith('prokrust-workflow-plan-'))
+    name: protected-name
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - configmaps
+  validations:
+  - expression: 'request.operation == ''CREATE'' ? request.userInfo.username == ''system:serviceaccount:prokrust-system:prokrust-application-controller''
+      : variables.isGarbageCollector && (request.operation == ''DELETE'' || variables.foregroundFinalizerUpdate)'
+    message: Frozen Workflow plans are created only by Operator and removed only by
+      owner garbage collection; GC updates only release foregroundDeletion.
+  - expression: request.operation == 'DELETE' || (has(object.immutable) && object.immutable
+      && has(object.data) && size(object.data) == 2 && 'execution.json' in object.data
+      && 'artifact.json' in object.data && size(object.data['execution.json']) <=
+      524288)
+    message: Frozen Workflow plans must be immutable, bounded execution anchors.
+  - expression: |-
+      request.operation != 'UPDATE' || (object.immutable == oldObject.immutable && object.data == oldObject.data &&
+
+        has(object.binaryData) == has(oldObject.binaryData) &&
+        (!has(object.binaryData) || object.binaryData == oldObject.binaryData))
+    message: Garbage collection cannot change frozen execution bytes.
+  variables:
+  - expression: request.userInfo.username in ['system:serviceaccount:kube-system:generic-garbage-collector',
+      'system:kube-controller-manager']
+    name: isGarbageCollector
+  - expression: |-
+      request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '') && oldObject != null && has(oldObject.metadata.deletionTimestamp) && has(object.metadata.deletionTimestamp) && object.metadata.deletionTimestamp == oldObject.metadata.deletionTimestamp && object.metadata.uid == oldObject.metadata.uid && object.metadata.uid != '' && object.metadata.resourceVersion == oldObject.metadata.resourceVersion && object.metadata.resourceVersion != '' && object.metadata.name == oldObject.metadata.name && object.metadata.namespace == oldObject.metadata.namespace && has(oldObject.metadata.finalizers) && oldObject.metadata.finalizers.filter(f, f == 'foregroundDeletion').size() == 1 && oldObject.metadata.finalizers.all(f, f != '' &&
+
+        oldObject.metadata.finalizers.filter(other, other == f).size() == 1) &&
+      (has(object.metadata.finalizers) ? object.metadata.finalizers : []) ==
+
+        oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion') &&
+      has(object.metadata.labels) == has(oldObject.metadata.labels) && (!has(object.metadata.labels) || object.metadata.labels == oldObject.metadata.labels) && has(object.metadata.annotations) == has(oldObject.metadata.annotations) && (!has(object.metadata.annotations) || object.metadata.annotations == oldObject.metadata.annotations) && has(object.metadata.ownerReferences) == has(oldObject.metadata.ownerReferences) && (!has(object.metadata.ownerReferences) || object.metadata.ownerReferences == oldObject.metadata.ownerReferences) && has(object.metadata.generation) == has(oldObject.metadata.generation) && (!has(object.metadata.generation) || object.metadata.generation == oldObject.metadata.generation) && has(object.metadata.creationTimestamp) == has(oldObject.metadata.creationTimestamp) && (!has(object.metadata.creationTimestamp) || object.metadata.creationTimestamp == oldObject.metadata.creationTimestamp) && has(object.metadata.generateName) == has(oldObject.metadata.generateName) && (!has(object.metadata.generateName) || object.metadata.generateName == oldObject.metadata.generateName) && has(object.metadata.deletionGracePeriodSeconds) == has(oldObject.metadata.deletionGracePeriodSeconds) && (!has(object.metadata.deletionGracePeriodSeconds) ||
+
+        object.metadata.deletionGracePeriodSeconds == oldObject.metadata.deletionGracePeriodSeconds)
+    name: foregroundFinalizerUpdate
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-prokrust-ballista-capacity
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-prokrust-ballista-capacity
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-prokrust-gcp-deployments
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-prokrust-gcp-deployments
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-prokrust-gcp-snapshots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-prokrust-gcp-snapshots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-prokrust-reserved-serving
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-prokrust-reserved-serving
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-prokrust-workflow-anchor
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-prokrust-workflow-anchor
+  validationActions:
+  - Deny
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "-1"
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: argocd
+spec:
+  activeDeadlineSeconds: 120
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prokrust-lease-bootstrap-11c50d8075
+    spec:
+      containers:
+      - args:
+        - |
+          # kubectl with a request timeout can skip in-cluster discovery.
+          api_host="${KUBERNETES_SERVICE_HOST:?Kubernetes Service host is required}"
+          api_port="${KUBERNETES_SERVICE_PORT:?Kubernetes Service port is required}"
+          case "$api_host" in *:*) api_host="[$api_host]";; esac
+          umask 077
+          export KUBECONFIG="$HOME/prokrust-hook-kubeconfig"
+          cat > "$KUBECONFIG" <<EOF
+          apiVersion: v1
+          kind: Config
+          current-context: incluster
+          clusters:
+          - name: local
+            cluster:
+              server: "https://$api_host:$api_port"
+              certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          contexts:
+          - name: incluster
+            context:
+              cluster: local
+              user: hook
+          users:
+          - name: hook
+            user:
+              tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          EOF
+          if [ -n "$CRD_BUNDLE_SHA256" ]; then
+            for crd in licenseactivations.platform.prokrust.ai prokrustaccessbindings.platform.prokrust.ai; do
+              observed="$(kubectl --request-timeout=10s get crd "$crd" \
+                -o 'jsonpath={.spec.scope}{"|"}{.metadata.annotations.prokrust\.ai/crd-bundle-sha256}')" || {
+                echo "Cannot read $crd. Install the compatible prokrust-crds release first." >&2
+                exit 1
+              }
+              if [ "$observed" != "Namespaced|$CRD_BUNDLE_SHA256" ]; then
+                echo "$crd does not match the required Prokrust API schema bundle $CRD_BUNDLE_SHA256." >&2
+                exit 1
+              fi
+            done
+          fi
+          # Preserve active holder and renewal fields.
+          exec kubectl apply --server-side --field-manager=prokrust-lease-bootstrap -f /config/leases.yaml
+        command:
+        - /bin/sh
+        - -ec
+        env:
+        - name: HOME
+          value: /tmp
+        - name: CRD_BUNDLE_SHA256
+          value: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+        image: docker.io/alpine/kubectl:1.36.4@sha256:a2cd8ee034cbe04d651e565b3373299b31921de5c2af86490559e21b3e197808
+        name: bootstrap
+        resources:
+          limits:
+            cpu: 250m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /tmp
+          name: tmp
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      restartPolicy: Never
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-lease-bootstrap-11c50d8075
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-lease-bootstrap-11c50d8075
+        name: config
+      - emptyDir:
+          sizeLimit: 16Mi
+        name: tmp
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prokrust-license-ca
+  namespace: prokrust-system
+spec:
+  commonName: prokrust-license-admission-ca
+  isCA: true
+  issuerRef:
+    kind: Issuer
+    name: prokrust-license-selfsigned
+  secretName: prokrust-license-webhook-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prokrust-license-webhook
+  namespace: prokrust-system
+spec:
+  dnsNames:
+  - prokrust-license-webhook.prokrust-system.svc
+  - prokrust-license-webhook.prokrust-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: prokrust-license-ca
+  secretName: prokrust-license-webhook-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prokrust-runtime-startup
+  namespace: prokrust-system
+spec:
+  dnsNames:
+  - prokrust-runtime-startup.prokrust-system.svc
+  - prokrust-runtime-startup.prokrust-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: prokrust-license-ca
+  secretName: prokrust-runtime-startup-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prokrust-license-ca
+  namespace: prokrust-system
+spec:
+  ca:
+    secretName: prokrust-license-webhook-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prokrust-license-selfsigned
+  namespace: prokrust-system
+spec:
+  selfSigned: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-lease-bootstrap-11c50d8075
+  namespace: argocd
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  ingress: []
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-lease-bootstrap-11c50d8075
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: default-deny
+  namespace: prokrust-system
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-aws-auth
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f70:4000::/56
+  podSelector:
+    matchLabels:
+      prokrust.ai/aws-auth: "true"
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-ballista-controller-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 50050
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          prokrust.ai/installation: prokrust-system
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: scheduler
+          app.kubernetes.io/name: ballista-gate
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: prokrust-ballista-cluster-controller
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-gcp-control-plane-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/name
+      operator: In
+      values:
+      - prokrust-application-controller
+      - prokrust-ballista-cluster-controller
+      - prokrust-web-api
+      - ballista-gate
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-license-metrics-ingress
+  namespace: prokrust-system
+spec:
+  ingress: []
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-application-controller
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-license-server-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-application-controller
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-license-webhook-ingress
+  namespace: prokrust-system
+spec:
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae00::/56
+    ports:
+    - port: 8443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-application-controller
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: prokrust-operator-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae10::41fe/128
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae20::beb5/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: prokrust-application-controller
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-runtime-startup-ingress
+  namespace: prokrust-system
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          prokrust.ai/installation: prokrust-system
+      podSelector:
+        matchLabels:
+          prokrust.ai/workload: product
+    - namespaceSelector:
+        matchLabels:
+          prokrust.ai/installation: prokrust-system
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: model-serving
+    ports:
+    - port: 8444
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-application-controller
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-session-redis
+  namespace: prokrust-system
+spec:
+  egress: []
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-web-api
+    ports:
+    - port: 6379
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-session-redis
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: web-api-0.25.0-rc.1
+  name: prokrust-web-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae10::41fe/128
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae20::beb5/128
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          prokrust.ai/api-client: "true"
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: web-api-0.25.0-rc.1
+  name: prokrust-web-api-aws-auth
+  namespace: prokrust-system
+spec:
+  egress: null
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+      prokrust.ai/aws-auth: "true"
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-web-api-oidc-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 6379
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-session-redis
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 35.254.118.132/32
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-web-api
+  policyTypes:
+  - Egress
+---
+apiVersion: platform.prokrust.ai/v1beta1
+kind: LicenseActivation
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-system-0.22.0-rc.4
+  name: default
+  namespace: prokrust-system
+spec:
+  credentialSecretRef:
+    name: prokrust-license-credential
+  entitlementSecretRef:
+    name: prokrust-license-entitlement
+  identitySecretRef:
+    name: prokrust-installation-identity
+  serverUrl: https://license.prokrust.ai
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: prokrust-system/prokrust-license-webhook
+  name: prokrust-system-prokrust-license
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /mutate-license
+      port: 443
+  failurePolicy: Fail
+  matchConditions:
+  - expression: object.spec.containers.exists(c, (has(c.command) && size(c.command)
+      > 0 && c.command[0] in ['/usr/local/bin/prokrust-trainer', '/usr/local/bin/prokrust-batch-predictor',
+      '/usr/local/bin/prokrust-serve']) || (has(c.image) && ['ar.prokrust.io/prokrust/trainer:',
+      'ar.prokrust.io/prokrust/trainer@', 'ar.prokrust.io/prokrust/trainer-cuda:',
+      'ar.prokrust.io/prokrust/trainer-cuda@', 'ar.prokrust.io/prokrust/batch-predictor:',
+      'ar.prokrust.io/prokrust/batch-predictor@', 'ar.prokrust.io/prokrust/serving:',
+      'ar.prokrust.io/prokrust/serving@', 'ar.prokrust.io/prokrust/model-server:',
+      'ar.prokrust.io/prokrust/model-server@'].exists(prefix, c.image.startsWith(prefix))))
+      || (has(object.spec.initContainers) && object.spec.initContainers.exists(c,
+      (has(c.command) && size(c.command) > 0 && c.command[0] in ['/usr/local/bin/prokrust-trainer',
+      '/usr/local/bin/prokrust-batch-predictor', '/usr/local/bin/prokrust-serve'])
+      || (has(c.image) && ['ar.prokrust.io/prokrust/trainer:', 'ar.prokrust.io/prokrust/trainer@',
+      'ar.prokrust.io/prokrust/trainer-cuda:', 'ar.prokrust.io/prokrust/trainer-cuda@',
+      'ar.prokrust.io/prokrust/batch-predictor:', 'ar.prokrust.io/prokrust/batch-predictor@',
+      'ar.prokrust.io/prokrust/serving:', 'ar.prokrust.io/prokrust/serving@', 'ar.prokrust.io/prokrust/model-server:',
+      'ar.prokrust.io/prokrust/model-server@'].exists(prefix, c.image.startsWith(prefix)))))
+      || (has(object.spec.ephemeralContainers) && object.spec.ephemeralContainers.exists(c,
+      (has(c.command) && size(c.command) > 0 && c.command[0] in ['/usr/local/bin/prokrust-trainer',
+      '/usr/local/bin/prokrust-batch-predictor', '/usr/local/bin/prokrust-serve'])
+      || (has(c.image) && ['ar.prokrust.io/prokrust/trainer:', 'ar.prokrust.io/prokrust/trainer@',
+      'ar.prokrust.io/prokrust/trainer-cuda:', 'ar.prokrust.io/prokrust/trainer-cuda@',
+      'ar.prokrust.io/prokrust/batch-predictor:', 'ar.prokrust.io/prokrust/batch-predictor@',
+      'ar.prokrust.io/prokrust/serving:', 'ar.prokrust.io/prokrust/serving@', 'ar.prokrust.io/prokrust/model-server:',
+      'ar.prokrust.io/prokrust/model-server@'].exists(prefix, c.image.startsWith(prefix)))))
+      || (has(object.spec.serviceAccountName) && object.spec.serviceAccountName in
+      ['prokrust-trainer', 'prokrust-batch-predictor', 'prokrust-kserve-runtime',
+      'prokrust-serving', 'prokrust-model-server', 'prokrust-table-staging', 'prokrust-table-materializer',
+      'prokrust-graph-materializer', 'prokrust-training-materializer', 'prokrust-prediction-materializer',
+      'prokrust-artifact-writer', 'prokrust-workflow-executor']) || (has(object.spec.volumes)
+      && object.spec.volumes.exists(v, (has(v.secret) && v.secret.secretName.matches('^prokrust-license-[0-9a-f]{24}$'))
+      || (has(v.projected) && v.projected.sources.exists(s, has(s.secret) && s.secret.name.matches('^prokrust-license-[0-9a-f]{24}$')))))
+    name: licensed-compute
+  matchPolicy: Equivalent
+  name: scheduling.license.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  reinvocationPolicy: IfNeeded
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: prokrust-system/prokrust-license-webhook
+  name: prokrust-system-prokrust-submission-authority
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /mutate-submission
+      port: 443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: authority.submission.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  reinvocationPolicy: Never
+  rules:
+  - apiGroups:
+    - data.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - snapshotpreparations
+    - snapshotbuilds
+    - tablesnapshots
+    - graphsnapshots
+    scope: Namespaced
+  - apiGroups:
+    - ml.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - trainingruns
+    - trainingstudies
+    - predictionruns
+    - inferenceendpoints
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: prokrust-system/prokrust-license-webhook
+  name: prokrust-system-prokrust-license
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-namespace
+      port: 443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: namespace.enrollment.prokrust.ai
+  objectSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - namespaces
+    scope: Cluster
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-workspace-submission
+      port: 443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: submission.enrollment.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - ml.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    resources:
+    - trainingruns
+    - trainingstudies
+    - predictionruns
+    - inferenceendpoints
+    scope: Namespaced
+  - apiGroups:
+    - data.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    resources:
+    - tablesnapshots
+    - graphsnapshots
+    - snapshotpreparations
+    - snapshotbuilds
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-license
+      port: 443
+  failurePolicy: Fail
+  matchConditions:
+  - expression: (object.spec.containers.exists(c, (has(c.command) && size(c.command)
+      > 0 && c.command[0] in ['/usr/local/bin/prokrust-trainer', '/usr/local/bin/prokrust-batch-predictor',
+      '/usr/local/bin/prokrust-serve']) || (has(c.image) && ['ar.prokrust.io/prokrust/trainer:',
+      'ar.prokrust.io/prokrust/trainer@', 'ar.prokrust.io/prokrust/trainer-cuda:',
+      'ar.prokrust.io/prokrust/trainer-cuda@', 'ar.prokrust.io/prokrust/batch-predictor:',
+      'ar.prokrust.io/prokrust/batch-predictor@', 'ar.prokrust.io/prokrust/serving:',
+      'ar.prokrust.io/prokrust/serving@', 'ar.prokrust.io/prokrust/model-server:',
+      'ar.prokrust.io/prokrust/model-server@'].exists(prefix, c.image.startsWith(prefix))))
+      || (has(object.spec.initContainers) && object.spec.initContainers.exists(c,
+      (has(c.command) && size(c.command) > 0 && c.command[0] in ['/usr/local/bin/prokrust-trainer',
+      '/usr/local/bin/prokrust-batch-predictor', '/usr/local/bin/prokrust-serve'])
+      || (has(c.image) && ['ar.prokrust.io/prokrust/trainer:', 'ar.prokrust.io/prokrust/trainer@',
+      'ar.prokrust.io/prokrust/trainer-cuda:', 'ar.prokrust.io/prokrust/trainer-cuda@',
+      'ar.prokrust.io/prokrust/batch-predictor:', 'ar.prokrust.io/prokrust/batch-predictor@',
+      'ar.prokrust.io/prokrust/serving:', 'ar.prokrust.io/prokrust/serving@', 'ar.prokrust.io/prokrust/model-server:',
+      'ar.prokrust.io/prokrust/model-server@'].exists(prefix, c.image.startsWith(prefix)))))
+      || (has(object.spec.ephemeralContainers) && object.spec.ephemeralContainers.exists(c,
+      (has(c.command) && size(c.command) > 0 && c.command[0] in ['/usr/local/bin/prokrust-trainer',
+      '/usr/local/bin/prokrust-batch-predictor', '/usr/local/bin/prokrust-serve'])
+      || (has(c.image) && ['ar.prokrust.io/prokrust/trainer:', 'ar.prokrust.io/prokrust/trainer@',
+      'ar.prokrust.io/prokrust/trainer-cuda:', 'ar.prokrust.io/prokrust/trainer-cuda@',
+      'ar.prokrust.io/prokrust/batch-predictor:', 'ar.prokrust.io/prokrust/batch-predictor@',
+      'ar.prokrust.io/prokrust/serving:', 'ar.prokrust.io/prokrust/serving@', 'ar.prokrust.io/prokrust/model-server:',
+      'ar.prokrust.io/prokrust/model-server@'].exists(prefix, c.image.startsWith(prefix)))))
+      || (has(object.spec.serviceAccountName) && object.spec.serviceAccountName in
+      ['prokrust-trainer', 'prokrust-batch-predictor', 'prokrust-kserve-runtime',
+      'prokrust-serving', 'prokrust-model-server', 'prokrust-table-staging', 'prokrust-table-materializer',
+      'prokrust-graph-materializer', 'prokrust-training-materializer', 'prokrust-prediction-materializer',
+      'prokrust-artifact-writer', 'prokrust-workflow-executor']) || (has(object.spec.volumes)
+      && object.spec.volumes.exists(v, (has(v.secret) && v.secret.secretName.matches('^prokrust-license-[0-9a-f]{24}$'))
+      || (has(v.projected) && v.projected.sources.exists(s, has(s.secret) && s.secret.name.matches('^prokrust-license-[0-9a-f]{24}$'))))))
+      || (has(object.spec.schedulingGates) && object.spec.schedulingGates.exists(g,
+      g.name == 'licensing.prokrust.ai/admission')) || (oldObject != null && has(oldObject.spec.schedulingGates)
+      && oldObject.spec.schedulingGates.exists(g, g.name == 'licensing.prokrust.ai/admission'))
+    name: licensed-compute
+  matchPolicy: Equivalent
+  name: compute.license.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+    - pods/resize
+    - pods/ephemeralcontainers
+    scope: Namespaced
+  sideEffects: NoneOnDryRun
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-license-binding
+      port: 443
+  failurePolicy: Fail
+  matchConditions:
+  - expression: request.userInfo.username != 'system:kube-scheduler'
+    name: nonstandard-binding-caller
+  matchPolicy: Equivalent
+  name: binding.license.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods/binding
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: prokrust-system/prokrust-license-webhook
+  name: prokrust-system-prokrust-workflow-integrity
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-snapshot
+      port: 443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: lifecycle.snapshot.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - platform.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - performancecaptures
+    - performancecaptures/status
+    scope: Namespaced
+  - apiGroups:
+    - data.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - tableprofiles
+    - tableprofiles/status
+    - snapshotpreparations
+    - snapshotpreparations/status
+    - snapshotbuilds
+    - snapshotbuilds/status
+    - tablesnapshots
+    - tablesnapshots/status
+    - graphsnapshots
+    - graphsnapshots/status
+    scope: Namespaced
+  - apiGroups:
+    - platform.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - DELETE
+    resources:
+    - performancecaptures
+    scope: Namespaced
+  - apiGroups:
+    - data.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - DELETE
+    resources:
+    - tableprofiles
+    - snapshotbuilds
+    scope: Namespaced
+  - apiGroups:
+    - ml.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - trainingstudies
+    - trainingstudies/status
+    scope: Namespaced
+  - apiGroups:
+    - ml.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - trainingruns
+    - trainingruns/status
+    - predictionruns
+    - predictionruns/status
+    - inferenceendpoints
+    - inferenceendpoints/status
+    scope: Namespaced
+  - apiGroups:
+    - ml.prokrust.ai
+    apiVersions:
+    - v1beta1
+    operations:
+    - DELETE
+    resources:
+    - trainingruns
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-workflow
+      port: 443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: program.workflow.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - argoproj.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - workflows
+    - workflows/status
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-workflow-pod
+      port: 443
+  failurePolicy: Fail
+  matchConditions:
+  - expression: |-
+      false || ((
+
+        (has(object.metadata.ownerReferences) && object.metadata.ownerReferences.exists(r,
+          (r.apiVersion == 'argoproj.io/v1alpha1' && r.kind == 'Workflow') ||
+          (r.apiVersion == 'batch/v1' && r.kind == 'Job'))) ||
+        (has(object.metadata.labels) && 'prokrust.ai/component' in object.metadata.labels &&
+          object.metadata.labels['prokrust.ai/component'] == 'source-inspection')))
+      || (request.kind.kind == 'Pod' && has(object.spec) &&
+
+        ((has(object.spec.serviceAccountName) && object.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"]) ||
+         (has(object.spec.serviceAccount) && object.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"])
+         || (has(object.spec.volumes) && object.spec.volumes.exists(v,
+            (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('prokrust-gcp-config-')) ||
+            (has(v.projected) && has(v.projected.sources) && v.projected.sources.exists(s,
+              has(s.configMap) && has(s.configMap.name) && s.configMap.name.startsWith('prokrust-gcp-config-')))))
+        ))
+      || (request.kind.kind == 'ReplicaSet' && has(object.spec) &&
+
+        has(object.spec.template) && has(object.spec.template.spec) &&
+        ((has(object.spec.template.spec.serviceAccountName) && object.spec.template.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"]) ||
+         (has(object.spec.template.spec.serviceAccount) && object.spec.template.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"])
+         || (has(object.spec.template.spec.volumes) && object.spec.template.spec.volumes.exists(v,
+            (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('prokrust-gcp-config-')) ||
+            (has(v.projected) && has(v.projected.sources) && v.projected.sources.exists(s,
+              has(s.configMap) && has(s.configMap.name) && s.configMap.name.startsWith('prokrust-gcp-config-')))))
+        ))
+      || (request.kind.kind == 'Job' && has(object.spec) &&
+
+        has(object.spec.template) && has(object.spec.template.spec) &&
+        ((has(object.spec.template.spec.serviceAccountName) && object.spec.template.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"]) ||
+         (has(object.spec.template.spec.serviceAccount) && object.spec.template.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"])
+        ))
+      || (request.operation == 'UPDATE' && (
+
+        (has(oldObject.metadata.ownerReferences) && oldObject.metadata.ownerReferences.exists(r,
+          (r.apiVersion == 'argoproj.io/v1alpha1' && r.kind == 'Workflow') ||
+          (r.apiVersion == 'batch/v1' && r.kind == 'Job'))) ||
+        (has(oldObject.metadata.labels) && 'prokrust.ai/component' in oldObject.metadata.labels &&
+          oldObject.metadata.labels['prokrust.ai/component'] == 'source-inspection')))
+      || (request.kind.kind == 'Pod' && request.operation == 'UPDATE' && has(oldObject.spec) &&
+
+        ((has(oldObject.spec.serviceAccountName) && oldObject.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"]) ||
+         (has(oldObject.spec.serviceAccount) && oldObject.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"])
+         || (has(oldObject.spec.volumes) && oldObject.spec.volumes.exists(v,
+            (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('prokrust-gcp-config-')) ||
+            (has(v.projected) && has(v.projected.sources) && v.projected.sources.exists(s,
+              has(s.configMap) && has(s.configMap.name) && s.configMap.name.startsWith('prokrust-gcp-config-')))))
+        ))
+      || (request.kind.kind == 'ReplicaSet' && request.operation == 'UPDATE' && has(oldObject.spec) &&
+
+        has(oldObject.spec.template) && has(oldObject.spec.template.spec) &&
+        ((has(oldObject.spec.template.spec.serviceAccountName) && oldObject.spec.template.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"]) ||
+         (has(oldObject.spec.template.spec.serviceAccount) && oldObject.spec.template.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"])
+         || (has(oldObject.spec.template.spec.volumes) && oldObject.spec.template.spec.volumes.exists(v,
+            (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('prokrust-gcp-config-')) ||
+            (has(v.projected) && has(v.projected.sources) && v.projected.sources.exists(s,
+              has(s.configMap) && has(s.configMap.name) && s.configMap.name.startsWith('prokrust-gcp-config-')))))
+        ))
+      || (request.kind.kind == 'Job' && request.operation == 'UPDATE' && has(oldObject.spec) &&
+
+        has(oldObject.spec.template) && has(oldObject.spec.template.spec) &&
+        ((has(oldObject.spec.template.spec.serviceAccountName) && oldObject.spec.template.spec.serviceAccountName in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"]) ||
+         (has(oldObject.spec.template.spec.serviceAccount) && oldObject.spec.template.spec.serviceAccount in ["prokrust-ballista-scheduler","prokrust-ballista-executor","prokrust-kserve-runtime","prokrust-artifact-store-probe","prokrust-connection-probe","prokrust-table-staging","prokrust-table-materializer","prokrust-graph-materializer","prokrust-training-materializer","prokrust-prediction-materializer","prokrust-artifact-writer","prokrust-trainer","prokrust-batch-predictor"])
+        ))
+    name: protected-cloud-or-managed-workload
+  matchPolicy: Equivalent
+  name: workload.workflow.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+    - pods/resize
+    - pods/ephemeralcontainers
+    scope: Namespaced
+  - apiGroups:
+    - batch
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - jobs
+    scope: Namespaced
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - replicasets
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: prokrust-license-webhook
+      namespace: prokrust-system
+      path: /validate-workflow-plan
+      port: 443
+  failurePolicy: Fail
+  matchConditions:
+  - expression: (object != null && has(object.metadata.name) && object.metadata.name.startsWith('prokrust-workflow-plan-'))
+      || (oldObject != null && has(oldObject.metadata.name) && oldObject.metadata.name.startsWith('prokrust-workflow-plan-'))
+    name: protected-execution-anchor
+  matchPolicy: Equivalent
+  name: anchor.workflow.prokrust.ai
+  namespaceSelector:
+    matchLabels:
+      prokrust.ai/installation: prokrust-system
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - configmaps
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 10

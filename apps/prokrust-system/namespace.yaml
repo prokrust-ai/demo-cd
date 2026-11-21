@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prokrust-system
+  labels:
+    app.kubernetes.io/part-of: prokrust
+    secrets.prokrust.io/aws-demo: 'true'
+  annotations:
+    argocd.argoproj.io/sync-wave: '-3'
