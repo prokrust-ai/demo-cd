@@ -1,0 +1,287 @@
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - artifactstores
+  - performancecaptures
+  verbs: &id001
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tables
+  - tablesnapshots
+  - graphs
+  - graphsnapshots
+  - snapshotbuilds
+  verbs: *id001
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - predictionqueries
+  - trainingruns
+  - trainingstudies
+  - models
+  - predictionruns
+  - inferenceendpoints
+  verbs: *id001
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - snapshotpreparations
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - sources.prokrust.ai
+  resources:
+  - syntheticconnections
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - bigqueryconnections
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - ballistaclusters
+  verbs:
+  - get
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - prokrustpolicies
+  verbs:
+  - get
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ''
+  resources:
+  - pods/log
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - serving.kserve.io
+  resources:
+  - inferenceservices
+  verbs:
+  - get
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  - serviceaccounts
+  verbs:
+  - get
+- apiGroups:
+  - ''
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-ui-admin
+subjects:
+- kind: ServiceAccount
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - artifactstores
+  - ballistaclusters
+  - prokrustpolicies
+  - performancecaptures
+  verbs: &id001
+  - get
+  - list
+  - watch
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - graphs
+  - graphsnapshots
+  - snapshotbuilds
+  - snapshotpreparations
+  - tables
+  - tablesnapshots
+  verbs: *id001
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - inferenceendpoints
+  - models
+  - predictionqueries
+  - predictionruns
+  - trainingruns
+  - trainingstudies
+  verbs: *id001
+- apiGroups:
+  - sources.prokrust.ai
+  resources:
+  - syntheticconnections
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - bigqueryconnections
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ''
+  resources:
+  - pods/log
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - serving.kserve.io
+  resources:
+  - inferenceservices
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-demo-reviewer
+subjects:
+- kind: ServiceAccount
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce

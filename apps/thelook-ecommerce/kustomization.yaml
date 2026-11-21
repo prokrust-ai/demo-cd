@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- browser-access.yaml
+- ballista-accounts.yaml
+helmCharts:
+- name: prokrust-workspace
+  repo: oci://ar.prokrust.io/charts
+  version: 0.22.0-rc.2
+  releaseName: thelook-ecommerce
+  namespace: thelook-ecommerce
+  valuesFile: values.yaml
+patches:
+- target:
+    version: v1
+    kind: ServiceAccount
+    namespace: thelook-ecommerce
+    name: (prokrust-artifact-store-probe|prokrust-artifact-writer|prokrust-batch-predictor|prokrust-connection-probe|prokrust-graph-materializer|prokrust-prediction-materializer|prokrust-table-materializer|prokrust-table-staging|prokrust-trainer|prokrust-training-materializer|prokrust-workflow-executor)
+  patch: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: unused
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
