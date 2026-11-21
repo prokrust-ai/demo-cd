@@ -12,15 +12,13 @@ admin OIDC bindings use the system's `sso` provider and its role claim.
 
 ## Before syncing
 
-- Match the chart's declared supported system composition to the installed
-  `prokrust-component-versions` ConfigMap. Workspace chart `0.22.0-rc.2` declares
-  `0.22.0-rc.2`; the current Demo system reports `0.22.0-rc.4`.
-- The private `prokrust` AppProject must allow the `thelook-ecommerce` destination,
-  core `LimitRange` and `ResourceQuota`, and `platform.prokrust.ai/ProkrustAccessBinding`.
-  Enrollment also uses the project's existing scoped cluster RBAC permissions
-  and its `prokrust-system` destination.
-- Provision `harbor-reader` in the workspace through Demo's private ExternalSecret
-  configuration. The system namespace's Secret is separate.
+- Pin a workspace chart release that includes the enrollment fix. The current
+  pin, `0.22.0-rc.2`, still rejects the Demo system's `0.22.0-rc.4`.
+- Apply the Demo-managed `prokrust` AppProject update. It authorizes Argo CD to
+  target `thelook-ecommerce` and deploy `LimitRange`, `ResourceQuota` and
+  `ProkrustAccessBinding` resources from this repository.
+- Sync the private registry application and wait for the workspace's
+  `harbor-reader` ExternalSecret to report Ready.
 
 After sync, verify the enrollment hook completes and the workspace namespace
 reports `prokrust.ai/enrollment-phase=Ready`. This app provisions workspace
