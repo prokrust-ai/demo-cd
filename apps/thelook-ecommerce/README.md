@@ -12,8 +12,6 @@ admin OIDC bindings use the system's `sso` provider and its role claim.
 
 ## Before syncing
 
-- Pin a workspace chart release that includes the enrollment fix. The current
-  pin, `0.22.0-rc.2`, still rejects the Demo system's `0.22.0-rc.4`.
 - Apply the Demo-managed `prokrust` AppProject update. It authorizes Argo CD to
   target `thelook-ecommerce` and deploy `LimitRange`, `ResourceQuota` and
   `ProkrustAccessBinding` resources from this repository.

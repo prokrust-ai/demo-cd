@@ -6,7 +6,7 @@ resources:
 helmCharts:
 - name: prokrust-workspace
   repo: oci://ar.prokrust.io/charts
-  version: 0.22.0-rc.2
+  version: 0.22.0-rc.3
   releaseName: thelook-ecommerce
   namespace: thelook-ecommerce
   valuesFile: values.yaml
