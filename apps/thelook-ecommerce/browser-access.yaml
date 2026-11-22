@@ -67,6 +67,15 @@ rules:
   - update
   - patch
   - delete
+- apiGroups: [google.sources.prokrust.ai]
+  resources: [gcsconnections]
+  verbs: [get, list]
+- apiGroups: [aws.sources.prokrust.ai]
+  resources: [s3connections]
+  verbs: [get, list]
+- apiGroups: [apache.sources.prokrust.ai]
+  resources: [icebergconnections, paimonconnections]
+  verbs: [get, list]
 - apiGroups:
   - google.sources.prokrust.ai
   resources:
@@ -226,6 +235,15 @@ rules:
   - get
   - list
   - watch
+- apiGroups: [google.sources.prokrust.ai]
+  resources: [gcsconnections]
+  verbs: [get, list]
+- apiGroups: [aws.sources.prokrust.ai]
+  resources: [s3connections]
+  verbs: [get, list]
+- apiGroups: [apache.sources.prokrust.ai]
+  resources: [icebergconnections, paimonconnections]
+  verbs: [get, list]
 - apiGroups:
   - google.sources.prokrust.ai
   resources:
