@@ -1,0 +1,1801 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: namespace-bounds
+  namespace: thelook-ecommerce
+spec:
+  hard:
+    limits.cpu: "32"
+    limits.ephemeral-storage: 256Gi
+    limits.memory: 64Gi
+    pods: "50"
+    requests.cpu: "16"
+    requests.ephemeral-storage: 128Gi
+    requests.memory: 32Gi
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: prokrust-system
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-artifact-store-probe
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-artifact-writer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-ballista-store
+  name: prokrust-ballista-executor
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-ballista-store
+  name: prokrust-ballista-scheduler
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-batch-predictor
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-connection-probe
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-graph-materializer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-prediction-materializer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-table-materializer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-table-staging
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-trainer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-training-materializer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-workflow-executor
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1-composition
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-component-versions
+  resources:
+  - configmaps
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-application-controller
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - prokrustpolicies
+  - artifactstores
+  - ballistaclusters
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tables
+  - graphs
+  - tablesnapshots
+  - snapshotbuilds
+  - snapshotpreparations
+  - graphsnapshots
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - predictionqueries
+  - trainingruns
+  - trainingstudies
+  - predictionruns
+  - inferenceendpoints
+  - models
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tableprofiles
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+  - delete
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - performancecaptures
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+  - delete
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tableprofiles/status
+  - snapshotbuilds/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - performancecaptures/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - limitranges
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  verbs:
+  - create
+  - get
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resourceNames:
+  - prokrust-workflow-executor
+  resources:
+  - roles
+  verbs:
+  - bind
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tablesnapshots
+  - snapshotbuilds
+  - snapshotpreparations
+  - graphsnapshots
+  verbs:
+  - patch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - trainingruns
+  - trainingstudies
+  - predictionruns
+  - inferenceendpoints
+  verbs:
+  - patch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - inferenceendpoints
+  - predictionruns
+  verbs:
+  - delete
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - prokrustpolicies/status
+  - artifactstores/status
+  verbs:
+  - patch
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tables/status
+  - graphs/status
+  - tablesnapshots/status
+  - snapshotbuilds/status
+  - snapshotpreparations/status
+  - graphsnapshots/status
+  verbs:
+  - patch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - predictionqueries/status
+  - trainingruns/status
+  - trainingstudies/status
+  - predictionruns/status
+  - inferenceendpoints/status
+  - models/status
+  verbs:
+  - patch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - trainingruns
+  verbs:
+  - create
+  - delete
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - models
+  verbs:
+  - create
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tablesnapshots
+  - graphsnapshots
+  - snapshotbuilds
+  verbs:
+  - create
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-producer-semaphore
+  - prokrust-conversion-semaphore
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-ballista-capacity
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-runtime-startup-ca
+  - prokrust-license-usage
+  resources:
+  - configmaps
+  verbs:
+  - update
+  - delete
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-conversion-semaphore
+  resources:
+  - configmaps
+  verbs:
+  - update
+- apiGroups:
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-ballista-cluster-controller
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-ballista-capacity
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - prokrustpolicies
+  - artifactstores
+  - ballistaclusters
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - snapshotbuilds
+  - tableprofiles
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - trainingruns
+  - predictionruns
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - ballistaclusters/status
+  verbs:
+  - patch
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - apps
+  resourceNames:
+  - ballista-scheduler
+  - ballista-executor
+  resources:
+  - deployments
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resourceNames:
+  - ballista-scheduler
+  resources:
+  - services
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-producer-semaphore
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - artifactstores
+  - ballistaclusters
+  - prokrustpolicies
+  - performancecaptures
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - graphs
+  - graphsnapshots
+  - snapshotbuilds
+  - snapshotpreparations
+  - tables
+  - tablesnapshots
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - inferenceendpoints
+  - models
+  - predictionqueries
+  - predictionruns
+  - trainingruns
+  - trainingstudies
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - sources.prokrust.ai
+  resources:
+  - syntheticconnections
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - bigqueryconnections
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - serving.kserve.io
+  resources:
+  - inferenceservices
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-profile-broker
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tableprofiles
+  verbs:
+  - get
+  - list
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - artifactstores
+  - performancecaptures
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - tables
+  - tablesnapshots
+  - graphs
+  - graphsnapshots
+  - snapshotbuilds
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ml.prokrust.ai
+  resources:
+  - predictionqueries
+  - trainingruns
+  - trainingstudies
+  - models
+  - predictionruns
+  - inferenceendpoints
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - data.prokrust.ai
+  resources:
+  - snapshotpreparations
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - sources.prokrust.ai
+  resources:
+  - syntheticconnections
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - bigqueryconnections
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - ballistaclusters
+  verbs:
+  - get
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - prokrustpolicies
+  verbs:
+  - get
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - serving.kserve.io
+  resources:
+  - inferenceservices
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - serviceaccounts
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-web-api-broker
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resources:
+  - prokrustaccessbindings
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-demo-reviewer
+  - prokrust-ui-admin
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - impersonate
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-workflow-executor
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflowtaskresults
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - thelook-ecommerce
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1-composition
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-enroll-5a4f9861bc6bf0d1-composition
+subjects:
+- kind: ServiceAccount
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-application-controller
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-application-controller
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-ballista-cluster-controller
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-ballista-cluster-controller
+subjects:
+- kind: ServiceAccount
+  name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-demo-reviewer
+subjects:
+- kind: ServiceAccount
+  name: prokrust-demo-reviewer
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-profile-broker
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-profile-broker
+subjects:
+- kind: ServiceAccount
+  name: prokrust-web-api
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-ui-admin
+subjects:
+- kind: ServiceAccount
+  name: prokrust-ui-admin
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-web-api-broker
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-web-api-broker
+subjects:
+- kind: ServiceAccount
+  name: prokrust-web-api
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-workflow-executor
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-workflow-executor
+subjects:
+- kind: ServiceAccount
+  name: prokrust-workflow-executor
+- kind: ServiceAccount
+  name: prokrust-table-staging
+- kind: ServiceAccount
+  name: prokrust-table-materializer
+- kind: ServiceAccount
+  name: prokrust-graph-materializer
+- kind: ServiceAccount
+  name: prokrust-training-materializer
+- kind: ServiceAccount
+  name: prokrust-prediction-materializer
+- kind: ServiceAccount
+  name: prokrust-artifact-writer
+- kind: ServiceAccount
+  name: prokrust-trainer
+- kind: ServiceAccount
+  name: prokrust-batch-predictor
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+subjects:
+- kind: ServiceAccount
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  ballistaExecutor: ar.prokrust.io/prokrust/ballista-executor@sha256:d57e702c0086c2dd9eca8dc37c72c5531eadaed3a656ec3978d2314b9cb7269d
+  ballistaScheduler: ar.prokrust.io/prokrust/ballista-scheduler@sha256:ae826346473fb13733701ee740ded8106d78ee43df5018989539fdb440a23645
+  componentVersion: 0.4.0
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-ballista-images
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+data:
+  batchPredictor: ar.prokrust.io/prokrust/batch-predictor@sha256:1a84f9abc224c765b8e947b55fe5d6ef38553f5505b0df4d56f87f572a6e1544
+  componentVersion: 0.11.0-rc.1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-batch-predictor-images
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+data:
+  limit: "16"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-conversion-semaphore
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+data:
+  componentVersion: 0.13.0-rc.1
+  dataJob: ar.prokrust.io/prokrust/data-job@sha256:65bfb6fbb828df79a48b9baeca3d721072bd26319135591083b06011e1957581
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-data-job-images
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+data:
+  limit: "1"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: prokrust-producer-semaphore
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+data:
+  componentVersion: 0.11.0-rc.1
+  trainer: ar.prokrust.io/prokrust/trainer@sha256:6f500c234cc66450e4b7e2a61c4c7f25f5f7f0f0b60d187805a6f2d9386777b7
+  trainerCuda: ar.prokrust.io/prokrust/trainer-cuda@sha256:7697b034af65d75e9e22ace78e1de2ffe8902257c701b8b511c9f48a1719eac1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-trainer-images
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: container-defaults
+  namespace: thelook-ecommerce
+spec:
+  limits:
+  - default:
+      cpu: "2"
+      ephemeral-storage: 8Gi
+      memory: 2Gi
+    defaultRequest:
+      cpu: 100m
+      ephemeral-storage: 1Gi
+      memory: 128Mi
+    type: Container
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "-1"
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: prokrust-system
+spec:
+  activeDeadlineSeconds: 150
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prokrust-enroll-5a4f9861bc6bf0d1
+    spec:
+      automountServiceAccountToken: true
+      containers:
+      - args:
+        - |
+          set -eu
+
+          # kubectl with a request timeout can skip in-cluster discovery.
+          api_host="${KUBERNETES_SERVICE_HOST:?Kubernetes Service host is required}"
+          api_port="${KUBERNETES_SERVICE_PORT:?Kubernetes Service port is required}"
+          case "$api_host" in *:*) api_host="[$api_host]";; esac
+          umask 077
+          export KUBECONFIG="$HOME/prokrust-hook-kubeconfig"
+          cat > "$KUBECONFIG" <<EOF
+          apiVersion: v1
+          kind: Config
+          current-context: incluster
+          clusters:
+          - name: local
+            cluster:
+              server: "https://$api_host:$api_port"
+              certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          contexts:
+          - name: incluster
+            context:
+              cluster: local
+              user: hook
+          users:
+          - name: hook
+            user:
+              tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          EOF
+
+          read_namespace() {
+            kubectl --request-timeout=10s get namespace "$WORKSPACE" -o "$1"
+          }
+
+          installed="$(kubectl --request-timeout=10s -n "$INSTALLATION" get configmap prokrust-component-versions \
+            -o 'jsonpath={.data.compositionVersion}')" || {
+            echo "Cannot read the product release from installation $INSTALLATION. Install the system chart first and check enrollment API access." >&2
+            exit 1
+          }
+          if [ -z "$installed" ]; then
+            echo "Installation $INSTALLATION has no recorded system release." >&2
+            exit 1
+          fi
+
+          # Argo applies opt-in default resources after this Sync hook. Helm also checks
+          # existing ownership during server-side rendering and its own install checks.
+          if [ "$CHECK_DEFAULTS" = true ]; then
+            for kind in prokrustpolicy artifactstore ballistacluster; do
+              found="$(kubectl --request-timeout=10s -n "$WORKSPACE" get "$kind" default --ignore-not-found \
+                -o 'jsonpath={.metadata.name}{"|"}{.metadata.annotations.prokrust\.ai/workspace-chart}')"
+              if [ -n "$found" ] && [ "$found" != "default|$WORKSPACE_RELEASE" ]; then
+                echo "Refusing to adopt existing $kind/default in $WORKSPACE. Disable tenantDefaults or use the existing resource owner." >&2
+                exit 1
+              fi
+            done
+          fi
+
+          for attempt in 1 2 3 4 5; do
+            state="$(read_namespace 'jsonpath={.metadata.resourceVersion}{"|"}{.metadata.labels.prokrust\.ai/installation}{"|"}{.metadata.deletionTimestamp}')" || {
+              echo "Cannot read workspace Namespace $WORKSPACE. Provision the namespace and check enrollment RBAC and API egress." >&2
+              exit 1
+            }
+            version="${state%%|*}"
+            assignment="${state#*|}"
+            if [ -z "$version" ] || [ -n "${assignment#*|}" ]; then
+              echo "Workspace Namespace $WORKSPACE is terminating or has no resourceVersion." >&2
+              exit 1
+            fi
+            assignment="${assignment%%|*}"
+            if [ "$assignment" = "$INSTALLATION" ]; then
+              exit 0
+            fi
+            if [ -n "$assignment" ]; then
+              echo "Workspace $WORKSPACE is assigned to $assignment. Drain and release it before installing for $INSTALLATION." >&2
+              exit 1
+            fi
+            if kubectl --request-timeout=10s label namespace "$WORKSPACE" \
+              "prokrust.ai/installation=$INSTALLATION" --resource-version="$version"; then
+              exit 0
+            fi
+            sleep "$attempt"
+          done
+          echo "Cannot assign $WORKSPACE to $INSTALLATION. Check the Namespace label, enrollment admission, RBAC, and API connectivity." >&2
+          exit 1
+        command:
+        - /bin/sh
+        - -c
+        env:
+        - name: WORKSPACE
+          value: thelook-ecommerce
+        - name: INSTALLATION
+          value: prokrust-system
+        - name: WORKSPACE_RELEASE
+          value: thelook-ecommerce
+        - name: SUPPORTED_SYSTEM_VERSION
+          value: 0.22.0-rc.4
+        - name: CHECK_DEFAULTS
+          value: "false"
+        - name: HOME
+          value: /tmp
+        image: docker.io/alpine/kubectl:1.36.4@sha256:a2cd8ee034cbe04d651e565b3373299b31921de5c2af86490559e21b3e197808
+        name: enroll
+        resources:
+          limits:
+            cpu: 250m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      restartPolicy: Never
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-enroll-5a4f9861bc6bf0d1
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - emptyDir:
+          sizeLimit: 16Mi
+        name: tmp
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  ingress: []
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-enroll-5a4f9861bc6bf0d1
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+  name: default-deny
+  namespace: thelook-ecommerce
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-aws-auth
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f70:4000::/56
+  podSelector:
+    matchLabels:
+      prokrust.ai/aws-auth: "true"
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-ballista-capacity-inventory
+  namespace: thelook-ecommerce
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: prokrust-system
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-ballista-cluster-controller
+    ports:
+    - port: 50050
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: scheduler
+      app.kubernetes.io/name: ballista-gate
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-ballista-gcp-auth-egress
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ballista-gate
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-ballista-peers
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 50050
+      protocol: TCP
+    - port: 50051
+      protocol: TCP
+    - port: 50052
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ballista-gate
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae10::41fe/128
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae20::beb5/128
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ballista-gate
+    ports:
+    - port: 50050
+      protocol: TCP
+    - port: 50051
+      protocol: TCP
+    - port: 50052
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ballista-gate
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-gcp-serving-egress
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/component
+      operator: In
+      values:
+      - model-serving
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-gcp-workers-egress
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2001:4860:4840::/45
+    - ipBlock:
+        cidr: 2607:f8b0::/32
+  podSelector:
+    matchExpressions:
+    - key: prokrust.ai/gcp-auth
+      operator: In
+      values:
+      - "true"
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-runtime-startup-egress
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 8444
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: prokrust-system
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-application-controller
+  podSelector:
+    matchLabels:
+      prokrust.ai/workload: product
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-serving-startup-egress
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 8444
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: prokrust-system
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prokrust-application-controller
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: model-serving
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-workflow-egress
+  namespace: thelook-ecommerce
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae10::41fe/128
+    - ipBlock:
+        cidr: 2600:1f13:db0:ae20::beb5/128
+  - ports:
+    - port: 50050
+      protocol: TCP
+    - port: 50051
+      protocol: TCP
+    - port: 50052
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ballista-gate
+  podSelector:
+    matchLabels:
+      prokrust.ai/workload: product
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+  name: prokrust-workflow-to-ballista
+  namespace: thelook-ecommerce
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          prokrust.ai/workload: product
+    ports:
+    - port: 50050
+      protocol: TCP
+    - port: 50051
+      protocol: TCP
+    - port: 50052
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ballista-gate
+  policyTypes:
+  - Ingress
+---
+apiVersion: platform.prokrust.ai/v1beta1
+kind: ProkrustAccessBinding
+metadata:
+  name: demo-admin
+  namespace: thelook-ecommerce
+spec:
+  displayName: Demo admin
+  providerRef: sso
+  rule: claims['prokrust.ai/role'] == 'admin'
+  serviceAccountRef:
+    name: prokrust-ui-admin
+---
+apiVersion: platform.prokrust.ai/v1beta1
+kind: ProkrustAccessBinding
+metadata:
+  name: demo-guest
+  namespace: thelook-ecommerce
+spec:
+  displayName: Demo guest
+  providerRef: sso
+  rule: claims['prokrust.ai/role'] == 'guest'
+  serviceAccountRef:
+    name: prokrust-demo-reviewer

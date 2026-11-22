@@ -1,0 +1,52 @@
+installation:
+  namespace: prokrust-system
+global:
+  awsRegion: us-west-2
+  networkFamily: IPv6
+  workloadPlacementProfile: arm64
+  imagePullSecrets:
+  - name: harbor-reader
+  networkPolicy:
+    apiServerEndpoints:
+    - cidr: fd8e:1cf8:6673::1/128
+      port: 443
+    artifactStore:
+      cidrs:
+      - 2600:1f13:db0:ae10::41fe/128
+      - 2600:1f13:db0:ae20::beb5/128
+      podSelector: {}
+      port: 443
+    gcpAuth:
+      enabled: true
+      metadataEndpoints: []
+      googleApiCIDRs:
+      - 2001:4860:4840::/45
+      - 2607:f8b0::/32
+    awsAuth:
+      enabled: true
+      stsCIDRs: []
+      podIdentityAgentEnabled: false
+awsAuth:
+  stsNetworkCIDRs:
+  - 2600:1f70:4000::/56
+namespaceResources:
+  resourceQuota:
+    limits.ephemeral-storage: 256Gi
+    requests.ephemeral-storage: 128Gi
+access:
+  serviceAccounts:
+  - prokrust-demo-reviewer
+  - prokrust-ui-admin
+  bindings:
+    demo-guest:
+      providerRef: sso
+      serviceAccountRef:
+        name: prokrust-demo-reviewer
+      rule: claims['prokrust.ai/role'] == 'guest'
+      displayName: Demo guest
+    demo-admin:
+      providerRef: sso
+      serviceAccountRef:
+        name: prokrust-ui-admin
+      rule: claims['prokrust.ai/role'] == 'admin'
+      displayName: Demo admin

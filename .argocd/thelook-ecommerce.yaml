@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: thelook-ecommerce
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
+spec:
+  project: prokrust
+  source:
+    repoURL: https://github.com/prokrust-ai/demo-cd.git
+    targetRevision: main
+    path: generated/thelook-ecommerce
+    directory:
+      include: '*.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: thelook-ecommerce
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true
+    - CreateNamespace=true
+    - FailOnSharedResource=true
