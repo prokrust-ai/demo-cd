@@ -53,7 +53,7 @@ global:
       podIdentityAgentEnabled: false
   oidc:
     enabled: true
-    revision: 4
+    revision: 5
     sessionSecret: prokrust-browser-sessions
     providerEgressCIDRs:
     - 35.254.118.132/32
@@ -78,6 +78,7 @@ global:
     - namespace: thelook-ecommerce
       serviceAccount: prokrust-ui-admin
       installationReports: false
+      installationActivation: true
     redis:
       image: docker.io/library/redis:8.8-alpine@sha256:ab669f1420eaa05360a417b24f3bd210c9272e2c79a4bb35d3e50b4bfd50dbee
       storage: 2Gi
