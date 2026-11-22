@@ -1,26 +1,25 @@
 connectors:
-  enabled: true
-  registryConfigMap: &registryName prokrust-connector-registry
-  registryItems: &registryItems
-    - {key: registry.json, path: registry.json}
-    - {key: bigquery-connection-v1.json, path: bigquery/connection-v1.json}
-    - {key: bigquery-descriptor.json, path: bigquery/descriptor.json}
-    - {key: bigquery-selector-v1.json, path: bigquery/selector-v1.json}
-    - {key: gcs-connection-v1.json, path: gcs/connection-v1.json}
-    - {key: gcs-descriptor.json, path: gcs/descriptor.json}
-    - {key: gcs-selector-v1.json, path: gcs/selector-v1.json}
-    - {key: iceberg-connection-v1.json, path: iceberg/connection-v1.json}
-    - {key: iceberg-descriptor.json, path: iceberg/descriptor.json}
-    - {key: iceberg-selector-v1.json, path: iceberg/selector-v1.json}
-    - {key: paimon-connection-v1.json, path: paimon/connection-v1.json}
-    - {key: paimon-descriptor.json, path: paimon/descriptor.json}
-    - {key: paimon-selector-v1.json, path: paimon/selector-v1.json}
-    - {key: s3-connection-v1.json, path: s3/connection-v1.json}
-    - {key: s3-descriptor.json, path: s3/descriptor.json}
-    - {key: s3-selector-v1.json, path: s3/selector-v1.json}
-    - {key: synthetic-connection-v1.json, path: synthetic/connection-v1.json}
-    - {key: synthetic-descriptor.json, path: synthetic/descriptor.json}
-    - {key: synthetic-selector-v1.json, path: synthetic/selector-v1.json}
+  bigquery: &demoConnector
+    enabled: true
+    imagePullSecrets:
+      - name: harbor-reader
+    nodeSelector: &connectorNodes
+      kubernetes.io/arch: arm64
+    tolerations: &connectorTolerations
+      - key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+        effect: NoSchedule
+    runtimeNodeSelector: *connectorNodes
+    runtimeTolerations: *connectorTolerations
+    controllerApiServerEndpoints:
+      - cidr: fd8e:1cf8:6673::1/128
+        port: 443
+  gcs: *demoConnector
+  iceberg: *demoConnector
+  paimon: *demoConnector
+  s3: *demoConnector
+  synthetic: *demoConnector
 leaseBootstrap:
   mode: argo
   namespace: argocd
@@ -93,8 +92,6 @@ artifactCredentials:
     roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
 web-api:
   webApi:
-    connectorRegistryConfigMap: *registryName
-    connectorRegistryItems: *registryItems
     artifactWorkloadIdentity:
       provider: IRSA
       roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
