@@ -36,7 +36,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-artifact-store-probe
   namespace: thelook-ecommerce
 ---
@@ -51,7 +51,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-artifact-writer
   namespace: thelook-ecommerce
 ---
@@ -88,7 +88,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-batch-predictor
   namespace: thelook-ecommerce
 ---
@@ -103,7 +103,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-connection-probe
   namespace: thelook-ecommerce
 ---
@@ -125,7 +125,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-graph-materializer
   namespace: thelook-ecommerce
 ---
@@ -140,7 +140,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-prediction-materializer
   namespace: thelook-ecommerce
 ---
@@ -155,7 +155,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-table-materializer
   namespace: thelook-ecommerce
 ---
@@ -170,7 +170,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-table-staging
   namespace: thelook-ecommerce
 ---
@@ -185,7 +185,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-trainer
   namespace: thelook-ecommerce
 ---
@@ -200,7 +200,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-training-materializer
   namespace: thelook-ecommerce
 ---
@@ -1177,7 +1177,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-ballista-images
   namespace: thelook-ecommerce
 ---
@@ -1190,7 +1190,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-batch-predictor-images
   namespace: thelook-ecommerce
 ---
@@ -1214,7 +1214,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-data-job-images
   namespace: thelook-ecommerce
 ---
@@ -1239,7 +1239,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-trainer-images
   namespace: thelook-ecommerce
 ---
@@ -1323,8 +1323,8 @@ spec:
             echo "Cannot read the product release from installation $INSTALLATION. Install the system chart first and check enrollment API access." >&2
             exit 1
           }
-          if [ "$installed" != "$SUPPORTED_SYSTEM_VERSION" ]; then
-            echo "Workspace requires system chart $SUPPORTED_SYSTEM_VERSION in $INSTALLATION; found ${installed:-no release version}." >&2
+          if [ -z "$installed" ]; then
+            echo "Installation $INSTALLATION has no recorded system release." >&2
             exit 1
           fi
 
@@ -1379,7 +1379,7 @@ spec:
         - name: WORKSPACE_RELEASE
           value: thelook-ecommerce
         - name: SUPPORTED_SYSTEM_VERSION
-          value: 0.22.0-rc.2
+          value: 0.22.0-rc.4
         - name: CHECK_DEFAULTS
           value: "false"
         - name: HOME
@@ -1465,7 +1465,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-aws-auth
   namespace: thelook-ecommerce
 spec:
@@ -1512,7 +1512,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-ballista-gcp-auth-egress
   namespace: thelook-ecommerce
 spec:
@@ -1537,7 +1537,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-ballista-peers
   namespace: thelook-ecommerce
 spec:
@@ -1598,7 +1598,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-gcp-serving-egress
   namespace: thelook-ecommerce
 spec:
@@ -1626,7 +1626,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-gcp-workers-egress
   namespace: thelook-ecommerce
 spec:
@@ -1700,7 +1700,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-workflow-egress
   namespace: thelook-ecommerce
 spec:
@@ -1754,7 +1754,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.2
+    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
   name: prokrust-workflow-to-ballista
   namespace: thelook-ecommerce
 spec:
