@@ -46,6 +46,42 @@ metadata:
   namespace: prokrust-system
 ---
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-system-connector-bigquery
+  namespace: prokrust-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-system-connector-gcs
+  namespace: prokrust-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-system-connector-iceberg
+  namespace: prokrust-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-system-connector-paimon
+  namespace: prokrust-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-system-connector-s3
+  namespace: prokrust-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-system-connector-synthetic
+  namespace: prokrust-system
+---
+apiVersion: v1
 automountServiceAccountToken: true
 imagePullSecrets:
 - name: harbor-reader
@@ -56,7 +92,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.25.0-rc.1
+    helm.sh/chart: web-api-0.26.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 ---
@@ -150,6 +186,29 @@ rules:
   - get
   - patch
   - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-connector-issuer
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates
+  verbs:
+  - get
+  - create
+  - update
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -264,6 +323,438 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  name: prokrust-system-connector-bigquery-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-bigquery-workspace
+rules:
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - bigqueryconnections
+  verbs:
+  - get
+  - list
+  - patch
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - bigqueryconnections/status
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-gcs-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-gcs-workspace
+rules:
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - gcsconnections
+  verbs:
+  - get
+  - list
+  - patch
+- apiGroups:
+  - google.sources.prokrust.ai
+  resources:
+  - gcsconnections/status
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-iceberg-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-iceberg-workspace
+rules:
+- apiGroups:
+  - apache.sources.prokrust.ai
+  resources:
+  - icebergconnections
+  verbs:
+  - get
+  - list
+  - patch
+- apiGroups:
+  - apache.sources.prokrust.ai
+  resources:
+  - icebergconnections/status
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-paimon-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-paimon-workspace
+rules:
+- apiGroups:
+  - apache.sources.prokrust.ai
+  resources:
+  - paimonconnections
+  verbs:
+  - get
+  - list
+  - patch
+- apiGroups:
+  - apache.sources.prokrust.ai
+  resources:
+  - paimonconnections/status
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-s3-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-s3-workspace
+rules:
+- apiGroups:
+  - aws.sources.prokrust.ai
+  resources:
+  - s3connections
+  verbs:
+  - get
+  - list
+  - patch
+- apiGroups:
+  - aws.sources.prokrust.ai
+  resources:
+  - s3connections/status
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-synthetic-discovery
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prokrust-system-connector-synthetic-workspace
+rules:
+- apiGroups:
+  - sources.prokrust.ai
+  resources:
+  - syntheticconnections
+  verbs:
+  - get
+  - list
+  - patch
+- apiGroups:
+  - sources.prokrust.ai
+  resources:
+  - syntheticconnections/status
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - create
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
   name: prokrust-system-prokrust-namespace-discovery
 rules:
 - apiGroups:
@@ -345,6 +836,20 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prokrust-ballista-cluster-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-connector-issuer
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-connector-issuer
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
   namespace: prokrust-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -437,6 +942,84 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  name: prokrust-system-connector-bigquery-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-bigquery-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-bigquery
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-connector-gcs-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-gcs-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-gcs
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-connector-iceberg-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-iceberg-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-iceberg
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-connector-paimon-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-paimon-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-paimon
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-connector-s3-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-s3-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-s3
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prokrust-system-connector-synthetic-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-synthetic-discovery
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-synthetic
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
   name: prokrust-system-prokrust-namespace-discovery
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -518,18 +1101,647 @@ data:
   ballista.chartVersion: 0.4.0
   ballista.version: 0.4.0
   batch-predictor.version: 0.11.0-rc.1
-  compositionVersion: 0.22.0-rc.4
+  compositionVersion: 0.23.0-rc.1
   data-job.version: 0.13.0-rc.1
   serving.version: 0.11.0-rc.2
   trainer.version: 0.11.0-rc.1
-  web-api.version: 0.25.0-rc.1
+  web-api.version: 0.26.0-rc.1
 kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-component-versions
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "project": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 30,
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "billingProject": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 30,
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$"
+        },
+        "datasets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9_]+$"
+          }
+        },
+        "expectedServiceAccountEmail": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 254,
+          "pattern": "^[a-z0-9][a-z0-9-]*@[a-z0-9][a-z0-9-]*[.]iam[.]gserviceaccount[.]com$"
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "authMode": {
+          "type": "string",
+          "enum": [
+            "serviceAccountKey",
+            "impersonation",
+            "federation"
+          ]
+        },
+        "federationAudience": {
+          "type": "string",
+          "maxLength": 256,
+          "pattern": "^//iam[.]googleapis[.]com/projects/[0-9]{1,20}/locations/global/workloadIdentityPools/[a-z0-9][a-z0-9-]{0,30}[a-z0-9]/providers/[a-z0-9][a-z0-9-]{0,30}[a-z0-9]$"
+        }
+      },
+      "required": [
+        "project",
+        "billingProject",
+        "location",
+        "datasets",
+        "expectedServiceAccountEmail"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "authMode": {
+              "const": "impersonation"
+            },
+            "credentialsSecretRef": false,
+            "federationAudience": false
+          },
+          "required": [
+            "authMode"
+          ]
+        },
+        {
+          "properties": {
+            "authMode": {
+              "const": "serviceAccountKey"
+            }
+          },
+          "required": [
+            "credentialsSecretRef"
+          ],
+          "not": {
+            "required": [
+              "federationAudience"
+            ]
+          }
+        },
+        {
+          "properties": {
+            "authMode": {
+              "const": "federation"
+            }
+          },
+          "required": [
+            "authMode",
+            "federationAudience"
+          ],
+          "not": {
+            "required": [
+              "credentialsSecretRef"
+            ]
+          }
+        }
+      ]
+    }
+  descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"BigQueryConnection","plural":"bigqueryconnections","schema":{"file":"connection-v1.json","sha256":"sha256:9c69c82e770d3d552a093c98bbd0503fe0148830c3c835c9342557fbe5f7762a"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/bigquery","providerMajor":1,"release":"1.3.0-rc.1","runtimeImages":[{"digest":"sha256:d130072c245a148c6795cd0ba93812fda02d6a64fa5255a5a84c6df279905257","role":"runtime"},{"digest":"sha256:d130072c245a148c6795cd0ba93812fda02d6a64fa5255a5a84c6df279905257","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:deda40edb62827f121d1b9784319fd9b6790902310255cf2c48af75e50dc3100"}],"ui":{"displayName":"Google BigQuery"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:e84daa29b1d2888924851d6ee236738a969ccdfd6ed04cc91056599651aa7902"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}'
+  selector-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "kind": {"type": "string", "enum": ["dataset", "table"]},
+        "dataset": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9_]+$"},
+        "table": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9_-]+$"}
+      },
+      "required": ["kind", "dataset"],
+      "if": {"properties": {"kind": {"const": "table"}}},
+      "then": {"required": ["table"]},
+      "else": {"not": {"required": ["table"]}},
+      "additionalProperties": false
+    }
+kind: ConfigMap
+metadata:
+  name: prokrust-connector-bigquery-registry
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 222,
+          "pattern": "^[a-z0-9][a-z0-9._-]*[a-z0-9]$"
+        },
+        "prefix": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "bucketProjectNumber": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19}$"
+        },
+        "expectedServiceAccountEmail": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 254,
+          "pattern": "^[a-z0-9][a-z0-9-]*@[a-z0-9][a-z0-9-]*[.]iam[.]gserviceaccount[.]com$"
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "authMode": {
+          "type": "string",
+          "enum": [
+            "serviceAccountKey",
+            "impersonation"
+          ]
+        }
+      },
+      "required": [
+        "bucket",
+        "prefix",
+        "bucketProjectNumber",
+        "expectedServiceAccountEmail"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "authMode": {
+              "const": "impersonation"
+            }
+          },
+          "required": [
+            "authMode"
+          ],
+          "not": {
+            "required": [
+              "credentialsSecretRef"
+            ]
+          }
+        },
+        {
+          "properties": {
+            "authMode": {
+              "const": "serviceAccountKey"
+            }
+          },
+          "required": [
+            "credentialsSecretRef"
+          ]
+        }
+      ]
+    }
+  descriptor.json: |
+    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"GCSConnection","plural":"gcsconnections","schema":{"file":"connection-v1.json","sha256":"sha256:7de07fed71c6cb2500e4008f13453dc06a30c7a88924f717db57046965f75228"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/gcs","providerMajor":1,"release":"1.2.0-rc.1","runtimeImages":[{"digest":"sha256:24d99efae1bbe59da86f6865f4419ef13e493a54f9b17eee26a26d063e7f719a","role":"runtime"},{"digest":"sha256:24d99efae1bbe59da86f6865f4419ef13e493a54f9b17eee26a26d063e7f719a","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Google Cloud Storage"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:b6ea558b9a9299e7534d3cc5d8e520fd356853233e662d83e7056fe462a3947b"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.2.0-rc.1","tlsProfile":"installation-ca"}'
+  selector-v1.json: |
+    {"type":"object","properties":{"kind":{"type":"string","enum":["prefix","object"]},"path":{"type":"string","maxLength":1024}},"required":["kind","path"],"additionalProperties":false}
+kind: ConfigMap
+metadata:
+  name: prokrust-connector-gcs-registry
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "storage": {
+          "type": "object",
+          "properties": {
+            "backend": {
+              "type": "string",
+              "enum": [
+                "s3",
+                "gcs"
+              ]
+            },
+            "bucket": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 63
+            },
+            "prefix": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1024
+            },
+            "expectedPrincipal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "backend",
+            "bucket",
+            "prefix",
+            "expectedPrincipal"
+          ],
+          "additionalProperties": false
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "metadataPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "catalog": {
+          "type": "object",
+          "required": [
+            "endpoint",
+            "policyRef",
+            "allowedNamespaces",
+            "auth"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "policyRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "auth": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "bearer"
+              ]
+            },
+            "allowedNamespaces": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 512,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "storage",
+        "credentialsSecretRef"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "metadataPath"
+          ]
+        },
+        {
+          "required": [
+            "catalog"
+          ]
+        }
+      ]
+    }
+  descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"IcebergConnection","plural":"icebergconnections","schema":{"file":"connection-v1.json","sha256":"sha256:83496e62c0a8ede2f86402bf9299b195615e96fc09d6ac19c0673bca37b5f112"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/iceberg","providerMajor":1,"release":"1.2.0-rc.1","runtimeImages":[{"digest":"sha256:b7a65198ecb2624ee3c63db2644ef5c853d8d152f06ce4e7da4164277635b6eb","role":"runtime"},{"digest":"sha256:b7a65198ecb2624ee3c63db2644ef5c853d8d152f06ce4e7da4164277635b6eb","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:022501059ec277779b0b0eb2afb7195366b656a5c8a21959e75a4580f16cdfce"}],"ui":{"displayName":"Apache Iceberg"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:ac0ce5d113dddf4ce1010f8984ee22b7b9897964a3be9198fb454fc5be8c6e4a"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.2.0-rc.1","tlsProfile":"installation-ca"}'
+  selector-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "namespace": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        },
+        "table": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "additionalProperties": false,
+      "not": {
+        "required": [
+          "snapshotId",
+          "tag"
+        ]
+      },
+      "dependentRequired": {
+        "table": [
+          "namespace"
+        ]
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: prokrust-connector-iceberg-registry
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "storage": {
+          "type": "object",
+          "properties": {
+            "backend": {
+              "type": "string",
+              "enum": [
+                "s3",
+                "gcs"
+              ]
+            },
+            "bucket": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 63
+            },
+            "prefix": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1024
+            },
+            "expectedPrincipal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "backend",
+            "bucket",
+            "prefix",
+            "expectedPrincipal"
+          ],
+          "additionalProperties": false
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "warehousePath": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1024
+        },
+        "catalog": {
+          "type": "object",
+          "required": [
+            "endpoint",
+            "policyRef",
+            "allowedNamespaces",
+            "auth"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "policyRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "auth": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "bearer"
+              ]
+            },
+            "allowedNamespaces": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 512,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "storage",
+        "credentialsSecretRef"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "warehousePath"
+          ]
+        },
+        {
+          "required": [
+            "catalog"
+          ]
+        }
+      ]
+    }
+  descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"PaimonConnection","plural":"paimonconnections","schema":{"file":"connection-v1.json","sha256":"sha256:f41f5b3d0416c70c3e11a42efffeb98831548680ffac1a19f7e68ac180bf84e7"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/paimon","providerMajor":1,"release":"1.2.0-rc.1","runtimeImages":[{"digest":"sha256:a057cd0e9ce3e7ff264e33bc1da8ea8fbaab81bb5725f9ca6fdde5d9defb69e2","role":"runtime"},{"digest":"sha256:a057cd0e9ce3e7ff264e33bc1da8ea8fbaab81bb5725f9ca6fdde5d9defb69e2","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:85d827bf44b4213e697ea49d863d60271510cf022cc1100362f3d2cc6b3b20d1"}],"ui":{"displayName":"Apache Paimon"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:6bf6e0803ead2a659ec913699c54c8a6eb4b75d03ef043ec87f98677394d422f"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.2.0-rc.1","tlsProfile":"installation-ca"}'
+  selector-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "database": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "table": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "tag": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        }
+      },
+      "required": [
+        "database"
+      ],
+      "additionalProperties": false,
+      "not": {
+        "required": [
+          "snapshotId",
+          "tag"
+        ]
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: prokrust-connector-paimon-registry
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  registry.json: '{"providers":[{"controllerNamespace":"prokrust-system","descriptor":{"file":"bigquery/descriptor.json","sha256":"sha256:e84daa29b1d2888924851d6ee236738a969ccdfd6ed04cc91056599651aa7902"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.3.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"gcs/descriptor.json","sha256":"sha256:b6ea558b9a9299e7534d3cc5d8e520fd356853233e662d83e7056fe462a3947b"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.2.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"iceberg/descriptor.json","sha256":"sha256:ac0ce5d113dddf4ce1010f8984ee22b7b9897964a3be9198fb454fc5be8c6e4a"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.2.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"paimon/descriptor.json","sha256":"sha256:6bf6e0803ead2a659ec913699c54c8a6eb4b75d03ef043ec87f98677394d422f"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.2.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"s3/descriptor.json","sha256":"sha256:545d4b99ecc7ae3d952f2c4909e83491c31279b66de5cac797e3f6844cd9aa1d"},"enabled":true,"id":"prokrust.ai/s3","release":"1.2.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"synthetic/descriptor.json","sha256":"sha256:55dd027b73bd0dc8fad877b43b6db1a0d5c9badf6d90e3c1aa2a658acfadde92"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.2.0-rc.1","tlsProfile":"installation-ca"}]}'
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  name: prokrust-connector-registry-index
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  connection-v1.json: |
+    {"type":"object","properties":{"bucket":{"type":"string","minLength":3,"maxLength":63,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$"},"region":{"type":"string","minLength":3,"maxLength":32,"pattern":"^[a-z0-9-]+$"},"prefix":{"type":"string","maxLength":1024},"bucketOwner":{"type":"string","pattern":"^[0-9]{12}$"},"expectedPrincipalArn":{"type":"string","minLength":20,"maxLength":2048},"credentialsSecretRef":{"type":"object","properties":{"name":{"type":"string","minLength":1,"maxLength":253,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"}},"required":["name"],"additionalProperties":false}},"required":["bucket","region","prefix","bucketOwner","expectedPrincipalArn","credentialsSecretRef"],"additionalProperties":false}
+  descriptor.json: |
+    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"aws.sources.prokrust.ai/v1beta1","kind":"S3Connection","plural":"s3connections","schema":{"file":"connection-v1.json","sha256":"sha256:387c51354d9bd41e80e0f83d8615ccaed8b21d65e36e61d52c35f16a574c3e39"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/s3","providerMajor":1,"release":"1.2.0-rc.1","runtimeImages":[{"digest":"sha256:dd6fc5546fe12d2cd2cbab64cafb5724e002148bd68dff87b407eb1b0e9d5ce3","role":"runtime"},{"digest":"sha256:dd6fc5546fe12d2cd2cbab64cafb5724e002148bd68dff87b407eb1b0e9d5ce3","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Amazon S3"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:545d4b99ecc7ae3d952f2c4909e83491c31279b66de5cac797e3f6844cd9aa1d"},"enabled":true,"id":"prokrust.ai/s3","release":"1.2.0-rc.1","tlsProfile":"installation-ca"}'
+  selector-v1.json: |
+    {"type":"object","properties":{"kind":{"type":"string","enum":["prefix","object"]},"path":{"type":"string","maxLength":1024}},"required":["kind","path"],"additionalProperties":false}
+kind: ConfigMap
+metadata:
+  name: prokrust-connector-s3-registry
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  connection-v1.json: |
+    {"type":"object","properties":{"seed":{"type":"integer","minimum":0,"maximum":999999},"partitions":{"type":"integer","minimum":1,"maximum":100000},"rowsPerPartition":{"type":"integer","minimum":0,"maximum":100000}},"required":["seed","partitions","rowsPerPartition"],"additionalProperties":false}
+  descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","original-files","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"sources.prokrust.ai/v1beta1","kind":"SyntheticConnection","plural":"syntheticconnections","schema":{"file":"connection-v1.json","sha256":"sha256:bd836f078291ce5e8ccbd9436a4852f1f7291f3add7c4afeafe4cf2b194c48a1"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/synthetic","providerMajor":1,"release":"1.2.0-rc.1","runtimeImages":[{"digest":"sha256:7aeb08ac8a4d6516b1d1960acc4d0ce1f9e0987d7a46591d20c46e8febf2e9d7","role":"runtime"},{"digest":"sha256:7aeb08ac8a4d6516b1d1960acc4d0ce1f9e0987d7a46591d20c46e8febf2e9d7","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:f2bc86898d3d2d182032758d99f06eb270cbc5b68b30e469b5b9b82461d2d07b"}],"ui":{"displayName":"Synthetic Events"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:55dd027b73bd0dc8fad877b43b6db1a0d5c9badf6d90e3c1aa2a658acfadde92"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.2.0-rc.1","tlsProfile":"installation-ca"}'
+  selector-v1.json: |
+    {"type":"object","properties":{"dataset":{"type":"string","const":"events"}},"required":["dataset"],"additionalProperties":false}
+kind: ConfigMap
+metadata:
+  name: prokrust-connector-synthetic-registry
   namespace: prokrust-system
 ---
 apiVersion: v1
@@ -560,13 +1772,61 @@ metadata:
   namespace: prokrust-system
 ---
 apiVersion: v1
+data:
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:e84daa29b1d2888924851d6ee236738a969ccdfd6ed04cc91056599651aa7902","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":1,"release":"1.3.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"1Gi"},"requests":{"cpu":"100m","memory":"256Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-bigquery@sha256:d130072c245a148c6795cd0ba93812fda02d6a64fa5255a5a84c6df279905257","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+kind: ConfigMap
+metadata:
+  name: prokrust-system-connector-bigquery-settings
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:b6ea558b9a9299e7534d3cc5d8e520fd356853233e662d83e7056fe462a3947b","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.2.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-gcs@sha256:24d99efae1bbe59da86f6865f4419ef13e493a54f9b17eee26a26d063e7f719a","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+kind: ConfigMap
+metadata:
+  name: prokrust-system-connector-gcs-settings
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:ac0ce5d113dddf4ce1010f8984ee22b7b9897964a3be9198fb454fc5be8c6e4a","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"providerConfig":{"catalogEndpointPolicies":{}},"release":"1.2.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-iceberg@sha256:b7a65198ecb2624ee3c63db2644ef5c853d8d152f06ce4e7da4164277635b6eb","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+kind: ConfigMap
+metadata:
+  name: prokrust-system-connector-iceberg-settings
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:6bf6e0803ead2a659ec913699c54c8a6eb4b75d03ef043ec87f98677394d422f","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"providerConfig":{"catalogEndpointPolicies":{}},"release":"1.2.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-paimon@sha256:a057cd0e9ce3e7ff264e33bc1da8ea8fbaab81bb5725f9ca6fdde5d9defb69e2","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+kind: ConfigMap
+metadata:
+  name: prokrust-system-connector-paimon-settings
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:545d4b99ecc7ae3d952f2c4909e83491c31279b66de5cac797e3f6844cd9aa1d","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.2.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-s3@sha256:dd6fc5546fe12d2cd2cbab64cafb5724e002148bd68dff87b407eb1b0e9d5ce3","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+kind: ConfigMap
+metadata:
+  name: prokrust-system-connector-s3-settings
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:55dd027b73bd0dc8fad877b43b6db1a0d5c9badf6d90e3c1aa2a658acfadde92","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.2.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-synthetic@sha256:7aeb08ac8a4d6516b1d1960acc4d0ce1f9e0987d7a46591d20c46e8febf2e9d7","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+kind: ConfigMap
+metadata:
+  name: prokrust-system-connector-synthetic-settings
+  namespace: prokrust-system
+---
+apiVersion: v1
 kind: Service
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -653,7 +1913,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.25.0-rc.1
+    helm.sh/chart: web-api-0.26.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -676,7 +1936,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -688,6 +1948,8 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        prokrust.ai/connector-registry-checksum: 8808e5c03847fa5779f8dbef3e2ef077db5036bf6528b4651041938ed7dca930
       labels:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: prokrust-application-controller
@@ -705,11 +1967,13 @@ spec:
         - name: RP_PROFILING_ENABLED
           value: "false"
         - name: PROKRUST_CONNECTORS_ENABLED
-          value: "false"
+          value: "true"
         - name: AWS_REGION
           value: us-west-2
         - name: AWS_DEFAULT_REGION
           value: us-west-2
+        - name: PROKRUST_CONNECTOR_CONFIG
+          value: /etc/prokrust/connectors/registry.json
         - name: PROKRUST_SERVING_ENABLED
           value: "false"
         - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
@@ -794,6 +2058,9 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /etc/prokrust/connectors
+          name: connector-registry
+          readOnly: true
         - mountPath: /tmp
           name: tmp
         - mountPath: /var/run/prokrust-webhook
@@ -820,6 +2087,68 @@ spec:
         operator: Equal
         value: arm64
       volumes:
+      - name: connector-registry
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: registry.json
+                path: registry.json
+              name: prokrust-connector-registry-index
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: bigquery/descriptor.json
+              - key: connection-v1.json
+                path: bigquery/connection-v1.json
+              - key: selector-v1.json
+                path: bigquery/selector-v1.json
+              name: prokrust-connector-bigquery-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: gcs/descriptor.json
+              - key: connection-v1.json
+                path: gcs/connection-v1.json
+              - key: selector-v1.json
+                path: gcs/selector-v1.json
+              name: prokrust-connector-gcs-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: iceberg/descriptor.json
+              - key: connection-v1.json
+                path: iceberg/connection-v1.json
+              - key: selector-v1.json
+                path: iceberg/selector-v1.json
+              name: prokrust-connector-iceberg-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: paimon/descriptor.json
+              - key: connection-v1.json
+                path: paimon/connection-v1.json
+              - key: selector-v1.json
+                path: paimon/selector-v1.json
+              name: prokrust-connector-paimon-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: s3/descriptor.json
+              - key: connection-v1.json
+                path: s3/connection-v1.json
+              - key: selector-v1.json
+                path: s3/selector-v1.json
+              name: prokrust-connector-s3-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: synthetic/descriptor.json
+              - key: connection-v1.json
+                path: synthetic/connection-v1.json
+              - key: selector-v1.json
+                path: synthetic/selector-v1.json
+              name: prokrust-connector-synthetic-registry
       - name: startup-tls
         secret:
           defaultMode: 288
@@ -840,7 +2169,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -867,7 +2196,7 @@ spec:
         - $(RP_POD_NAMESPACE)
         env:
         - name: PROKRUST_CONNECTORS_ENABLED
-          value: "false"
+          value: "true"
         - name: AWS_REGION
           value: us-west-2
         - name: AWS_DEFAULT_REGION
@@ -957,12 +2286,414 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: prokrust-system-connector-bigquery
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-bigquery
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/settings-digest: 57357625e0715b7c5111e605ae30be07f7e00dcd9cc211f61b259d9abca22797
+      labels:
+        app.kubernetes.io/name: prokrust-system-connector-bigquery
+    spec:
+      containers:
+      - args:
+        - controller
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ar.prokrust.io/prokrust/connector-bigquery@sha256:d130072c245a148c6795cd0ba93812fda02d6a64fa5255a5a84c6df279905257
+        name: controller
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust/controller
+          name: settings
+          readOnly: true
+      imagePullSecrets:
+      - name: harbor-reader
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-system-connector-bigquery
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-system-connector-bigquery-settings
+        name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prokrust-system-connector-gcs
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-gcs
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/settings-digest: 06d48ad7d40f8c30e27706e3d2489d05952089420aad4b9b389e94d8bcf54f49
+      labels:
+        app.kubernetes.io/name: prokrust-system-connector-gcs
+    spec:
+      containers:
+      - args:
+        - controller
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ar.prokrust.io/prokrust/connector-gcs@sha256:24d99efae1bbe59da86f6865f4419ef13e493a54f9b17eee26a26d063e7f719a
+        name: controller
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust/controller
+          name: settings
+          readOnly: true
+      imagePullSecrets:
+      - name: harbor-reader
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-system-connector-gcs
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-system-connector-gcs-settings
+        name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prokrust-system-connector-iceberg
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-iceberg
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/settings-digest: 7b7de1dd512f04bdfaacce087864063a9dc5fffc7ac0e520b97f5e41204393cc
+      labels:
+        app.kubernetes.io/name: prokrust-system-connector-iceberg
+    spec:
+      containers:
+      - args:
+        - controller
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ar.prokrust.io/prokrust/connector-iceberg@sha256:b7a65198ecb2624ee3c63db2644ef5c853d8d152f06ce4e7da4164277635b6eb
+        name: controller
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust/controller
+          name: settings
+          readOnly: true
+      imagePullSecrets:
+      - name: harbor-reader
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-system-connector-iceberg
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-system-connector-iceberg-settings
+        name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prokrust-system-connector-paimon
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-paimon
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/settings-digest: b0dce748dff1556619559eb8e9ea78474be27dcc1b2626708a6d602e27391d8f
+      labels:
+        app.kubernetes.io/name: prokrust-system-connector-paimon
+    spec:
+      containers:
+      - args:
+        - controller
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ar.prokrust.io/prokrust/connector-paimon@sha256:a057cd0e9ce3e7ff264e33bc1da8ea8fbaab81bb5725f9ca6fdde5d9defb69e2
+        name: controller
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust/controller
+          name: settings
+          readOnly: true
+      imagePullSecrets:
+      - name: harbor-reader
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-system-connector-paimon
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-system-connector-paimon-settings
+        name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prokrust-system-connector-s3
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-s3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/settings-digest: 284653c419e7cc262c69f6b3713e76e8c8b82e267d9b51df8fbcd7ac111e049f
+      labels:
+        app.kubernetes.io/name: prokrust-system-connector-s3
+    spec:
+      containers:
+      - args:
+        - controller
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ar.prokrust.io/prokrust/connector-s3@sha256:dd6fc5546fe12d2cd2cbab64cafb5724e002148bd68dff87b407eb1b0e9d5ce3
+        name: controller
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust/controller
+          name: settings
+          readOnly: true
+      imagePullSecrets:
+      - name: harbor-reader
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-system-connector-s3
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-system-connector-s3-settings
+        name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prokrust-system-connector-synthetic
+  namespace: prokrust-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-synthetic
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prokrust.ai/settings-digest: d7cab695ad3c5821293377a4e8b0e292f5d4fed620528c2036354daa410b09bd
+      labels:
+        app.kubernetes.io/name: prokrust-system-connector-synthetic
+    spec:
+      containers:
+      - args:
+        - controller
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ar.prokrust.io/prokrust/connector-synthetic@sha256:7aeb08ac8a4d6516b1d1960acc4d0ce1f9e0987d7a46591d20c46e8febf2e9d7
+        name: controller
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/prokrust/controller
+          name: settings
+          readOnly: true
+      imagePullSecrets:
+      - name: harbor-reader
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-system-connector-synthetic
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+      volumes:
+      - configMap:
+          name: prokrust-system-connector-synthetic-settings
+        name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   labels:
     app.kubernetes.io/component: api
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-web-api
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.25.0-rc.1
+    helm.sh/chart: web-api-0.26.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -974,6 +2705,7 @@ spec:
     metadata:
       annotations:
         prokrust.ai/auth-revision: "4"
+        prokrust.ai/connector-registry-checksum: 8808e5c03847fa5779f8dbef3e2ef077db5036bf6528b4651041938ed7dca930
       labels:
         app.kubernetes.io/component: api
         app.kubernetes.io/name: prokrust-web-api
@@ -993,6 +2725,8 @@ spec:
           value: /etc/prokrust/auth.toml
         - name: PROKRUST_ARGO_UI_BASE_URL
           value: https://demo.prokrust.ai/argo
+        - name: PROKRUST_CONNECTOR_CONFIG
+          value: /var/run/prokrust-connectors/registry.json
         - name: PROKRUST_SYSTEM_NAMESPACE
           value: prokrust-system
         - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAMESPACE
@@ -1009,7 +2743,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/web-api@sha256:657bd5212fa4e799acf9c26b897b26a33c01a3c6cc1b58cfa90564176fa13e62
+        image: ar.prokrust.io/prokrust/web-api@sha256:0d3a688c1b3fbb11ce8d0e7b7165befa710bac24550b743565837c236d8f6174
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1041,6 +2775,9 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /var/run/prokrust-connectors
+          name: connector-registry
+          readOnly: true
         - mountPath: /etc/prokrust
           name: oidc-config
           readOnly: true
@@ -1063,6 +2800,68 @@ spec:
         operator: Equal
         value: arm64
       volumes:
+      - name: connector-registry
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: registry.json
+                path: registry.json
+              name: prokrust-connector-registry-index
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: bigquery/descriptor.json
+              - key: connection-v1.json
+                path: bigquery/connection-v1.json
+              - key: selector-v1.json
+                path: bigquery/selector-v1.json
+              name: prokrust-connector-bigquery-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: gcs/descriptor.json
+              - key: connection-v1.json
+                path: gcs/connection-v1.json
+              - key: selector-v1.json
+                path: gcs/selector-v1.json
+              name: prokrust-connector-gcs-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: iceberg/descriptor.json
+              - key: connection-v1.json
+                path: iceberg/connection-v1.json
+              - key: selector-v1.json
+                path: iceberg/selector-v1.json
+              name: prokrust-connector-iceberg-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: paimon/descriptor.json
+              - key: connection-v1.json
+                path: paimon/connection-v1.json
+              - key: selector-v1.json
+                path: paimon/selector-v1.json
+              name: prokrust-connector-paimon-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: s3/descriptor.json
+              - key: connection-v1.json
+                path: s3/connection-v1.json
+              - key: selector-v1.json
+                path: s3/selector-v1.json
+              name: prokrust-connector-s3-registry
+          - configMap:
+              items:
+              - key: descriptor.json
+                path: synthetic/descriptor.json
+              - key: connection-v1.json
+                path: synthetic/connection-v1.json
+              - key: selector-v1.json
+                path: synthetic/selector-v1.json
+              name: prokrust-connector-synthetic-registry
       - configMap:
           name: prokrust-oidc-4
         name: oidc-config
@@ -1188,6 +2987,1655 @@ spec:
         requests:
           storage: 2Gi
       storageClassName: gp3
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-bigquery-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - CONNECT
+      resources:
+      - services
+      - secrets
+      - configmaps
+      - pods
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      - serviceaccounts
+      - serviceaccounts/token
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      - replicasets
+      scope: Namespaced
+    - apiGroups:
+      - discovery.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - endpointslices
+      scope: Namespaced
+    - apiGroups:
+      - networking.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - networkpolicies
+      scope: Namespaced
+    - apiGroups:
+      - cert-manager.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - certificates
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.operation == 'CREATE' &&
+        request.resource.resource == 'serviceaccounts' &&
+        has(request.subResource) && request.subResource == 'token' &&
+        has(request.name) && request.name == "prokrust-connector-runtime" &&
+        has(request.userInfo.groups) && 'system:nodes' in request.userInfo.groups &&
+        has(request.userInfo.username) && request.userInfo.username.startsWith('system:node:') &&
+        request.userInfo.username != 'system:node:' &&
+        object != null && has(object.spec) && has(object.spec.audiences) &&
+        size(object.spec.audiences) > 0 &&
+        object.spec.audiences.all(audience, audience in [])
+      ) || (
+
+        request.operation == 'DELETE' &&
+        request.resource.group == '' && request.resource.version == 'v1' &&
+        request.resource.resource == 'pods' &&
+        (!has(request.subResource) || request.subResource == '') &&
+        has(request.userInfo.groups) &&
+        'system:nodes' in request.userInfo.groups && 'system:authenticated' in request.userInfo.groups &&
+        has(request.userInfo.username) &&
+        oldObject != null && has(oldObject.apiVersion) && oldObject.apiVersion == 'v1' &&
+        has(oldObject.kind) && oldObject.kind == 'Pod' &&
+        has(oldObject.spec) && has(oldObject.spec.nodeName) && size(oldObject.spec.nodeName) > 0 &&
+        request.userInfo.username == 'system:node:' + oldObject.spec.nodeName &&
+        has(oldObject.status) && has(oldObject.status.phase) &&
+        oldObject.status.phase in ['Succeeded', 'Failed'] &&
+        has(oldObject.metadata) && has(oldObject.metadata.deletionTimestamp) &&
+        oldObject.metadata.deletionTimestamp != null &&
+        has(oldObject.metadata.name) && has(request.name) && request.name == oldObject.metadata.name &&
+        has(oldObject.metadata.labels) &&
+        ['prokrust.ai/connector-uid', 'prokrust.ai/connector-installation-uid', 'prokrust.ai/connector-workspace-uid'].all(label,
+          label in oldObject.metadata.labels &&
+          oldObject.metadata.labels[label].matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')) &&
+        oldObject.metadata.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+        has(oldObject.metadata.ownerReferences) && size(oldObject.metadata.ownerReferences) == 1 &&
+        oldObject.metadata.ownerReferences.all(owner,
+          owner.apiVersion == 'apps/v1' && owner.kind == 'ReplicaSet' &&
+          has(owner.controller) && owner.controller &&
+          has(owner.blockOwnerDeletion) && owner.blockOwnerDeletion &&
+          owner.uid.matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') &&
+          owner.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+          oldObject.metadata.name.startsWith(owner.name + '-'))
+      ) || (
+
+        (!has(request.name) || !request.name.startsWith('connector-')) &&
+        !(request.resource.resource == 'serviceaccounts' && has(request.name) && request.name == "prokrust-connector-runtime") &&
+        (object == null || !has(dyn(object).metadata) ||
+          ((!has(object.metadata.name) || !object.metadata.name.startsWith('connector-')) &&
+           (!has(object.metadata.generateName) || !object.metadata.generateName.startsWith('connector-')) &&
+           (!has(object.metadata.labels) ||
+             !object.metadata.labels.exists(label, label.startsWith('prokrust.ai/connector-') ||
+                (label == 'kubernetes.io/service-name' && object.metadata.labels[label].startsWith('connector-')))))) &&
+        (oldObject == null || !has(dyn(oldObject).metadata) ||
+          (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(label,
+            label.startsWith('prokrust.ai/connector-') ||
+            (label == 'kubernetes.io/service-name' && oldObject.metadata.labels[label].startsWith('connector-')))))
+      )
+    message: Connector runtime infrastructure is managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-bigquery-status
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - google.sources.prokrust.ai
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - bigqueryconnections
+      - bigqueryconnections/status
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || ((!has(request.subResource) || request.subResource != 'status') &&
+
+        (has(object.metadata.finalizers) && 'prokrust.ai/connector-runtime' in object.metadata.finalizers) ==
+        (oldObject != null && has(oldObject.metadata.finalizers) && 'prokrust.ai/connector-runtime' in oldObject.metadata.finalizers))
+    message: Connection status and runtime finalization are managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-bigquery-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        (!has(variables.podSpec.serviceAccountName) || variables.podSpec.serviceAccountName != "prokrust-connector-runtime") &&
+        (!has(variables.podSpec.serviceAccount) || variables.podSpec.serviceAccount != "prokrust-connector-runtime") &&
+        (!has(variables.templateLabels.labels) || !variables.templateLabels.labels.exists(label, label.startsWith('prokrust.ai/connector-'))) &&
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && (v.secret.secretName.startsWith('connector-') || v.secret.secretName.startsWith('prokrust-connector-runtime-artifact-'))) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('connector-')) ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && (source.secret.name.startsWith('connector-') || source.secret.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name.startsWith('connector-'))))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && (e.secretRef.name.startsWith('connector-') || e.secretRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name.startsWith('connector-')))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && (e.valueFrom.secretKeyRef.name.startsWith('connector-') || e.valueFrom.secretKeyRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name.startsWith('connector-'))
+            )))
+        )
+      )
+    message: Connector workload identities and bindings are reserved for the installation
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).metadata)
+      : request.resource.resource == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.metadata)
+      : dyn(dyn(object).spec.template.metadata)'
+    name: templateLabels
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-gcs-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - CONNECT
+      resources:
+      - services
+      - secrets
+      - configmaps
+      - pods
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      - serviceaccounts
+      - serviceaccounts/token
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      - replicasets
+      scope: Namespaced
+    - apiGroups:
+      - discovery.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - endpointslices
+      scope: Namespaced
+    - apiGroups:
+      - networking.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - networkpolicies
+      scope: Namespaced
+    - apiGroups:
+      - cert-manager.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - certificates
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.operation == 'CREATE' &&
+        request.resource.resource == 'serviceaccounts' &&
+        has(request.subResource) && request.subResource == 'token' &&
+        has(request.name) && request.name == "prokrust-connector-runtime" &&
+        has(request.userInfo.groups) && 'system:nodes' in request.userInfo.groups &&
+        has(request.userInfo.username) && request.userInfo.username.startsWith('system:node:') &&
+        request.userInfo.username != 'system:node:' &&
+        object != null && has(object.spec) && has(object.spec.audiences) &&
+        size(object.spec.audiences) > 0 &&
+        object.spec.audiences.all(audience, audience in [])
+      ) || (
+
+        request.operation == 'DELETE' &&
+        request.resource.group == '' && request.resource.version == 'v1' &&
+        request.resource.resource == 'pods' &&
+        (!has(request.subResource) || request.subResource == '') &&
+        has(request.userInfo.groups) &&
+        'system:nodes' in request.userInfo.groups && 'system:authenticated' in request.userInfo.groups &&
+        has(request.userInfo.username) &&
+        oldObject != null && has(oldObject.apiVersion) && oldObject.apiVersion == 'v1' &&
+        has(oldObject.kind) && oldObject.kind == 'Pod' &&
+        has(oldObject.spec) && has(oldObject.spec.nodeName) && size(oldObject.spec.nodeName) > 0 &&
+        request.userInfo.username == 'system:node:' + oldObject.spec.nodeName &&
+        has(oldObject.status) && has(oldObject.status.phase) &&
+        oldObject.status.phase in ['Succeeded', 'Failed'] &&
+        has(oldObject.metadata) && has(oldObject.metadata.deletionTimestamp) &&
+        oldObject.metadata.deletionTimestamp != null &&
+        has(oldObject.metadata.name) && has(request.name) && request.name == oldObject.metadata.name &&
+        has(oldObject.metadata.labels) &&
+        ['prokrust.ai/connector-uid', 'prokrust.ai/connector-installation-uid', 'prokrust.ai/connector-workspace-uid'].all(label,
+          label in oldObject.metadata.labels &&
+          oldObject.metadata.labels[label].matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')) &&
+        oldObject.metadata.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+        has(oldObject.metadata.ownerReferences) && size(oldObject.metadata.ownerReferences) == 1 &&
+        oldObject.metadata.ownerReferences.all(owner,
+          owner.apiVersion == 'apps/v1' && owner.kind == 'ReplicaSet' &&
+          has(owner.controller) && owner.controller &&
+          has(owner.blockOwnerDeletion) && owner.blockOwnerDeletion &&
+          owner.uid.matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') &&
+          owner.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+          oldObject.metadata.name.startsWith(owner.name + '-'))
+      ) || (
+
+        (!has(request.name) || !request.name.startsWith('connector-')) &&
+        !(request.resource.resource == 'serviceaccounts' && has(request.name) && request.name == "prokrust-connector-runtime") &&
+        (object == null || !has(dyn(object).metadata) ||
+          ((!has(object.metadata.name) || !object.metadata.name.startsWith('connector-')) &&
+           (!has(object.metadata.generateName) || !object.metadata.generateName.startsWith('connector-')) &&
+           (!has(object.metadata.labels) ||
+             !object.metadata.labels.exists(label, label.startsWith('prokrust.ai/connector-') ||
+                (label == 'kubernetes.io/service-name' && object.metadata.labels[label].startsWith('connector-')))))) &&
+        (oldObject == null || !has(dyn(oldObject).metadata) ||
+          (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(label,
+            label.startsWith('prokrust.ai/connector-') ||
+            (label == 'kubernetes.io/service-name' && oldObject.metadata.labels[label].startsWith('connector-')))))
+      )
+    message: Connector runtime infrastructure is managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-gcs-status
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - google.sources.prokrust.ai
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - gcsconnections
+      - gcsconnections/status
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || ((!has(request.subResource) || request.subResource != 'status') &&
+
+        (has(object.metadata.finalizers) && 'prokrust.ai/connector-runtime' in object.metadata.finalizers) ==
+        (oldObject != null && has(oldObject.metadata.finalizers) && 'prokrust.ai/connector-runtime' in oldObject.metadata.finalizers))
+    message: Connection status and runtime finalization are managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-gcs-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        (!has(variables.podSpec.serviceAccountName) || variables.podSpec.serviceAccountName != "prokrust-connector-runtime") &&
+        (!has(variables.podSpec.serviceAccount) || variables.podSpec.serviceAccount != "prokrust-connector-runtime") &&
+        (!has(variables.templateLabels.labels) || !variables.templateLabels.labels.exists(label, label.startsWith('prokrust.ai/connector-'))) &&
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && (v.secret.secretName.startsWith('connector-') || v.secret.secretName.startsWith('prokrust-connector-runtime-artifact-'))) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('connector-')) ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && (source.secret.name.startsWith('connector-') || source.secret.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name.startsWith('connector-'))))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && (e.secretRef.name.startsWith('connector-') || e.secretRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name.startsWith('connector-')))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && (e.valueFrom.secretKeyRef.name.startsWith('connector-') || e.valueFrom.secretKeyRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name.startsWith('connector-'))
+            )))
+        )
+      )
+    message: Connector workload identities and bindings are reserved for the installation
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).metadata)
+      : request.resource.resource == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.metadata)
+      : dyn(dyn(object).spec.template.metadata)'
+    name: templateLabels
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-iceberg-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - CONNECT
+      resources:
+      - services
+      - secrets
+      - configmaps
+      - pods
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      - serviceaccounts
+      - serviceaccounts/token
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      - replicasets
+      scope: Namespaced
+    - apiGroups:
+      - discovery.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - endpointslices
+      scope: Namespaced
+    - apiGroups:
+      - networking.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - networkpolicies
+      scope: Namespaced
+    - apiGroups:
+      - cert-manager.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - certificates
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.operation == 'CREATE' &&
+        request.resource.resource == 'serviceaccounts' &&
+        has(request.subResource) && request.subResource == 'token' &&
+        has(request.name) && request.name == "prokrust-connector-runtime" &&
+        has(request.userInfo.groups) && 'system:nodes' in request.userInfo.groups &&
+        has(request.userInfo.username) && request.userInfo.username.startsWith('system:node:') &&
+        request.userInfo.username != 'system:node:' &&
+        object != null && has(object.spec) && has(object.spec.audiences) &&
+        size(object.spec.audiences) > 0 &&
+        object.spec.audiences.all(audience, audience in [])
+      ) || (
+
+        request.operation == 'DELETE' &&
+        request.resource.group == '' && request.resource.version == 'v1' &&
+        request.resource.resource == 'pods' &&
+        (!has(request.subResource) || request.subResource == '') &&
+        has(request.userInfo.groups) &&
+        'system:nodes' in request.userInfo.groups && 'system:authenticated' in request.userInfo.groups &&
+        has(request.userInfo.username) &&
+        oldObject != null && has(oldObject.apiVersion) && oldObject.apiVersion == 'v1' &&
+        has(oldObject.kind) && oldObject.kind == 'Pod' &&
+        has(oldObject.spec) && has(oldObject.spec.nodeName) && size(oldObject.spec.nodeName) > 0 &&
+        request.userInfo.username == 'system:node:' + oldObject.spec.nodeName &&
+        has(oldObject.status) && has(oldObject.status.phase) &&
+        oldObject.status.phase in ['Succeeded', 'Failed'] &&
+        has(oldObject.metadata) && has(oldObject.metadata.deletionTimestamp) &&
+        oldObject.metadata.deletionTimestamp != null &&
+        has(oldObject.metadata.name) && has(request.name) && request.name == oldObject.metadata.name &&
+        has(oldObject.metadata.labels) &&
+        ['prokrust.ai/connector-uid', 'prokrust.ai/connector-installation-uid', 'prokrust.ai/connector-workspace-uid'].all(label,
+          label in oldObject.metadata.labels &&
+          oldObject.metadata.labels[label].matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')) &&
+        oldObject.metadata.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+        has(oldObject.metadata.ownerReferences) && size(oldObject.metadata.ownerReferences) == 1 &&
+        oldObject.metadata.ownerReferences.all(owner,
+          owner.apiVersion == 'apps/v1' && owner.kind == 'ReplicaSet' &&
+          has(owner.controller) && owner.controller &&
+          has(owner.blockOwnerDeletion) && owner.blockOwnerDeletion &&
+          owner.uid.matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') &&
+          owner.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+          oldObject.metadata.name.startsWith(owner.name + '-'))
+      ) || (
+
+        (!has(request.name) || !request.name.startsWith('connector-')) &&
+        !(request.resource.resource == 'serviceaccounts' && has(request.name) && request.name == "prokrust-connector-runtime") &&
+        (object == null || !has(dyn(object).metadata) ||
+          ((!has(object.metadata.name) || !object.metadata.name.startsWith('connector-')) &&
+           (!has(object.metadata.generateName) || !object.metadata.generateName.startsWith('connector-')) &&
+           (!has(object.metadata.labels) ||
+             !object.metadata.labels.exists(label, label.startsWith('prokrust.ai/connector-') ||
+                (label == 'kubernetes.io/service-name' && object.metadata.labels[label].startsWith('connector-')))))) &&
+        (oldObject == null || !has(dyn(oldObject).metadata) ||
+          (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(label,
+            label.startsWith('prokrust.ai/connector-') ||
+            (label == 'kubernetes.io/service-name' && oldObject.metadata.labels[label].startsWith('connector-')))))
+      )
+    message: Connector runtime infrastructure is managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-iceberg-status
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apache.sources.prokrust.ai
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - icebergconnections
+      - icebergconnections/status
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || ((!has(request.subResource) || request.subResource != 'status') &&
+
+        (has(object.metadata.finalizers) && 'prokrust.ai/connector-runtime' in object.metadata.finalizers) ==
+        (oldObject != null && has(oldObject.metadata.finalizers) && 'prokrust.ai/connector-runtime' in oldObject.metadata.finalizers))
+    message: Connection status and runtime finalization are managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-iceberg-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        (!has(variables.podSpec.serviceAccountName) || variables.podSpec.serviceAccountName != "prokrust-connector-runtime") &&
+        (!has(variables.podSpec.serviceAccount) || variables.podSpec.serviceAccount != "prokrust-connector-runtime") &&
+        (!has(variables.templateLabels.labels) || !variables.templateLabels.labels.exists(label, label.startsWith('prokrust.ai/connector-'))) &&
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && (v.secret.secretName.startsWith('connector-') || v.secret.secretName.startsWith('prokrust-connector-runtime-artifact-'))) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('connector-')) ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && (source.secret.name.startsWith('connector-') || source.secret.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name.startsWith('connector-'))))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && (e.secretRef.name.startsWith('connector-') || e.secretRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name.startsWith('connector-')))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && (e.valueFrom.secretKeyRef.name.startsWith('connector-') || e.valueFrom.secretKeyRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name.startsWith('connector-'))
+            )))
+        )
+      )
+    message: Connector workload identities and bindings are reserved for the installation
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).metadata)
+      : request.resource.resource == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.metadata)
+      : dyn(dyn(object).spec.template.metadata)'
+    name: templateLabels
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-paimon-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - CONNECT
+      resources:
+      - services
+      - secrets
+      - configmaps
+      - pods
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      - serviceaccounts
+      - serviceaccounts/token
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      - replicasets
+      scope: Namespaced
+    - apiGroups:
+      - discovery.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - endpointslices
+      scope: Namespaced
+    - apiGroups:
+      - networking.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - networkpolicies
+      scope: Namespaced
+    - apiGroups:
+      - cert-manager.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - certificates
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.operation == 'CREATE' &&
+        request.resource.resource == 'serviceaccounts' &&
+        has(request.subResource) && request.subResource == 'token' &&
+        has(request.name) && request.name == "prokrust-connector-runtime" &&
+        has(request.userInfo.groups) && 'system:nodes' in request.userInfo.groups &&
+        has(request.userInfo.username) && request.userInfo.username.startsWith('system:node:') &&
+        request.userInfo.username != 'system:node:' &&
+        object != null && has(object.spec) && has(object.spec.audiences) &&
+        size(object.spec.audiences) > 0 &&
+        object.spec.audiences.all(audience, audience in [])
+      ) || (
+
+        request.operation == 'DELETE' &&
+        request.resource.group == '' && request.resource.version == 'v1' &&
+        request.resource.resource == 'pods' &&
+        (!has(request.subResource) || request.subResource == '') &&
+        has(request.userInfo.groups) &&
+        'system:nodes' in request.userInfo.groups && 'system:authenticated' in request.userInfo.groups &&
+        has(request.userInfo.username) &&
+        oldObject != null && has(oldObject.apiVersion) && oldObject.apiVersion == 'v1' &&
+        has(oldObject.kind) && oldObject.kind == 'Pod' &&
+        has(oldObject.spec) && has(oldObject.spec.nodeName) && size(oldObject.spec.nodeName) > 0 &&
+        request.userInfo.username == 'system:node:' + oldObject.spec.nodeName &&
+        has(oldObject.status) && has(oldObject.status.phase) &&
+        oldObject.status.phase in ['Succeeded', 'Failed'] &&
+        has(oldObject.metadata) && has(oldObject.metadata.deletionTimestamp) &&
+        oldObject.metadata.deletionTimestamp != null &&
+        has(oldObject.metadata.name) && has(request.name) && request.name == oldObject.metadata.name &&
+        has(oldObject.metadata.labels) &&
+        ['prokrust.ai/connector-uid', 'prokrust.ai/connector-installation-uid', 'prokrust.ai/connector-workspace-uid'].all(label,
+          label in oldObject.metadata.labels &&
+          oldObject.metadata.labels[label].matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')) &&
+        oldObject.metadata.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+        has(oldObject.metadata.ownerReferences) && size(oldObject.metadata.ownerReferences) == 1 &&
+        oldObject.metadata.ownerReferences.all(owner,
+          owner.apiVersion == 'apps/v1' && owner.kind == 'ReplicaSet' &&
+          has(owner.controller) && owner.controller &&
+          has(owner.blockOwnerDeletion) && owner.blockOwnerDeletion &&
+          owner.uid.matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') &&
+          owner.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+          oldObject.metadata.name.startsWith(owner.name + '-'))
+      ) || (
+
+        (!has(request.name) || !request.name.startsWith('connector-')) &&
+        !(request.resource.resource == 'serviceaccounts' && has(request.name) && request.name == "prokrust-connector-runtime") &&
+        (object == null || !has(dyn(object).metadata) ||
+          ((!has(object.metadata.name) || !object.metadata.name.startsWith('connector-')) &&
+           (!has(object.metadata.generateName) || !object.metadata.generateName.startsWith('connector-')) &&
+           (!has(object.metadata.labels) ||
+             !object.metadata.labels.exists(label, label.startsWith('prokrust.ai/connector-') ||
+                (label == 'kubernetes.io/service-name' && object.metadata.labels[label].startsWith('connector-')))))) &&
+        (oldObject == null || !has(dyn(oldObject).metadata) ||
+          (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(label,
+            label.startsWith('prokrust.ai/connector-') ||
+            (label == 'kubernetes.io/service-name' && oldObject.metadata.labels[label].startsWith('connector-')))))
+      )
+    message: Connector runtime infrastructure is managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-paimon-status
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apache.sources.prokrust.ai
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - paimonconnections
+      - paimonconnections/status
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || ((!has(request.subResource) || request.subResource != 'status') &&
+
+        (has(object.metadata.finalizers) && 'prokrust.ai/connector-runtime' in object.metadata.finalizers) ==
+        (oldObject != null && has(oldObject.metadata.finalizers) && 'prokrust.ai/connector-runtime' in oldObject.metadata.finalizers))
+    message: Connection status and runtime finalization are managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-paimon-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        (!has(variables.podSpec.serviceAccountName) || variables.podSpec.serviceAccountName != "prokrust-connector-runtime") &&
+        (!has(variables.podSpec.serviceAccount) || variables.podSpec.serviceAccount != "prokrust-connector-runtime") &&
+        (!has(variables.templateLabels.labels) || !variables.templateLabels.labels.exists(label, label.startsWith('prokrust.ai/connector-'))) &&
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && (v.secret.secretName.startsWith('connector-') || v.secret.secretName.startsWith('prokrust-connector-runtime-artifact-'))) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('connector-')) ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && (source.secret.name.startsWith('connector-') || source.secret.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name.startsWith('connector-'))))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && (e.secretRef.name.startsWith('connector-') || e.secretRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name.startsWith('connector-')))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && (e.valueFrom.secretKeyRef.name.startsWith('connector-') || e.valueFrom.secretKeyRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name.startsWith('connector-'))
+            )))
+        )
+      )
+    message: Connector workload identities and bindings are reserved for the installation
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).metadata)
+      : request.resource.resource == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.metadata)
+      : dyn(dyn(object).spec.template.metadata)'
+    name: templateLabels
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-platform-executor
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CONNECT
+      - UPDATE
+      resources:
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      scope: Namespaced
+  validations:
+  - expression: |-
+      request.userInfo.username in ["system:serviceaccount:prokrust-system:prokrust-application-controller","system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller"] || (request.operation == 'DELETE' && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.resource.resource == 'pods' ? !variables.resourceName.startsWith('ballista-executor-') :
+        variables.resourceName != 'ballista-executor'
+      )
+    message: The Ballista executor may only be changed or debugged by trusted platform
+      controllers
+  variables:
+  - expression: 'has(request.name) && request.name != '''' ? request.name : object
+      != null && has(dyn(object).metadata) && has(dyn(object).metadata.name) ? dyn(object).metadata.name
+      : '''''
+    name: resourceName
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-platform-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - configmaps
+      - secrets
+      scope: Namespaced
+  validations:
+  - expression: |-
+      request.userInfo.username == "system:serviceaccount:prokrust-system:prokrust-application-controller" || (request.operation == 'DELETE' && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || variables.foregroundFinalizerUpdate || (
+
+        !(variables.resourceName in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) &&
+        variables.resourceName != 'prokrust-connector-executor-binding' &&
+        !variables.resourceName.startsWith('connector-') &&
+        (object == null || !has(object.metadata.labels) || !('prokrust.ai/connector-platform-root' in object.metadata.labels)) &&
+        (oldObject == null || !has(oldObject.metadata.labels) || !('prokrust.ai/connector-platform-root' in oldObject.metadata.labels))
+      )
+    message: Connector platform roots are managed by the application controller
+  variables:
+  - expression: 'has(request.name) && request.name != '''' ? request.name : object
+      != null && has(object.metadata.name) ? object.metadata.name : '''''
+    name: resourceName
+  - expression: |-
+      request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector' && request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '') && request.resource.group == '' && request.resource.version == 'v1' && request.resource.resource in ['configmaps', 'secrets'] && object != null && oldObject != null && object.apiVersion == 'v1' && oldObject.apiVersion == 'v1' && object.kind == oldObject.kind && ((request.resource.resource == 'configmaps' && object.kind == 'ConfigMap') ||
+
+        (request.resource.resource == 'secrets' && object.kind == 'Secret')) &&
+      has(oldObject.metadata.labels) && ['prokrust.ai/connector-platform-root', 'prokrust.ai/connector-installation-uid',
+
+        'prokrust.ai/connector-workspace-uid'].all(key,
+        key in oldObject.metadata.labels && oldObject.metadata.labels[key] != '') &&
+      (oldObject.metadata.name.startsWith('connector-') ||
+
+        oldObject.metadata.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"] ||
+        oldObject.metadata.name == 'prokrust-connector-executor-binding') &&
+      has(oldObject.metadata.deletionTimestamp) && oldObject.metadata.deletionTimestamp != null && has(object.metadata.deletionTimestamp) && object.metadata.deletionTimestamp == oldObject.metadata.deletionTimestamp && object.metadata.uid == oldObject.metadata.uid && object.metadata.uid != '' && object.metadata.resourceVersion == oldObject.metadata.resourceVersion && object.metadata.resourceVersion != '' && object.metadata.name == oldObject.metadata.name && object.metadata.name == request.name && object.metadata.namespace == oldObject.metadata.namespace && object.metadata.namespace == request.namespace && has(oldObject.metadata.finalizers) && oldObject.metadata.finalizers.filter(f, f == 'foregroundDeletion').size() == 1 && oldObject.metadata.finalizers.all(f, f != '' &&
+
+        oldObject.metadata.finalizers.filter(other, other == f).size() == 1) &&
+      (has(object.metadata.finalizers) ? object.metadata.finalizers : []) ==
+
+        oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion') &&
+      has(object.metadata.labels) == has(oldObject.metadata.labels) && (!has(object.metadata.labels) || object.metadata.labels == oldObject.metadata.labels) && has(object.metadata.annotations) == has(oldObject.metadata.annotations) && (!has(object.metadata.annotations) || object.metadata.annotations == oldObject.metadata.annotations) && has(object.metadata.ownerReferences) == has(oldObject.metadata.ownerReferences) && (!has(object.metadata.ownerReferences) || object.metadata.ownerReferences == oldObject.metadata.ownerReferences) && has(object.metadata.generation) == has(oldObject.metadata.generation) && (!has(object.metadata.generation) || object.metadata.generation == oldObject.metadata.generation) && has(object.metadata.creationTimestamp) == has(oldObject.metadata.creationTimestamp) && (!has(object.metadata.creationTimestamp) || object.metadata.creationTimestamp == oldObject.metadata.creationTimestamp) && has(object.metadata.generateName) == has(oldObject.metadata.generateName) && (!has(object.metadata.generateName) || object.metadata.generateName == oldObject.metadata.generateName) && has(object.metadata.deletionGracePeriodSeconds) == has(oldObject.metadata.deletionGracePeriodSeconds) && (!has(object.metadata.deletionGracePeriodSeconds) || object.metadata.deletionGracePeriodSeconds == oldObject.metadata.deletionGracePeriodSeconds) && has(dyn(object).data) == has(dyn(oldObject).data) && (!has(dyn(object).data) || dyn(object).data == dyn(oldObject).data) && has(dyn(object).binaryData) == has(dyn(oldObject).binaryData) && (!has(dyn(object).binaryData) || dyn(object).binaryData == dyn(oldObject).binaryData) && has(dyn(object).immutable) == has(dyn(oldObject).immutable) && (!has(dyn(object).immutable) || dyn(object).immutable == dyn(oldObject).immutable) && has(dyn(object).type) == has(dyn(oldObject).type) && (!has(dyn(object).type) || dyn(object).type == dyn(oldObject).type) && has(dyn(object).stringData) == has(dyn(oldObject).stringData) && (!has(dyn(object).stringData) || dyn(object).stringData == dyn(oldObject).stringData) && !has(dyn(object).spec) && !has(dyn(oldObject).spec) && !has(dyn(object).status) && !has(dyn(oldObject).status)
+    name: foregroundFinalizerUpdate
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-platform-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      request.userInfo.username in ["system:serviceaccount:prokrust-system:prokrust-application-controller","system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller"] || request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller"] || (
+
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && v.secret.secretName in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name == 'prokrust-connector-executor-binding') ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && source.secret.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name == 'prokrust-connector-executor-binding')))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && e.secretRef.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name == 'prokrust-connector-executor-binding'))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && e.valueFrom.secretKeyRef.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name == 'prokrust-connector-executor-binding')
+            )))
+        )
+      )
+    message: Connector caller credentials may only be mounted by trusted platform
+      workloads
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-s3-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - CONNECT
+      resources:
+      - services
+      - secrets
+      - configmaps
+      - pods
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      - serviceaccounts
+      - serviceaccounts/token
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      - replicasets
+      scope: Namespaced
+    - apiGroups:
+      - discovery.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - endpointslices
+      scope: Namespaced
+    - apiGroups:
+      - networking.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - networkpolicies
+      scope: Namespaced
+    - apiGroups:
+      - cert-manager.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - certificates
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.operation == 'CREATE' &&
+        request.resource.resource == 'serviceaccounts' &&
+        has(request.subResource) && request.subResource == 'token' &&
+        has(request.name) && request.name == "prokrust-connector-runtime" &&
+        has(request.userInfo.groups) && 'system:nodes' in request.userInfo.groups &&
+        has(request.userInfo.username) && request.userInfo.username.startsWith('system:node:') &&
+        request.userInfo.username != 'system:node:' &&
+        object != null && has(object.spec) && has(object.spec.audiences) &&
+        size(object.spec.audiences) > 0 &&
+        object.spec.audiences.all(audience, audience in [])
+      ) || (
+
+        request.operation == 'DELETE' &&
+        request.resource.group == '' && request.resource.version == 'v1' &&
+        request.resource.resource == 'pods' &&
+        (!has(request.subResource) || request.subResource == '') &&
+        has(request.userInfo.groups) &&
+        'system:nodes' in request.userInfo.groups && 'system:authenticated' in request.userInfo.groups &&
+        has(request.userInfo.username) &&
+        oldObject != null && has(oldObject.apiVersion) && oldObject.apiVersion == 'v1' &&
+        has(oldObject.kind) && oldObject.kind == 'Pod' &&
+        has(oldObject.spec) && has(oldObject.spec.nodeName) && size(oldObject.spec.nodeName) > 0 &&
+        request.userInfo.username == 'system:node:' + oldObject.spec.nodeName &&
+        has(oldObject.status) && has(oldObject.status.phase) &&
+        oldObject.status.phase in ['Succeeded', 'Failed'] &&
+        has(oldObject.metadata) && has(oldObject.metadata.deletionTimestamp) &&
+        oldObject.metadata.deletionTimestamp != null &&
+        has(oldObject.metadata.name) && has(request.name) && request.name == oldObject.metadata.name &&
+        has(oldObject.metadata.labels) &&
+        ['prokrust.ai/connector-uid', 'prokrust.ai/connector-installation-uid', 'prokrust.ai/connector-workspace-uid'].all(label,
+          label in oldObject.metadata.labels &&
+          oldObject.metadata.labels[label].matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')) &&
+        oldObject.metadata.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+        has(oldObject.metadata.ownerReferences) && size(oldObject.metadata.ownerReferences) == 1 &&
+        oldObject.metadata.ownerReferences.all(owner,
+          owner.apiVersion == 'apps/v1' && owner.kind == 'ReplicaSet' &&
+          has(owner.controller) && owner.controller &&
+          has(owner.blockOwnerDeletion) && owner.blockOwnerDeletion &&
+          owner.uid.matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') &&
+          owner.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+          oldObject.metadata.name.startsWith(owner.name + '-'))
+      ) || (
+
+        (!has(request.name) || !request.name.startsWith('connector-')) &&
+        !(request.resource.resource == 'serviceaccounts' && has(request.name) && request.name == "prokrust-connector-runtime") &&
+        (object == null || !has(dyn(object).metadata) ||
+          ((!has(object.metadata.name) || !object.metadata.name.startsWith('connector-')) &&
+           (!has(object.metadata.generateName) || !object.metadata.generateName.startsWith('connector-')) &&
+           (!has(object.metadata.labels) ||
+             !object.metadata.labels.exists(label, label.startsWith('prokrust.ai/connector-') ||
+                (label == 'kubernetes.io/service-name' && object.metadata.labels[label].startsWith('connector-')))))) &&
+        (oldObject == null || !has(dyn(oldObject).metadata) ||
+          (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(label,
+            label.startsWith('prokrust.ai/connector-') ||
+            (label == 'kubernetes.io/service-name' && oldObject.metadata.labels[label].startsWith('connector-')))))
+      )
+    message: Connector runtime infrastructure is managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-s3-status
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - aws.sources.prokrust.ai
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - s3connections
+      - s3connections/status
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || ((!has(request.subResource) || request.subResource != 'status') &&
+
+        (has(object.metadata.finalizers) && 'prokrust.ai/connector-runtime' in object.metadata.finalizers) ==
+        (oldObject != null && has(oldObject.metadata.finalizers) && 'prokrust.ai/connector-runtime' in oldObject.metadata.finalizers))
+    message: Connection status and runtime finalization are managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-s3-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        (!has(variables.podSpec.serviceAccountName) || variables.podSpec.serviceAccountName != "prokrust-connector-runtime") &&
+        (!has(variables.podSpec.serviceAccount) || variables.podSpec.serviceAccount != "prokrust-connector-runtime") &&
+        (!has(variables.templateLabels.labels) || !variables.templateLabels.labels.exists(label, label.startsWith('prokrust.ai/connector-'))) &&
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && (v.secret.secretName.startsWith('connector-') || v.secret.secretName.startsWith('prokrust-connector-runtime-artifact-'))) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('connector-')) ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && (source.secret.name.startsWith('connector-') || source.secret.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name.startsWith('connector-'))))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && (e.secretRef.name.startsWith('connector-') || e.secretRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name.startsWith('connector-')))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && (e.valueFrom.secretKeyRef.name.startsWith('connector-') || e.valueFrom.secretKeyRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name.startsWith('connector-'))
+            )))
+        )
+      )
+    message: Connector workload identities and bindings are reserved for the installation
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).metadata)
+      : request.resource.resource == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.metadata)
+      : dyn(dyn(object).spec.template.metadata)'
+    name: templateLabels
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-synthetic-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - CONNECT
+      resources:
+      - services
+      - secrets
+      - configmaps
+      - pods
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      - serviceaccounts
+      - serviceaccounts/token
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      - replicasets
+      scope: Namespaced
+    - apiGroups:
+      - discovery.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - endpointslices
+      scope: Namespaced
+    - apiGroups:
+      - networking.k8s.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - networkpolicies
+      scope: Namespaced
+    - apiGroups:
+      - cert-manager.io
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - certificates
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.operation == 'CREATE' &&
+        request.resource.resource == 'serviceaccounts' &&
+        has(request.subResource) && request.subResource == 'token' &&
+        has(request.name) && request.name == "prokrust-connector-runtime" &&
+        has(request.userInfo.groups) && 'system:nodes' in request.userInfo.groups &&
+        has(request.userInfo.username) && request.userInfo.username.startsWith('system:node:') &&
+        request.userInfo.username != 'system:node:' &&
+        object != null && has(object.spec) && has(object.spec.audiences) &&
+        size(object.spec.audiences) > 0 &&
+        object.spec.audiences.all(audience, audience in [])
+      ) || (
+
+        request.operation == 'DELETE' &&
+        request.resource.group == '' && request.resource.version == 'v1' &&
+        request.resource.resource == 'pods' &&
+        (!has(request.subResource) || request.subResource == '') &&
+        has(request.userInfo.groups) &&
+        'system:nodes' in request.userInfo.groups && 'system:authenticated' in request.userInfo.groups &&
+        has(request.userInfo.username) &&
+        oldObject != null && has(oldObject.apiVersion) && oldObject.apiVersion == 'v1' &&
+        has(oldObject.kind) && oldObject.kind == 'Pod' &&
+        has(oldObject.spec) && has(oldObject.spec.nodeName) && size(oldObject.spec.nodeName) > 0 &&
+        request.userInfo.username == 'system:node:' + oldObject.spec.nodeName &&
+        has(oldObject.status) && has(oldObject.status.phase) &&
+        oldObject.status.phase in ['Succeeded', 'Failed'] &&
+        has(oldObject.metadata) && has(oldObject.metadata.deletionTimestamp) &&
+        oldObject.metadata.deletionTimestamp != null &&
+        has(oldObject.metadata.name) && has(request.name) && request.name == oldObject.metadata.name &&
+        has(oldObject.metadata.labels) &&
+        ['prokrust.ai/connector-uid', 'prokrust.ai/connector-installation-uid', 'prokrust.ai/connector-workspace-uid'].all(label,
+          label in oldObject.metadata.labels &&
+          oldObject.metadata.labels[label].matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')) &&
+        oldObject.metadata.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+        has(oldObject.metadata.ownerReferences) && size(oldObject.metadata.ownerReferences) == 1 &&
+        oldObject.metadata.ownerReferences.all(owner,
+          owner.apiVersion == 'apps/v1' && owner.kind == 'ReplicaSet' &&
+          has(owner.controller) && owner.controller &&
+          has(owner.blockOwnerDeletion) && owner.blockOwnerDeletion &&
+          owner.uid.matches('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') &&
+          owner.name.startsWith('connector-' + oldObject.metadata.labels['prokrust.ai/connector-uid'] + '-') &&
+          oldObject.metadata.name.startsWith(owner.name + '-'))
+      ) || (
+
+        (!has(request.name) || !request.name.startsWith('connector-')) &&
+        !(request.resource.resource == 'serviceaccounts' && has(request.name) && request.name == "prokrust-connector-runtime") &&
+        (object == null || !has(dyn(object).metadata) ||
+          ((!has(object.metadata.name) || !object.metadata.name.startsWith('connector-')) &&
+           (!has(object.metadata.generateName) || !object.metadata.generateName.startsWith('connector-')) &&
+           (!has(object.metadata.labels) ||
+             !object.metadata.labels.exists(label, label.startsWith('prokrust.ai/connector-') ||
+                (label == 'kubernetes.io/service-name' && object.metadata.labels[label].startsWith('connector-')))))) &&
+        (oldObject == null || !has(dyn(oldObject).metadata) ||
+          (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(label,
+            label.startsWith('prokrust.ai/connector-') ||
+            (label == 'kubernetes.io/service-name' && oldObject.metadata.labels[label].startsWith('connector-')))))
+      )
+    message: Connector runtime infrastructure is managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-synthetic-status
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - sources.prokrust.ai
+      apiVersions:
+      - v1beta1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - syntheticconnections
+      - syntheticconnections/status
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || ((!has(request.subResource) || request.subResource != 'status') &&
+
+        (has(object.metadata.finalizers) && 'prokrust.ai/connector-runtime' in object.metadata.finalizers) ==
+        (oldObject != null && has(oldObject.metadata.finalizers) && 'prokrust.ai/connector-runtime' in oldObject.metadata.finalizers))
+    message: Connection status and runtime finalization are managed by the installation
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-synthetic-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      (has(request.userInfo.groups) && 'system:serviceaccounts:prokrust-system' in request.userInfo.groups) || (has(request.userInfo.username) && request.userInfo.username in ["system:serviceaccount:cert-manager:cert-manager"]) || (has(request.userInfo.username) && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller","system:serviceaccount:kube-system:endpoint-controller","system:serviceaccount:kube-system:endpointslice-controller","system:serviceaccount:kube-system:endpointslicemirroring-controller","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        (!has(variables.podSpec.serviceAccountName) || variables.podSpec.serviceAccountName != "prokrust-connector-runtime") &&
+        (!has(variables.podSpec.serviceAccount) || variables.podSpec.serviceAccount != "prokrust-connector-runtime") &&
+        (!has(variables.templateLabels.labels) || !variables.templateLabels.labels.exists(label, label.startsWith('prokrust.ai/connector-'))) &&
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && (v.secret.secretName.startsWith('connector-') || v.secret.secretName.startsWith('prokrust-connector-runtime-artifact-'))) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name.startsWith('connector-')) ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && (source.secret.name.startsWith('connector-') || source.secret.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name.startsWith('connector-'))))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && (e.secretRef.name.startsWith('connector-') || e.secretRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name.startsWith('connector-')))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && (e.valueFrom.secretKeyRef.name.startsWith('connector-') || e.valueFrom.secretKeyRef.name.startsWith('prokrust-connector-runtime-artifact-'))) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name.startsWith('connector-'))
+            )))
+        )
+      )
+    message: Connector workload identities and bindings are reserved for the installation
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).metadata)
+      : request.resource.resource == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.metadata)
+      : dyn(dyn(object).spec.template.metadata)'
+    name: templateLabels
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
@@ -1435,6 +4883,279 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
+  name: prokrust-system-connector-bigquery-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-bigquery-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-bigquery-status
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-bigquery-status
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-bigquery-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-bigquery-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-gcs-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-gcs-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-gcs-status
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-gcs-status
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-gcs-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-gcs-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-iceberg-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-iceberg-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-iceberg-status
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-iceberg-status
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-iceberg-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-iceberg-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-paimon-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-paimon-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-paimon-status
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-paimon-status
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-paimon-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-paimon-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-platform-executor
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-platform-executor
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-platform-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-platform-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-platform-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-platform-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-s3-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-s3-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-s3-status
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-s3-status
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-s3-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-s3-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-synthetic-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-synthetic-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-synthetic-status
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-synthetic-status
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-synthetic-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-synthetic-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
   name: prokrust-system-prokrust-ballista-capacity
 spec:
   matchResources:
@@ -1612,6 +5333,29 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: prokrust-connector-ca
+  namespace: prokrust-system
+spec:
+  commonName: prokrust-system Prokrust Connector CA
+  duration: 8760h
+  isCA: true
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: prokrust-connector-ca-bootstrap
+  privateKey:
+    algorithm: ECDSA
+    rotationPolicy: Never
+    size: 256
+  renewBefore: 720h
+  secretName: prokrust-connector-ca
+  usages:
+  - cert sign
+  - crl sign
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: prokrust-license-ca
   namespace: prokrust-system
 spec:
@@ -1649,6 +5393,23 @@ spec:
     kind: Issuer
     name: prokrust-license-ca
   secretName: prokrust-runtime-startup-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prokrust-connector-ca
+  namespace: prokrust-system
+spec:
+  ca:
+    secretName: prokrust-connector-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prokrust-connector-ca-bootstrap
+  namespace: prokrust-system
+spec:
+  selfSigned: {}
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -1710,7 +5471,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -1733,7 +5494,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -1777,10 +5538,38 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: prokrust-connector-client-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 8443
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          prokrust.ai/installation: prokrust-system
+      podSelector:
+        matchExpressions:
+        - key: prokrust.ai/connector-uid
+          operator: Exists
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/name
+      operator: In
+      values:
+      - prokrust-application-controller
+      - prokrust-web-api
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -1859,7 +5648,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -1951,10 +5740,124 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: prokrust-system-connector-bigquery-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-bigquery
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-system-connector-gcs-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-gcs
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-system-connector-iceberg-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-iceberg
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-system-connector-paimon-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-paimon
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-system-connector-s3-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-s3
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-system-connector-synthetic-api
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-system-connector-synthetic
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.25.0-rc.1
+    helm.sh/chart: web-api-0.26.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2014,7 +5917,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.25.0-rc.1
+    helm.sh/chart: web-api-0.26.0-rc.1
   name: prokrust-web-api-aws-auth
   namespace: prokrust-system
 spec:
@@ -2058,7 +5961,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.22.0-rc.4
+    helm.sh/chart: prokrust-system-0.23.0-rc.1
   name: default
   namespace: prokrust-system
 spec:

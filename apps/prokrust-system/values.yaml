@@ -1,3 +1,25 @@
+connectors:
+  bigquery: &demoConnector
+    enabled: true
+    imagePullSecrets:
+      - name: harbor-reader
+    nodeSelector: &connectorNodes
+      kubernetes.io/arch: arm64
+    tolerations: &connectorTolerations
+      - key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+        effect: NoSchedule
+    runtimeNodeSelector: *connectorNodes
+    runtimeTolerations: *connectorTolerations
+    controllerApiServerEndpoints:
+      - cidr: fd8e:1cf8:6673::1/128
+        port: 443
+  gcs: *demoConnector
+  iceberg: *demoConnector
+  paimon: *demoConnector
+  s3: *demoConnector
+  synthetic: *demoConnector
 leaseBootstrap:
   mode: argo
   namespace: argocd
