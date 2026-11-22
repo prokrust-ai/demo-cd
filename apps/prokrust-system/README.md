@@ -8,6 +8,11 @@ Argo Workflows controller identity. Artifact access uses IRSA; registry and lice
 use the existing `harbor-reader` and `prokrust-license-credential` Secrets.
 Adapt these settings when using another cluster.
 
+The system Application also installs the BigQuery, GCS, Iceberg, Paimon, S3 and
+Synthetic connector controllers in `prokrust-system`. Their API-server egress uses
+the Demo IPv6 endpoint in `connector-values.yaml`. Connector discovery in the
+Operator and Web API requires a descriptor registry configured separately.
+
 HTTPRoutes, TLS, ExternalSecrets and environment-specific NetworkPolicies are managed
 in the private deployment repository. Browser access uses `https://demo.prokrust.ai`
 and OIDC/session Secrets `prokrust-demo-ory` and `prokrust-browser-sessions`.

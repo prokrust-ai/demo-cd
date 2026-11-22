@@ -11,3 +11,64 @@ helmCharts:
     releaseName: prokrust-system
     namespace: prokrust-system
     valuesFile: values.yaml
+  - name: connector-bigquery
+    repo: oci://ar.prokrust.io/charts
+    version: 1.2.0-rc.1
+    releaseName: connector-bigquery
+    namespace: prokrust-system
+    valuesFile: connector-values.yaml
+  - name: connector-gcs
+    repo: oci://ar.prokrust.io/charts
+    version: 1.1.0-rc.1
+    releaseName: connector-gcs
+    namespace: prokrust-system
+    valuesFile: connector-values.yaml
+  - name: connector-iceberg
+    repo: oci://ar.prokrust.io/charts
+    version: 1.1.0-rc.1
+    releaseName: connector-iceberg
+    namespace: prokrust-system
+    valuesFile: connector-values.yaml
+  - name: connector-paimon
+    repo: oci://ar.prokrust.io/charts
+    version: 1.1.0-rc.1
+    releaseName: connector-paimon
+    namespace: prokrust-system
+    valuesFile: connector-values.yaml
+  - name: connector-s3
+    repo: oci://ar.prokrust.io/charts
+    version: 1.1.0-rc.1
+    releaseName: connector-s3
+    namespace: prokrust-system
+    valuesFile: connector-values.yaml
+  - name: connector-synthetic
+    repo: oci://ar.prokrust.io/charts
+    version: 1.1.0-rc.1
+    releaseName: connector-synthetic
+    namespace: prokrust-system
+    valuesFile: connector-values.yaml
+
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: prokrust-system
+      name: prokrust-system-connector-.*
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: connector
+      spec:
+        template:
+          spec:
+            imagePullSecrets:
+              - name: harbor-reader
+            nodeSelector:
+              kubernetes.io/arch: arm64
+            tolerations:
+              - key: kubernetes.io/arch
+                operator: Equal
+                value: arm64
+                effect: NoSchedule

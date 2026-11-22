@@ -1,0 +1,10 @@
+controllerApiServerEndpoints:
+  - cidr: fd8e:1cf8:6673::1/128
+    port: 443
+runtimeNodeSelector:
+  kubernetes.io/arch: arm64
+runtimeTolerations:
+  - key: kubernetes.io/arch
+    operator: Equal
+    value: arm64
+    effect: NoSchedule
