@@ -92,7 +92,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.26.0-rc.1
+    helm.sh/chart: web-api-0.27.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 ---
@@ -264,6 +264,14 @@ metadata:
   name: prokrust-oidc-reader-7dce348e5449e57d
   namespace: prokrust-system
 rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - licenseactivations
+  verbs:
+  - get
 - apiGroups:
   - ""
   resourceNames:
@@ -1185,17 +1193,17 @@ data:
   ballista.chartVersion: 0.4.0
   ballista.version: 0.4.0
   batch-predictor.version: 0.11.0-rc.1
-  compositionVersion: 0.23.0-rc.1
+  compositionVersion: 0.24.0-rc.1
   data-job.version: 0.13.0-rc.1
   serving.version: 0.11.0-rc.2
   trainer.version: 0.11.0-rc.1
-  web-api.version: 0.26.0-rc.1
+  web-api.version: 0.27.0-rc.1
 kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -1831,7 +1839,7 @@ metadata:
 apiVersion: v1
 data:
   auth.toml: |
-    revision = 4
+    revision = 5
     installationNamespace = "prokrust-system"
     redisUrlFile = "/var/run/prokrust/browser/redis-url"
     artifactHost = { namespace = "prokrust-system", serviceAccount = "prokrust-web-api" }
@@ -1843,6 +1851,7 @@ data:
     namespace = "thelook-ecommerce"
     serviceAccount = "prokrust-ui-admin"
     installationReports = false
+    installationActivation = true
     [oidc.providers.sso]
     issuer = "https://auth.prokrust.ai/"
     clientId = "prokrust-demo"
@@ -1852,7 +1861,7 @@ data:
 immutable: true
 kind: ConfigMap
 metadata:
-  name: prokrust-oidc-4
+  name: prokrust-oidc-5
   namespace: prokrust-system
 ---
 apiVersion: v1
@@ -1910,7 +1919,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -1997,7 +2006,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.26.0-rc.1
+    helm.sh/chart: web-api-0.27.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2020,7 +2029,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -2253,7 +2262,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -2777,7 +2786,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-web-api
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.26.0-rc.1
+    helm.sh/chart: web-api-0.27.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2788,7 +2797,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/auth-revision: "4"
+        prokrust.ai/auth-revision: "5"
         prokrust.ai/connector-registry-checksum: 8808e5c03847fa5779f8dbef3e2ef077db5036bf6528b4651041938ed7dca930
       labels:
         app.kubernetes.io/component: api
@@ -2827,7 +2836,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/web-api@sha256:0d3a688c1b3fbb11ce8d0e7b7165befa710bac24550b743565837c236d8f6174
+        image: ar.prokrust.io/prokrust/web-api@sha256:e32766b7be285c2e2bc62eabe26fef904c91597aa4329394a0e7ec1738f31263
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -2947,7 +2956,7 @@ spec:
                 path: synthetic/selector-v1.json
               name: prokrust-connector-synthetic-registry
       - configMap:
-          name: prokrust-oidc-4
+          name: prokrust-oidc-5
         name: oidc-config
       - name: oidc-secrets
         projected:
@@ -2981,7 +2990,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/auth-revision: "4"
+        prokrust.ai/auth-revision: "5"
       labels:
         app.kubernetes.io/name: prokrust-session-redis
     spec:
@@ -5555,7 +5564,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -5578,7 +5587,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -5653,7 +5662,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -5732,7 +5741,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -5941,7 +5950,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.26.0-rc.1
+    helm.sh/chart: web-api-0.27.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -6001,7 +6010,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.26.0-rc.1
+    helm.sh/chart: web-api-0.27.0-rc.1
   name: prokrust-web-api-aws-auth
   namespace: prokrust-system
 spec:
@@ -6045,7 +6054,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.23.0-rc.1
+    helm.sh/chart: prokrust-system-0.24.0-rc.1
   name: default
   namespace: prokrust-system
 spec:
