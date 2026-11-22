@@ -925,6 +925,90 @@ subjects:
   namespace: prokrust-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-system-connector-bigquery-workspace
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-bigquery-workspace
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-bigquery
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-system-connector-gcs-workspace
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-gcs-workspace
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-gcs
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-system-connector-iceberg-workspace
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-iceberg-workspace
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-iceberg
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-system-connector-paimon-workspace
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-paimon-workspace
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-paimon
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-system-connector-s3-workspace
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-s3-workspace
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-s3
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-system-connector-synthetic-workspace
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prokrust-system-connector-synthetic-workspace
+subjects:
+- kind: ServiceAccount
+  name: prokrust-system-connector-synthetic
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   annotations:
