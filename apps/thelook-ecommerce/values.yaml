@@ -1,5 +1,14 @@
 installation:
   namespace: prokrust-system
+connectors:
+  enabled: true
+  connectionResources:
+  - {apiGroup: google.sources.prokrust.ai, resource: bigqueryconnections}
+  - {apiGroup: google.sources.prokrust.ai, resource: gcsconnections}
+  - {apiGroup: apache.sources.prokrust.ai, resource: icebergconnections}
+  - {apiGroup: apache.sources.prokrust.ai, resource: paimonconnections}
+  - {apiGroup: aws.sources.prokrust.ai, resource: s3connections}
+  - {apiGroup: sources.prokrust.ai, resource: syntheticconnections}
 global:
   awsRegion: us-west-2
   networkFamily: IPv6

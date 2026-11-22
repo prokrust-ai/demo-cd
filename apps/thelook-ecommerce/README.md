@@ -10,6 +10,10 @@ working-store IRSA role. The two Ballista accounts use the separate Ballista rol
 The ephemeral-storage quota is 128 GiB requested and 256 GiB limited. Guest and
 admin OIDC bindings use the system's `sso` provider and its role claim.
 
+The workspace enables connector discovery for the six providers in the system chart.
+Each provider grants its controller access to this namespace through its system
+chart value `workspaceRbacBindings`.
+
 ## Before syncing
 
 - Apply the Demo-managed `prokrust` AppProject update. It authorizes Argo CD to
