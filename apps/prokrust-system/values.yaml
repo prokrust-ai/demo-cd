@@ -1,6 +1,8 @@
 connectors:
   bigquery: &demoConnector
     enabled: true
+    workspaceRbacBindings:
+      - thelook-ecommerce
     imagePullSecrets:
       - name: harbor-reader
     nodeSelector: &connectorNodes
