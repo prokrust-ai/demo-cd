@@ -4,6 +4,34 @@ kind: Kustomization
 resources:
   - namespace.yaml
 
+configMapGenerator:
+  - name: prokrust-connector-registry
+    namespace: prokrust-system
+    options:
+      immutable: true
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    files:
+      - registry/registry.json
+      - bigquery-connection-v1.json=registry/bigquery/connection-v1.json
+      - bigquery-descriptor.json=registry/bigquery/descriptor.json
+      - bigquery-selector-v1.json=registry/bigquery/selector-v1.json
+      - gcs-connection-v1.json=registry/gcs/connection-v1.json
+      - gcs-descriptor.json=registry/gcs/descriptor.json
+      - gcs-selector-v1.json=registry/gcs/selector-v1.json
+      - iceberg-connection-v1.json=registry/iceberg/connection-v1.json
+      - iceberg-descriptor.json=registry/iceberg/descriptor.json
+      - iceberg-selector-v1.json=registry/iceberg/selector-v1.json
+      - paimon-connection-v1.json=registry/paimon/connection-v1.json
+      - paimon-descriptor.json=registry/paimon/descriptor.json
+      - paimon-selector-v1.json=registry/paimon/selector-v1.json
+      - s3-connection-v1.json=registry/s3/connection-v1.json
+      - s3-descriptor.json=registry/s3/descriptor.json
+      - s3-selector-v1.json=registry/s3/selector-v1.json
+      - synthetic-connection-v1.json=registry/synthetic/connection-v1.json
+      - synthetic-descriptor.json=registry/synthetic/descriptor.json
+      - synthetic-selector-v1.json=registry/synthetic/selector-v1.json
+
 helmCharts:
   - name: prokrust-system
     repo: oci://ar.prokrust.io/charts

@@ -1,0 +1,70 @@
+{
+  "providers": [
+    {
+      "id": "prokrust.ai/bigquery",
+      "enabled": true,
+      "release": "1.2.0-rc.1",
+      "descriptor": {
+        "file": "bigquery/descriptor.json",
+        "sha256": "sha256:3ac25a70c62442bef34518422d5be0d3daa2f1d37bd51bcebc43a4bb6acd275a"
+      },
+      "controllerNamespace": "prokrust-system",
+      "tlsProfile": "installation-ca"
+    },
+    {
+      "id": "prokrust.ai/gcs",
+      "enabled": true,
+      "release": "1.1.0-rc.1",
+      "descriptor": {
+        "file": "gcs/descriptor.json",
+        "sha256": "sha256:7e294cf3824ca9ebea98093895e1937173da23d63fe7b288bc9b8d537e899beb"
+      },
+      "controllerNamespace": "prokrust-system",
+      "tlsProfile": "installation-ca"
+    },
+    {
+      "id": "prokrust.ai/iceberg",
+      "enabled": true,
+      "release": "1.1.0-rc.1",
+      "descriptor": {
+        "file": "iceberg/descriptor.json",
+        "sha256": "sha256:bfc20e2b4f4b8ad7cc935cd47d6ee7df31953c008fe2d82af33845a04b6cbd15"
+      },
+      "controllerNamespace": "prokrust-system",
+      "tlsProfile": "installation-ca"
+    },
+    {
+      "id": "prokrust.ai/paimon",
+      "enabled": true,
+      "release": "1.1.0-rc.1",
+      "descriptor": {
+        "file": "paimon/descriptor.json",
+        "sha256": "sha256:9e7daed83ac1be7476b53d4d9331eb1e6386ffa5ef318bc52245d11dd2e274f6"
+      },
+      "controllerNamespace": "prokrust-system",
+      "tlsProfile": "installation-ca"
+    },
+    {
+      "id": "prokrust.ai/s3",
+      "enabled": true,
+      "release": "1.1.0-rc.1",
+      "descriptor": {
+        "file": "s3/descriptor.json",
+        "sha256": "sha256:baf6bc67f594eb8f4d818a74c72f30fd88ca45a257a1165189fc46053aed467d"
+      },
+      "controllerNamespace": "prokrust-system",
+      "tlsProfile": "installation-ca"
+    },
+    {
+      "id": "prokrust.ai/synthetic",
+      "enabled": true,
+      "release": "1.1.0-rc.1",
+      "descriptor": {
+        "file": "synthetic/descriptor.json",
+        "sha256": "sha256:cb12cb42f0b6884cf2cdc7dac2fa84f5d018f1e059e41a6aa0172308c8653c0b"
+      },
+      "controllerNamespace": "prokrust-system",
+      "tlsProfile": "installation-ca"
+    }
+  ]
+}

@@ -10,8 +10,14 @@ Adapt these settings when using another cluster.
 
 The system Application also installs the BigQuery, GCS, Iceberg, Paimon, S3 and
 Synthetic connector controllers in `prokrust-system`. Their API-server egress uses
-the Demo IPv6 endpoint in `connector-values.yaml`. Connector discovery in the
-Operator and Web API requires a descriptor registry configured separately.
+the Demo IPv6 endpoint in `connector-values.yaml`. The Operator and Web API mount the
+same immutable registry ConfigMap generated from `registry/`. Its name includes
+a content hash so both Deployments roll out when the registry changes.
+
+When updating a connector, update its entry in `registry/registry.json` and the
+corresponding descriptor and schemas under `registry/<provider>/`. Preserve the
+release bytes: the descriptor SHA-256 must match the chart’s `descriptorDigest`,
+and each schema SHA-256 must match the descriptor.
 
 HTTPRoutes, TLS, ExternalSecrets and environment-specific NetworkPolicies are managed
 in the private deployment repository. Browser access uses `https://demo.prokrust.ai`

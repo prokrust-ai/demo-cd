@@ -190,6 +190,29 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  name: prokrust-connector-issuer
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates
+  verbs:
+  - get
+  - create
+  - update
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
   name: prokrust-lease-bootstrap-11c50d8075
@@ -818,6 +841,20 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  name: prokrust-connector-issuer
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-connector-issuer
+subjects:
+- kind: ServiceAccount
+  name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
   name: prokrust-lease-bootstrap-11c50d8075
@@ -1080,6 +1117,658 @@ metadata:
 ---
 apiVersion: v1
 data:
+  bigquery-connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "project": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 30,
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "billingProject": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 30,
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$"
+        },
+        "datasets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9_]+$"
+          }
+        },
+        "expectedServiceAccountEmail": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 254,
+          "pattern": "^[a-z0-9][a-z0-9-]*@[a-z0-9][a-z0-9-]*[.]iam[.]gserviceaccount[.]com$"
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "authMode": {
+          "type": "string",
+          "enum": [
+            "serviceAccountKey",
+            "impersonation",
+            "federation"
+          ]
+        },
+        "federationAudience": {
+          "type": "string",
+          "maxLength": 256,
+          "pattern": "^//iam[.]googleapis[.]com/projects/[0-9]{1,20}/locations/global/workloadIdentityPools/[a-z0-9][a-z0-9-]{0,30}[a-z0-9]/providers/[a-z0-9][a-z0-9-]{0,30}[a-z0-9]$"
+        }
+      },
+      "required": [
+        "project",
+        "billingProject",
+        "location",
+        "datasets",
+        "expectedServiceAccountEmail"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "authMode": {
+              "const": "impersonation"
+            },
+            "credentialsSecretRef": false,
+            "federationAudience": false
+          },
+          "required": [
+            "authMode"
+          ]
+        },
+        {
+          "properties": {
+            "authMode": {
+              "const": "serviceAccountKey"
+            }
+          },
+          "required": [
+            "credentialsSecretRef"
+          ],
+          "not": {
+            "required": [
+              "federationAudience"
+            ]
+          }
+        },
+        {
+          "properties": {
+            "authMode": {
+              "const": "federation"
+            }
+          },
+          "required": [
+            "authMode",
+            "federationAudience"
+          ],
+          "not": {
+            "required": [
+              "credentialsSecretRef"
+            ]
+          }
+        }
+      ]
+    }
+  bigquery-descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"BigQueryConnection","plural":"bigqueryconnections","schema":{"file":"connection-v1.json","sha256":"sha256:9c69c82e770d3d552a093c98bbd0503fe0148830c3c835c9342557fbe5f7762a"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/bigquery","providerMajor":1,"release":"1.2.0-rc.1","runtimeImages":[{"digest":"sha256:8809457884ce0b414f5e1b08e39f776c8eaf9edc8073a9310c7a5f3dc98862b4","role":"runtime"},{"digest":"sha256:8809457884ce0b414f5e1b08e39f776c8eaf9edc8073a9310c7a5f3dc98862b4","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:deda40edb62827f121d1b9784319fd9b6790902310255cf2c48af75e50dc3100"}],"ui":{"displayName":"Google BigQuery"}}
+  bigquery-selector-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "kind": {"type": "string", "enum": ["dataset", "table"]},
+        "dataset": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9_]+$"},
+        "table": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9_-]+$"}
+      },
+      "required": ["kind", "dataset"],
+      "if": {"properties": {"kind": {"const": "table"}}},
+      "then": {"required": ["table"]},
+      "else": {"not": {"required": ["table"]}},
+      "additionalProperties": false
+    }
+  gcs-connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 222,
+          "pattern": "^[a-z0-9][a-z0-9._-]*[a-z0-9]$"
+        },
+        "prefix": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "bucketProjectNumber": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19}$"
+        },
+        "expectedServiceAccountEmail": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 254,
+          "pattern": "^[a-z0-9][a-z0-9-]*@[a-z0-9][a-z0-9-]*[.]iam[.]gserviceaccount[.]com$"
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "authMode": {
+          "type": "string",
+          "enum": [
+            "serviceAccountKey",
+            "impersonation"
+          ]
+        }
+      },
+      "required": [
+        "bucket",
+        "prefix",
+        "bucketProjectNumber",
+        "expectedServiceAccountEmail"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "authMode": {
+              "const": "impersonation"
+            }
+          },
+          "required": [
+            "authMode"
+          ],
+          "not": {
+            "required": [
+              "credentialsSecretRef"
+            ]
+          }
+        },
+        {
+          "properties": {
+            "authMode": {
+              "const": "serviceAccountKey"
+            }
+          },
+          "required": [
+            "credentialsSecretRef"
+          ]
+        }
+      ]
+    }
+  gcs-descriptor.json: |
+    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"GCSConnection","plural":"gcsconnections","schema":{"file":"connection-v1.json","sha256":"sha256:7de07fed71c6cb2500e4008f13453dc06a30c7a88924f717db57046965f75228"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/gcs","providerMajor":1,"release":"1.1.0-rc.1","runtimeImages":[{"digest":"sha256:f1c0702c11470d62f145d66677d664af319df3f18bb6585d8adb378bce6568a6","role":"runtime"},{"digest":"sha256:f1c0702c11470d62f145d66677d664af319df3f18bb6585d8adb378bce6568a6","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Google Cloud Storage"}}
+  gcs-selector-v1.json: |
+    {"type":"object","properties":{"kind":{"type":"string","enum":["prefix","object"]},"path":{"type":"string","maxLength":1024}},"required":["kind","path"],"additionalProperties":false}
+  iceberg-connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "storage": {
+          "type": "object",
+          "properties": {
+            "backend": {
+              "type": "string",
+              "enum": [
+                "s3",
+                "gcs"
+              ]
+            },
+            "bucket": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 63
+            },
+            "prefix": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1024
+            },
+            "expectedPrincipal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "backend",
+            "bucket",
+            "prefix",
+            "expectedPrincipal"
+          ],
+          "additionalProperties": false
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "metadataPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "catalog": {
+          "type": "object",
+          "required": [
+            "endpoint",
+            "policyRef",
+            "allowedNamespaces",
+            "auth"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "policyRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "auth": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "bearer"
+              ]
+            },
+            "allowedNamespaces": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 512,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "storage",
+        "credentialsSecretRef"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "metadataPath"
+          ]
+        },
+        {
+          "required": [
+            "catalog"
+          ]
+        }
+      ]
+    }
+  iceberg-descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"IcebergConnection","plural":"icebergconnections","schema":{"file":"connection-v1.json","sha256":"sha256:83496e62c0a8ede2f86402bf9299b195615e96fc09d6ac19c0673bca37b5f112"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/iceberg","providerMajor":1,"release":"1.1.0-rc.1","runtimeImages":[{"digest":"sha256:5ccb0ee189f3eb4f3d373c5d4c996905b475cf8de1e6e7b057cd9fa0058e42d2","role":"runtime"},{"digest":"sha256:5ccb0ee189f3eb4f3d373c5d4c996905b475cf8de1e6e7b057cd9fa0058e42d2","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:022501059ec277779b0b0eb2afb7195366b656a5c8a21959e75a4580f16cdfce"}],"ui":{"displayName":"Apache Iceberg"}}
+  iceberg-selector-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "namespace": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        },
+        "table": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "additionalProperties": false,
+      "not": {
+        "required": [
+          "snapshotId",
+          "tag"
+        ]
+      },
+      "dependentRequired": {
+        "table": [
+          "namespace"
+        ]
+      }
+    }
+  paimon-connection-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "storage": {
+          "type": "object",
+          "properties": {
+            "backend": {
+              "type": "string",
+              "enum": [
+                "s3",
+                "gcs"
+              ]
+            },
+            "bucket": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 63
+            },
+            "prefix": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1024
+            },
+            "expectedPrincipal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "backend",
+            "bucket",
+            "prefix",
+            "expectedPrincipal"
+          ],
+          "additionalProperties": false
+        },
+        "credentialsSecretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "pattern": "^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "warehousePath": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1024
+        },
+        "catalog": {
+          "type": "object",
+          "required": [
+            "endpoint",
+            "policyRef",
+            "allowedNamespaces",
+            "auth"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "policyRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "auth": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "bearer"
+              ]
+            },
+            "allowedNamespaces": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 512,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "storage",
+        "credentialsSecretRef"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "warehousePath"
+          ]
+        },
+        {
+          "required": [
+            "catalog"
+          ]
+        }
+      ]
+    }
+  paimon-descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"PaimonConnection","plural":"paimonconnections","schema":{"file":"connection-v1.json","sha256":"sha256:f41f5b3d0416c70c3e11a42efffeb98831548680ffac1a19f7e68ac180bf84e7"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/paimon","providerMajor":1,"release":"1.1.0-rc.1","runtimeImages":[{"digest":"sha256:fc82b298bc9b3ad03760b224f35faa2d20e54f5f02f50d3551f4fc46117af6ac","role":"runtime"},{"digest":"sha256:fc82b298bc9b3ad03760b224f35faa2d20e54f5f02f50d3551f4fc46117af6ac","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:85d827bf44b4213e697ea49d863d60271510cf022cc1100362f3d2cc6b3b20d1"}],"ui":{"displayName":"Apache Paimon"}}
+  paimon-selector-v1.json: |
+    {
+      "type": "object",
+      "properties": {
+        "database": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "table": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "tag": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        }
+      },
+      "required": [
+        "database"
+      ],
+      "additionalProperties": false,
+      "not": {
+        "required": [
+          "snapshotId",
+          "tag"
+        ]
+      }
+    }
+  registry.json: |
+    {
+      "providers": [
+        {
+          "id": "prokrust.ai/bigquery",
+          "enabled": true,
+          "release": "1.2.0-rc.1",
+          "descriptor": {
+            "file": "bigquery/descriptor.json",
+            "sha256": "sha256:3ac25a70c62442bef34518422d5be0d3daa2f1d37bd51bcebc43a4bb6acd275a"
+          },
+          "controllerNamespace": "prokrust-system",
+          "tlsProfile": "installation-ca"
+        },
+        {
+          "id": "prokrust.ai/gcs",
+          "enabled": true,
+          "release": "1.1.0-rc.1",
+          "descriptor": {
+            "file": "gcs/descriptor.json",
+            "sha256": "sha256:7e294cf3824ca9ebea98093895e1937173da23d63fe7b288bc9b8d537e899beb"
+          },
+          "controllerNamespace": "prokrust-system",
+          "tlsProfile": "installation-ca"
+        },
+        {
+          "id": "prokrust.ai/iceberg",
+          "enabled": true,
+          "release": "1.1.0-rc.1",
+          "descriptor": {
+            "file": "iceberg/descriptor.json",
+            "sha256": "sha256:bfc20e2b4f4b8ad7cc935cd47d6ee7df31953c008fe2d82af33845a04b6cbd15"
+          },
+          "controllerNamespace": "prokrust-system",
+          "tlsProfile": "installation-ca"
+        },
+        {
+          "id": "prokrust.ai/paimon",
+          "enabled": true,
+          "release": "1.1.0-rc.1",
+          "descriptor": {
+            "file": "paimon/descriptor.json",
+            "sha256": "sha256:9e7daed83ac1be7476b53d4d9331eb1e6386ffa5ef318bc52245d11dd2e274f6"
+          },
+          "controllerNamespace": "prokrust-system",
+          "tlsProfile": "installation-ca"
+        },
+        {
+          "id": "prokrust.ai/s3",
+          "enabled": true,
+          "release": "1.1.0-rc.1",
+          "descriptor": {
+            "file": "s3/descriptor.json",
+            "sha256": "sha256:baf6bc67f594eb8f4d818a74c72f30fd88ca45a257a1165189fc46053aed467d"
+          },
+          "controllerNamespace": "prokrust-system",
+          "tlsProfile": "installation-ca"
+        },
+        {
+          "id": "prokrust.ai/synthetic",
+          "enabled": true,
+          "release": "1.1.0-rc.1",
+          "descriptor": {
+            "file": "synthetic/descriptor.json",
+            "sha256": "sha256:cb12cb42f0b6884cf2cdc7dac2fa84f5d018f1e059e41a6aa0172308c8653c0b"
+          },
+          "controllerNamespace": "prokrust-system",
+          "tlsProfile": "installation-ca"
+        }
+      ]
+    }
+  s3-connection-v1.json: |
+    {"type":"object","properties":{"bucket":{"type":"string","minLength":3,"maxLength":63,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$"},"region":{"type":"string","minLength":3,"maxLength":32,"pattern":"^[a-z0-9-]+$"},"prefix":{"type":"string","maxLength":1024},"bucketOwner":{"type":"string","pattern":"^[0-9]{12}$"},"expectedPrincipalArn":{"type":"string","minLength":20,"maxLength":2048},"credentialsSecretRef":{"type":"object","properties":{"name":{"type":"string","minLength":1,"maxLength":253,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"}},"required":["name"],"additionalProperties":false}},"required":["bucket","region","prefix","bucketOwner","expectedPrincipalArn","credentialsSecretRef"],"additionalProperties":false}
+  s3-descriptor.json: |
+    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"aws.sources.prokrust.ai/v1beta1","kind":"S3Connection","plural":"s3connections","schema":{"file":"connection-v1.json","sha256":"sha256:387c51354d9bd41e80e0f83d8615ccaed8b21d65e36e61d52c35f16a574c3e39"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/s3","providerMajor":1,"release":"1.1.0-rc.1","runtimeImages":[{"digest":"sha256:379bc693795ce287074a8a633d328c04d31a6f30e1747270c329ed32c2aa046f","role":"runtime"},{"digest":"sha256:379bc693795ce287074a8a633d328c04d31a6f30e1747270c329ed32c2aa046f","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Amazon S3"}}
+  s3-selector-v1.json: |
+    {"type":"object","properties":{"kind":{"type":"string","enum":["prefix","object"]},"path":{"type":"string","maxLength":1024}},"required":["kind","path"],"additionalProperties":false}
+  synthetic-connection-v1.json: |
+    {"type":"object","properties":{"seed":{"type":"integer","minimum":0,"maximum":999999},"partitions":{"type":"integer","minimum":1,"maximum":100000},"rowsPerPartition":{"type":"integer","minimum":0,"maximum":100000}},"required":["seed","partitions","rowsPerPartition"],"additionalProperties":false}
+  synthetic-descriptor.json: |
+    {"capabilities":["atomic-source-snapshot","browse","inspect","original-files","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"sources.prokrust.ai/v1beta1","kind":"SyntheticConnection","plural":"syntheticconnections","schema":{"file":"connection-v1.json","sha256":"sha256:bd836f078291ce5e8ccbd9436a4852f1f7291f3add7c4afeafe4cf2b194c48a1"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/synthetic","providerMajor":1,"release":"1.1.0-rc.1","runtimeImages":[{"digest":"sha256:9f14057f96c065f70975681795aabab7dd5f0ed5dccc8d5efa120ade6c4da867","role":"runtime"},{"digest":"sha256:9f14057f96c065f70975681795aabab7dd5f0ed5dccc8d5efa120ade6c4da867","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:f2bc86898d3d2d182032758d99f06eb270cbc5b68b30e469b5b9b82461d2d07b"}],"ui":{"displayName":"Synthetic Events"}}
+  synthetic-selector-v1.json: |
+    {"type":"object","properties":{"dataset":{"type":"string","const":"events"}},"required":["dataset"],"additionalProperties":false}
+immutable: true
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  name: prokrust-connector-registry-kbf4dmdg4c
+  namespace: prokrust-system
+---
+apiVersion: v1
+data:
   auth.toml: |
     revision = 4
     installationNamespace = "prokrust-system"
@@ -1299,11 +1988,13 @@ spec:
         - name: RP_PROFILING_ENABLED
           value: "false"
         - name: PROKRUST_CONNECTORS_ENABLED
-          value: "false"
+          value: "true"
         - name: AWS_REGION
           value: us-west-2
         - name: AWS_DEFAULT_REGION
           value: us-west-2
+        - name: PROKRUST_CONNECTOR_CONFIG
+          value: /etc/prokrust/connectors/registry.json
         - name: PROKRUST_SERVING_ENABLED
           value: "false"
         - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
@@ -1388,6 +2079,9 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /etc/prokrust/connectors
+          name: connector-registry
+          readOnly: true
         - mountPath: /tmp
           name: tmp
         - mountPath: /var/run/prokrust-webhook
@@ -1414,6 +2108,48 @@ spec:
         operator: Equal
         value: arm64
       volumes:
+      - configMap:
+          items:
+          - key: registry.json
+            path: registry.json
+          - key: bigquery-connection-v1.json
+            path: bigquery/connection-v1.json
+          - key: bigquery-descriptor.json
+            path: bigquery/descriptor.json
+          - key: bigquery-selector-v1.json
+            path: bigquery/selector-v1.json
+          - key: gcs-connection-v1.json
+            path: gcs/connection-v1.json
+          - key: gcs-descriptor.json
+            path: gcs/descriptor.json
+          - key: gcs-selector-v1.json
+            path: gcs/selector-v1.json
+          - key: iceberg-connection-v1.json
+            path: iceberg/connection-v1.json
+          - key: iceberg-descriptor.json
+            path: iceberg/descriptor.json
+          - key: iceberg-selector-v1.json
+            path: iceberg/selector-v1.json
+          - key: paimon-connection-v1.json
+            path: paimon/connection-v1.json
+          - key: paimon-descriptor.json
+            path: paimon/descriptor.json
+          - key: paimon-selector-v1.json
+            path: paimon/selector-v1.json
+          - key: s3-connection-v1.json
+            path: s3/connection-v1.json
+          - key: s3-descriptor.json
+            path: s3/descriptor.json
+          - key: s3-selector-v1.json
+            path: s3/selector-v1.json
+          - key: synthetic-connection-v1.json
+            path: synthetic/connection-v1.json
+          - key: synthetic-descriptor.json
+            path: synthetic/descriptor.json
+          - key: synthetic-selector-v1.json
+            path: synthetic/selector-v1.json
+          name: prokrust-connector-registry-kbf4dmdg4c
+        name: connector-registry
       - name: startup-tls
         secret:
           defaultMode: 288
@@ -1461,7 +2197,7 @@ spec:
         - $(RP_POD_NAMESPACE)
         env:
         - name: PROKRUST_CONNECTORS_ENABLED
-          value: "false"
+          value: "true"
         - name: AWS_REGION
           value: us-west-2
         - name: AWS_DEFAULT_REGION
@@ -1989,6 +2725,8 @@ spec:
           value: /etc/prokrust/auth.toml
         - name: PROKRUST_ARGO_UI_BASE_URL
           value: https://demo.prokrust.ai/argo
+        - name: PROKRUST_CONNECTOR_CONFIG
+          value: /var/run/prokrust-connectors/registry.json
         - name: PROKRUST_SYSTEM_NAMESPACE
           value: prokrust-system
         - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAMESPACE
@@ -2037,6 +2775,9 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /var/run/prokrust-connectors
+          name: connector-registry
+          readOnly: true
         - mountPath: /etc/prokrust
           name: oidc-config
           readOnly: true
@@ -2059,6 +2800,48 @@ spec:
         operator: Equal
         value: arm64
       volumes:
+      - configMap:
+          items:
+          - key: registry.json
+            path: registry.json
+          - key: bigquery-connection-v1.json
+            path: bigquery/connection-v1.json
+          - key: bigquery-descriptor.json
+            path: bigquery/descriptor.json
+          - key: bigquery-selector-v1.json
+            path: bigquery/selector-v1.json
+          - key: gcs-connection-v1.json
+            path: gcs/connection-v1.json
+          - key: gcs-descriptor.json
+            path: gcs/descriptor.json
+          - key: gcs-selector-v1.json
+            path: gcs/selector-v1.json
+          - key: iceberg-connection-v1.json
+            path: iceberg/connection-v1.json
+          - key: iceberg-descriptor.json
+            path: iceberg/descriptor.json
+          - key: iceberg-selector-v1.json
+            path: iceberg/selector-v1.json
+          - key: paimon-connection-v1.json
+            path: paimon/connection-v1.json
+          - key: paimon-descriptor.json
+            path: paimon/descriptor.json
+          - key: paimon-selector-v1.json
+            path: paimon/selector-v1.json
+          - key: s3-connection-v1.json
+            path: s3/connection-v1.json
+          - key: s3-descriptor.json
+            path: s3/descriptor.json
+          - key: s3-selector-v1.json
+            path: s3/selector-v1.json
+          - key: synthetic-connection-v1.json
+            path: synthetic/connection-v1.json
+          - key: synthetic-descriptor.json
+            path: synthetic/descriptor.json
+          - key: synthetic-selector-v1.json
+            path: synthetic/selector-v1.json
+          name: prokrust-connector-registry-kbf4dmdg4c
+        name: connector-registry
       - configMap:
           name: prokrust-oidc-4
         name: oidc-config
@@ -3168,6 +3951,185 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
+  name: prokrust-system-connector-platform-executor
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CONNECT
+      - UPDATE
+      resources:
+      - pods/exec
+      - pods/attach
+      - pods/ephemeralcontainers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - deployments
+      scope: Namespaced
+  validations:
+  - expression: |-
+      request.userInfo.username in ["system:serviceaccount:prokrust-system:prokrust-application-controller","system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller"] || (request.operation == 'DELETE' && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || (
+
+        request.resource.resource == 'pods' ? !variables.resourceName.startsWith('ballista-executor-') :
+        variables.resourceName != 'ballista-executor'
+      )
+    message: The Ballista executor may only be changed or debugged by trusted platform
+      controllers
+  variables:
+  - expression: 'has(request.name) && request.name != '''' ? request.name : object
+      != null && has(dyn(object).metadata) && has(dyn(object).metadata.name) ? dyn(object).metadata.name
+      : '''''
+    name: resourceName
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-platform-roots
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - configmaps
+      - secrets
+      scope: Namespaced
+  validations:
+  - expression: |-
+      request.userInfo.username == "system:serviceaccount:prokrust-system:prokrust-application-controller" || (request.operation == 'DELETE' && request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:generic-garbage-collector","system:serviceaccount:kube-system:namespace-controller"]) || variables.foregroundFinalizerUpdate || (
+
+        !(variables.resourceName in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) &&
+        variables.resourceName != 'prokrust-connector-executor-binding' &&
+        !variables.resourceName.startsWith('connector-') &&
+        (object == null || !has(object.metadata.labels) || !('prokrust.ai/connector-platform-root' in object.metadata.labels)) &&
+        (oldObject == null || !has(oldObject.metadata.labels) || !('prokrust.ai/connector-platform-root' in oldObject.metadata.labels))
+      )
+    message: Connector platform roots are managed by the application controller
+  variables:
+  - expression: 'has(request.name) && request.name != '''' ? request.name : object
+      != null && has(object.metadata.name) ? object.metadata.name : '''''
+    name: resourceName
+  - expression: |-
+      request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector' && request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '') && request.resource.group == '' && request.resource.version == 'v1' && request.resource.resource in ['configmaps', 'secrets'] && object != null && oldObject != null && object.apiVersion == 'v1' && oldObject.apiVersion == 'v1' && object.kind == oldObject.kind && ((request.resource.resource == 'configmaps' && object.kind == 'ConfigMap') ||
+
+        (request.resource.resource == 'secrets' && object.kind == 'Secret')) &&
+      has(oldObject.metadata.labels) && ['prokrust.ai/connector-platform-root', 'prokrust.ai/connector-installation-uid',
+
+        'prokrust.ai/connector-workspace-uid'].all(key,
+        key in oldObject.metadata.labels && oldObject.metadata.labels[key] != '') &&
+      (oldObject.metadata.name.startsWith('connector-') ||
+
+        oldObject.metadata.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"] ||
+        oldObject.metadata.name == 'prokrust-connector-executor-binding') &&
+      has(oldObject.metadata.deletionTimestamp) && oldObject.metadata.deletionTimestamp != null && has(object.metadata.deletionTimestamp) && object.metadata.deletionTimestamp == oldObject.metadata.deletionTimestamp && object.metadata.uid == oldObject.metadata.uid && object.metadata.uid != '' && object.metadata.resourceVersion == oldObject.metadata.resourceVersion && object.metadata.resourceVersion != '' && object.metadata.name == oldObject.metadata.name && object.metadata.name == request.name && object.metadata.namespace == oldObject.metadata.namespace && object.metadata.namespace == request.namespace && has(oldObject.metadata.finalizers) && oldObject.metadata.finalizers.filter(f, f == 'foregroundDeletion').size() == 1 && oldObject.metadata.finalizers.all(f, f != '' &&
+
+        oldObject.metadata.finalizers.filter(other, other == f).size() == 1) &&
+      (has(object.metadata.finalizers) ? object.metadata.finalizers : []) ==
+
+        oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion') &&
+      has(object.metadata.labels) == has(oldObject.metadata.labels) && (!has(object.metadata.labels) || object.metadata.labels == oldObject.metadata.labels) && has(object.metadata.annotations) == has(oldObject.metadata.annotations) && (!has(object.metadata.annotations) || object.metadata.annotations == oldObject.metadata.annotations) && has(object.metadata.ownerReferences) == has(oldObject.metadata.ownerReferences) && (!has(object.metadata.ownerReferences) || object.metadata.ownerReferences == oldObject.metadata.ownerReferences) && has(object.metadata.generation) == has(oldObject.metadata.generation) && (!has(object.metadata.generation) || object.metadata.generation == oldObject.metadata.generation) && has(object.metadata.creationTimestamp) == has(oldObject.metadata.creationTimestamp) && (!has(object.metadata.creationTimestamp) || object.metadata.creationTimestamp == oldObject.metadata.creationTimestamp) && has(object.metadata.generateName) == has(oldObject.metadata.generateName) && (!has(object.metadata.generateName) || object.metadata.generateName == oldObject.metadata.generateName) && has(object.metadata.deletionGracePeriodSeconds) == has(oldObject.metadata.deletionGracePeriodSeconds) && (!has(object.metadata.deletionGracePeriodSeconds) || object.metadata.deletionGracePeriodSeconds == oldObject.metadata.deletionGracePeriodSeconds) && has(dyn(object).data) == has(dyn(oldObject).data) && (!has(dyn(object).data) || dyn(object).data == dyn(oldObject).data) && has(dyn(object).binaryData) == has(dyn(oldObject).binaryData) && (!has(dyn(object).binaryData) || dyn(object).binaryData == dyn(oldObject).binaryData) && has(dyn(object).immutable) == has(dyn(oldObject).immutable) && (!has(dyn(object).immutable) || dyn(object).immutable == dyn(oldObject).immutable) && has(dyn(object).type) == has(dyn(oldObject).type) && (!has(dyn(object).type) || dyn(object).type == dyn(oldObject).type) && has(dyn(object).stringData) == has(dyn(oldObject).stringData) && (!has(dyn(object).stringData) || dyn(object).stringData == dyn(oldObject).stringData) && !has(dyn(object).spec) && !has(dyn(oldObject).spec) && !has(dyn(object).status) && !has(dyn(oldObject).status)
+    name: foregroundFinalizerUpdate
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: prokrust-system-connector-platform-workloads
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - replicationcontrollers
+      scope: Namespaced
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - replicasets
+      - daemonsets
+      - statefulsets
+      scope: Namespaced
+    - apiGroups:
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - jobs
+      - cronjobs
+      scope: Namespaced
+  validations:
+  - expression: |-
+      request.userInfo.username in ["system:serviceaccount:prokrust-system:prokrust-application-controller","system:serviceaccount:prokrust-system:prokrust-ballista-cluster-controller"] || request.userInfo.username in ["system:kube-controller-manager","system:serviceaccount:kube-system:deployment-controller","system:serviceaccount:kube-system:replicaset-controller"] || (
+
+        (!has(variables.podSpec.volumes) || !variables.podSpec.volumes.exists(v,
+          (has(v.secret) && has(v.secret.secretName) && v.secret.secretName in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+          (has(v.configMap) && has(v.configMap.name) && v.configMap.name == 'prokrust-connector-executor-binding') ||
+          (has(v.projected) && v.projected.sources.exists(source,
+            (has(source.secret) && has(source.secret.name) && source.secret.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+            (has(source.configMap) && has(source.configMap.name) && source.configMap.name == 'prokrust-connector-executor-binding')))
+        )) &&
+        !(
+          variables.podSpec.containers +
+          (has(variables.podSpec.initContainers) ? variables.podSpec.initContainers : []) +
+          (has(variables.podSpec.ephemeralContainers) ? variables.podSpec.ephemeralContainers : [])
+        ).exists(container,
+          (has(container.envFrom) && container.envFrom.exists(e,
+            (has(e.secretRef) && has(e.secretRef.name) && e.secretRef.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+            (has(e.configMapRef) && has(e.configMapRef.name) && e.configMapRef.name == 'prokrust-connector-executor-binding'))) ||
+          (has(container.env) && container.env.exists(e,
+            has(e.valueFrom) && (
+              (has(e.valueFrom.secretKeyRef) && has(e.valueFrom.secretKeyRef.name) && e.valueFrom.secretKeyRef.name in ["prokrust-connector-planner-tls","prokrust-connector-executor-tls"]) ||
+              (has(e.valueFrom.configMapKeyRef) && has(e.valueFrom.configMapKeyRef.name) && e.valueFrom.configMapKeyRef.name == 'prokrust-connector-executor-binding')
+            )))
+        )
+      )
+    message: Connector caller credentials may only be mounted by trusted platform
+      workloads
+  variables:
+  - expression: 'request.resource.resource == ''pods'' ? dyn(dyn(object).spec) : request.resource.resource
+      == ''cronjobs'' ? dyn(dyn(object).spec.jobTemplate.spec.template.spec) : dyn(dyn(object).spec.template.spec)'
+    name: podSpec
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
   name: prokrust-system-connector-s3-roots
 spec:
   failurePolicy: Fail
@@ -4057,6 +5019,45 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
+  name: prokrust-system-connector-platform-executor
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-platform-executor
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-platform-roots
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-platform-roots
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: prokrust-system-connector-platform-workloads
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        prokrust.ai/installation: prokrust-system
+  policyName: prokrust-system-connector-platform-workloads
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
   name: prokrust-system-connector-s3-roots
 spec:
   matchResources:
@@ -4312,6 +5313,29 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: prokrust-connector-ca
+  namespace: prokrust-system
+spec:
+  commonName: prokrust-system Prokrust Connector CA
+  duration: 8760h
+  isCA: true
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: prokrust-connector-ca-bootstrap
+  privateKey:
+    algorithm: ECDSA
+    rotationPolicy: Never
+    size: 256
+  renewBefore: 720h
+  secretName: prokrust-connector-ca
+  usages:
+  - cert sign
+  - crl sign
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: prokrust-license-ca
   namespace: prokrust-system
 spec:
@@ -4349,6 +5373,23 @@ spec:
     kind: Issuer
     name: prokrust-license-ca
   secretName: prokrust-runtime-startup-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prokrust-connector-ca
+  namespace: prokrust-system
+spec:
+  ca:
+    secretName: prokrust-connector-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prokrust-connector-ca-bootstrap
+  namespace: prokrust-system
+spec:
+  selfSigned: {}
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -4471,6 +5512,34 @@ spec:
     matchLabels:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: prokrust-ballista-cluster-controller
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prokrust-connector-client-egress
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 8443
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          prokrust.ai/installation: prokrust-system
+      podSelector:
+        matchExpressions:
+        - key: prokrust.ai/connector-uid
+          operator: Exists
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/name
+      operator: In
+      values:
+      - prokrust-application-controller
+      - prokrust-web-api
   policyTypes:
   - Egress
 ---
