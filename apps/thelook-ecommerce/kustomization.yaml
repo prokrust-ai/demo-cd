@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - browser-access.yaml
 - ballista-accounts.yaml
+- connector-runtime-accounts.yaml
 helmCharts:
 - name: prokrust-workspace
   repo: oci://ar.prokrust.io/charts
