@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: prokrust-connector-runtime
+  name: prokrust-connector-runtime-bigquery
   namespace: thelook-ecommerce
 automountServiceAccountToken: false
 imagePullSecrets:
