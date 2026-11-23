@@ -11,3 +11,26 @@ helmCharts:
     releaseName: prokrust-system
     namespace: prokrust-system
     valuesFile: values.yaml
+
+# Each connector protects its runtime ServiceAccount. Argo reconciles only the
+# ordinary account objects here. TokenRequests continue through the full policy.
+patches:
+  - target:
+      group: admissionregistration.k8s.io
+      version: v1
+      kind: ValidatingAdmissionPolicy
+      name: 'prokrust-system-connector-(bigquery|gcs|iceberg|paimon|s3|synthetic)-roots'
+    patch: |-
+      - op: add
+        path: /spec/matchConditions
+        value:
+          - name: thelook-runtime-account-gitops
+            expression: >-
+              !(request.userInfo.username == 'system:serviceaccount:argocd:argocd-application-controller'
+                && request.namespace == 'thelook-ecommerce'
+                && request.resource.group == '' && request.resource.resource == 'serviceaccounts'
+                && (!has(request.subResource) || request.subResource == '')
+                && request.operation in ['CREATE', 'UPDATE', 'DELETE']
+                && request.name in ['prokrust-connector-runtime', 'prokrust-connector-runtime-gcs',
+                                    'prokrust-connector-runtime-iceberg', 'prokrust-connector-runtime-paimon',
+                                    'prokrust-connector-runtime-s3', 'prokrust-connector-runtime-synthetic'])

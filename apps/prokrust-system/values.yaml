@@ -1,27 +1,57 @@
 connectors:
-  bigquery: &demoConnector
-    enabled: true
-    workspaceRbacBindings:
-      - thelook-ecommerce
-    imagePullSecrets:
-      - name: harbor-reader
-    nodeSelector: &connectorNodes
-      kubernetes.io/arch: arm64
-    tolerations: &connectorTolerations
-      - key: kubernetes.io/arch
-        operator: Equal
-        value: arm64
-        effect: NoSchedule
-    runtimeNodeSelector: *connectorNodes
-    runtimeTolerations: *connectorTolerations
-    controllerApiServerEndpoints:
-      - cidr: fd8e:1cf8:6673::1/128
-        port: 443
-  gcs: *demoConnector
-  iceberg: *demoConnector
-  paimon: *demoConnector
-  s3: *demoConnector
-  synthetic: *demoConnector
+  bigquery:
+    <<: &demoConnector
+      enabled: true
+      workspaceRbacBindings:
+        - thelook-ecommerce
+      imagePullSecrets:
+        - name: harbor-reader
+      nodeSelector: &connectorNodes
+        kubernetes.io/arch: arm64
+      tolerations: &connectorTolerations
+        - key: kubernetes.io/arch
+          operator: Equal
+          value: arm64
+          effect: NoSchedule
+      runtimeNodeSelector: *connectorNodes
+      runtimeTolerations: *connectorTolerations
+      controllerApiServerEndpoints:
+        - cidr: fd8e:1cf8:6673::1/128
+          port: 443
+    runtimeServiceAccountName: prokrust-connector-runtime
+    runtimeSourceTokenAudience: &googleAudience https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks
+    runtimeTokenAudiences: [*googleAudience]
+    egress:
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: kube-system
+            podSelector:
+              matchLabels:
+                k8s-app: kube-dns
+        ports:
+          - {protocol: UDP, port: 53}
+          - {protocol: TCP, port: 53}
+      - to:
+          - ipBlock: {cidr: '2001:4860:4840::/45'}
+          - ipBlock: {cidr: '2607:f8b0::/32'}
+        ports:
+          - {protocol: TCP, port: 443}
+  gcs:
+    <<: *demoConnector
+    runtimeServiceAccountName: prokrust-connector-runtime-gcs
+  iceberg:
+    <<: *demoConnector
+    runtimeServiceAccountName: prokrust-connector-runtime-iceberg
+  paimon:
+    <<: *demoConnector
+    runtimeServiceAccountName: prokrust-connector-runtime-paimon
+  s3:
+    <<: *demoConnector
+    runtimeServiceAccountName: prokrust-connector-runtime-s3
+  synthetic:
+    <<: *demoConnector
+    runtimeServiceAccountName: prokrust-connector-runtime-synthetic
 leaseBootstrap:
   mode: argo
   namespace: argocd

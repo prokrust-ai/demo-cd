@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-connector-runtime
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+imagePullSecrets:
+  - name: harbor-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-connector-runtime-gcs
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+imagePullSecrets:
+  - name: harbor-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-connector-runtime-iceberg
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+imagePullSecrets:
+  - name: harbor-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-connector-runtime-paimon
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+imagePullSecrets:
+  - name: harbor-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-connector-runtime-s3
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+imagePullSecrets:
+  - name: harbor-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prokrust-connector-runtime-synthetic
+  namespace: thelook-ecommerce
+automountServiceAccountToken: false
+imagePullSecrets:
+  - name: harbor-reader
