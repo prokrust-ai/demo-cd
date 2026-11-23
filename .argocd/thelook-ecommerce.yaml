@@ -17,6 +17,9 @@ spec:
     server: https://kubernetes.default.svc
     namespace: thelook-ecommerce
   syncPolicy:
+    managedNamespaceMetadata:
+      annotations:
+        prokrust.ai/workspace-title: TheLook Ecommerce
     syncOptions:
     - ServerSideApply=true
     - CreateNamespace=true
