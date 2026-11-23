@@ -14,9 +14,9 @@ The workspace enables connector discovery for the six providers in the system ch
 Each provider grants its controller access to this namespace through its system
 chart value `workspaceRbacBindings`.
 
-BigQuery pods run as `prokrust-connector-runtime` and exchange a projected
-service-account token directly with Google STS. The other five connectors each
-use `prokrust-connector-runtime-<provider>`. All six accounts reference
+BigQuery pods run as `prokrust-connector-runtime-bigquery` and exchange a projected
+service-account token directly with Google STS. Each connector uses
+`prokrust-connector-runtime-<provider>`. All six accounts reference
 `harbor-reader` and disable automatic API-token mounting. Only BigQuery projects
 the configured Google workload identity audience. Its runtime can reach cluster
 DNS and the approved Google API networks over HTTPS.

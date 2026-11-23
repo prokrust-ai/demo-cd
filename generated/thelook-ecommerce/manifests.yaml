@@ -113,7 +113,7 @@ imagePullSecrets:
 - name: harbor-reader
 kind: ServiceAccount
 metadata:
-  name: prokrust-connector-runtime
+  name: prokrust-connector-runtime-bigquery
   namespace: thelook-ecommerce
 ---
 apiVersion: v1
