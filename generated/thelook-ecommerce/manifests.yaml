@@ -36,7 +36,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-artifact-store-probe
   namespace: thelook-ecommerce
 ---
@@ -51,7 +51,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-artifact-writer
   namespace: thelook-ecommerce
 ---
@@ -88,7 +88,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-batch-predictor
   namespace: thelook-ecommerce
 ---
@@ -103,7 +103,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-connection-probe
   namespace: thelook-ecommerce
 ---
@@ -125,7 +125,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-graph-materializer
   namespace: thelook-ecommerce
 ---
@@ -140,7 +140,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-prediction-materializer
   namespace: thelook-ecommerce
 ---
@@ -155,7 +155,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-table-materializer
   namespace: thelook-ecommerce
 ---
@@ -170,7 +170,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-table-staging
   namespace: thelook-ecommerce
 ---
@@ -185,7 +185,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-trainer
   namespace: thelook-ecommerce
 ---
@@ -200,7 +200,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-training-materializer
   namespace: thelook-ecommerce
 ---
@@ -917,6 +917,25 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - prokrustpolicies
+  - artifactstores
+  - ballistaclusters
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
   name: prokrust-profile-broker
   namespace: thelook-ecommerce
 rules:
@@ -1292,6 +1311,22 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+subjects:
+- kind: ServiceAccount
+  name: prokrust-enroll-5a4f9861bc6bf0d1
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
   name: prokrust-profile-broker
   namespace: thelook-ecommerce
 roleRef:
@@ -1401,7 +1436,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-ballista-images
   namespace: thelook-ecommerce
 ---
@@ -1414,7 +1449,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-batch-predictor-images
   namespace: thelook-ecommerce
 ---
@@ -1438,7 +1473,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-data-job-images
   namespace: thelook-ecommerce
 ---
@@ -1463,7 +1498,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-trainer-images
   namespace: thelook-ecommerce
 ---
@@ -1565,6 +1600,17 @@ spec:
             done
           fi
 
+          if [ "${CHECK_BALLISTA_ACCOUNTS:-false}" = true ]; then
+            for name in prokrust-ballista-scheduler prokrust-ballista-executor; do
+              found="$(kubectl --request-timeout=10s -n "$WORKSPACE" get serviceaccount "$name" --ignore-not-found \
+                -o 'jsonpath={.metadata.name}{"|"}{.metadata.annotations.prokrust\.ai/workspace-chart}')"
+              if [ -n "$found" ] && [ "$found" != "$name|$WORKSPACE_RELEASE" ]; then
+                echo "External ServiceAccount/$name exists. Select workspace.ballistaAccounts=external to preserve its ownership." >&2
+                exit 1
+              fi
+            done
+          fi
+
           for attempt in 1 2 3 4 5; do
             state="$(read_namespace 'jsonpath={.metadata.resourceVersion}{"|"}{.metadata.labels.prokrust\.ai/installation}{"|"}{.metadata.deletionTimestamp}')" || {
               echo "Cannot read workspace Namespace $WORKSPACE. Provision the namespace and check enrollment RBAC and API egress." >&2
@@ -1603,8 +1649,10 @@ spec:
         - name: WORKSPACE_RELEASE
           value: thelook-ecommerce
         - name: SUPPORTED_SYSTEM_VERSION
-          value: 0.22.0-rc.4
+          value: 0.26.0-rc.1
         - name: CHECK_DEFAULTS
+          value: "true"
+        - name: CHECK_BALLISTA_ACCOUNTS
           value: "false"
         - name: HOME
           value: /tmp
@@ -1689,7 +1737,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-aws-auth
   namespace: thelook-ecommerce
 spec:
@@ -1736,7 +1784,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-ballista-gcp-auth-egress
   namespace: thelook-ecommerce
 spec:
@@ -1761,7 +1809,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-ballista-peers
   namespace: thelook-ecommerce
 spec:
@@ -1844,7 +1892,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-gcp-serving-egress
   namespace: thelook-ecommerce
 spec:
@@ -1872,7 +1920,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-gcp-workers-egress
   namespace: thelook-ecommerce
 spec:
@@ -1946,7 +1994,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-workflow-egress
   namespace: thelook-ecommerce
 spec:
@@ -2000,7 +2048,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-workspace-0.22.0-rc.3
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
   name: prokrust-workflow-to-ballista
   namespace: thelook-ecommerce
 spec:
@@ -2021,6 +2069,99 @@ spec:
       app.kubernetes.io/name: ballista-gate
   policyTypes:
   - Ingress
+---
+apiVersion: platform.prokrust.ai/v1beta1
+kind: ArtifactStore
+metadata:
+  annotations:
+    prokrust.ai/configuration-owner: chart
+    prokrust.ai/workspace-chart: thelook-ecommerce
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
+  name: default
+  namespace: thelook-ecommerce
+spec:
+  ballistaAuth:
+    backend: S3
+    s3:
+      type: WorkloadIdentity
+      workloadIdentity:
+        provider: IRSA
+        roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-ballista-store
+  publication: ManifestLast
+  retentionPolicy: Retain
+  storage:
+    backend: S3
+    s3:
+      auth:
+        type: WorkloadIdentity
+        workloadIdentity:
+          provider: IRSA
+          roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+      bucket: prokrust-demo-working-390992144652-us-west-2-an
+      forcePathStyle: false
+      prefix: artifacts/thelook-ecommerce/
+      region: us-west-2
+      serviceAccountName: prokrust-artifact-store-probe
+      tls:
+        verify: true
+---
+apiVersion: platform.prokrust.ai/v1beta1
+kind: BallistaCluster
+metadata:
+  annotations:
+    prokrust.ai/configuration-owner: chart
+    prokrust.ai/workspace-chart: thelook-ecommerce
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
+  name: default
+  namespace: thelook-ecommerce
+spec:
+  artifactStoreRef:
+    name: default
+  capacity:
+    idleTimeoutSeconds: 180
+    mode: OnDemand
+  executor:
+    memoryPool: 4GiB
+    resources:
+      limits:
+        cpu: "3"
+        ephemeral-storage: 20Gi
+        memory: 8Gi
+      requests:
+        cpu: "2"
+        ephemeral-storage: 10Gi
+        memory: 6Gi
+    vcores: 2
+  executorImage: ar.prokrust.io/prokrust/ballista-executor@sha256:d57e702c0086c2dd9eca8dc37c72c5531eadaed3a656ec3978d2314b9cb7269d
+  executorReplicas: 1
+  maxConcurrentProducers: 1
+  probeResources:
+    limits:
+      cpu: 250m
+      ephemeral-storage: 512Mi
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      ephemeral-storage: 128Mi
+      memory: 128Mi
+  release: 54.1.0
+  schedulerImage: ar.prokrust.io/prokrust/ballista-scheduler@sha256:ae826346473fb13733701ee740ded8106d78ee43df5018989539fdb440a23645
+  schedulerResources:
+    limits:
+      cpu: "1"
+      ephemeral-storage: 4Gi
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      ephemeral-storage: 1Gi
+      memory: 1Gi
+  targetPartitions: 16
 ---
 apiVersion: platform.prokrust.ai/v1beta1
 kind: ProkrustAccessBinding
@@ -2045,3 +2186,235 @@ spec:
   rule: claims['prokrust.ai/role'] == 'guest'
   serviceAccountRef:
     name: prokrust-demo-reviewer
+---
+apiVersion: platform.prokrust.ai/v1beta1
+kind: ProkrustPolicy
+metadata:
+  annotations:
+    prokrust.ai/configuration-owner: chart
+    prokrust.ai/workspace-chart: thelook-ecommerce
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prokrust
+    helm.sh/chart: prokrust-workspace-0.23.0-rc.1
+  name: default
+  namespace: thelook-ecommerce
+spec:
+  admission:
+    graph:
+      edgesMax: 10000000
+      nodesMax: 4000000
+      shards:
+        arrowBufferBytesMax: 536870912
+        destinationNodesMax: 1000000
+        edgesMax: 10000000
+        nodeRowsMax: 1000000
+        objectBytesMax: 1073741824
+    prediction:
+      outputPartitionsMax: 32
+      outputPartitionsMin: 1
+    serving:
+      maxBatchSize: 32
+      maxReplicas: 1
+      maxTimeoutSeconds: 30
+      minReplicas: 1
+    training:
+      maxNullLabelRatio: 0.05
+      model:
+        batchSizeMax: 65536
+        batchSizeMin: 1
+        dropoutMaxExclusive: 1
+        dropoutMin: 0
+        earlyStoppingPatienceMax: 100
+        earlyStoppingPatienceMin: 0
+        fanoutPerLayerMax: 1024
+        fanoutPerLayerMin: 0
+        hiddenDimensionMax: 1024
+        hiddenDimensionMin: 1
+        layersMax: 2
+        layersMin: 1
+        learningRateMax: 1
+        learningRateMinExclusive: 0
+        maxEpochsMax: 1000
+        maxEpochsMin: 1
+  authorization:
+    connectionProfile: aws
+    connections:
+      rules:
+      - allowedPrefixes:
+        - artifacts/thelook-ecommerce/
+        auth:
+          secretRefs: []
+          serviceAccounts:
+          - prokrust-connection-probe
+          - prokrust-artifact-store-probe
+          - prokrust-table-staging
+          - prokrust-table-materializer
+          - prokrust-graph-materializer
+          - prokrust-training-materializer
+          - prokrust-prediction-materializer
+          - prokrust-artifact-writer
+          - prokrust-trainer
+          - prokrust-batch-predictor
+          - prokrust-workflow-executor
+          - prokrust-ballista-scheduler
+          - prokrust-ballista-executor
+          workloadIdentityBindings:
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-connection-probe
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-artifact-store-probe
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-table-staging
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-table-materializer
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-graph-materializer
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-training-materializer
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-prediction-materializer
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-artifact-writer
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-trainer
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-batch-predictor
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-workflow-executor
+          - namespace: prokrust-system
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-application-controller
+          - namespace: prokrust-system
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+            serviceAccount: prokrust-web-api
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-ballista-store
+            serviceAccount: prokrust-ballista-scheduler
+          - namespace: thelook-ecommerce
+            provider: IRSA
+            roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-ballista-store
+            serviceAccount: prokrust-ballista-executor
+        bucket: prokrust-demo-working-390992144652-us-west-2-an
+        connectionName: default
+        endpoint:
+          allowRedirects: false
+          allowedResolvedCidrs:
+          - 2600:1f13:db0:ae10::41fe/128
+          - 2600:1f13:db0:ae20::beb5/128
+          denyCidrs:
+          - 0.0.0.0/8
+          - 127.0.0.0/8
+          - 169.254.0.0/16
+          - 224.0.0.0/4
+          - ::/128
+          - ::1/128
+          - fe80::/10
+          origin: https://s3.dualstack.us-west-2.amazonaws.com
+        forcePathStyle: false
+        purpose: Artifact
+  execution:
+    ballista:
+      clusterName: default
+      configurationDigest: sha256:4e339195ea248d2de863b57d7f368fd3549f24c9953dc6c2e4a94d603119b8a0
+      crateVersions:
+        arrow: 58.3.0
+        ballista: 54.1.0
+        datafusion: 54.1.0
+        objectStore: 0.13.2
+        parquet: 58.3.0
+      maxConcurrentProducers: 1
+      ports:
+        executorFlight: 50051
+        executorShuffle: 50052
+        workflowGrpc: 50050
+        workflowRest: 50050
+      release: 54.1.0
+      serviceAccounts:
+        executor: prokrust-ballista-executor
+        scheduler: prokrust-ballista-scheduler
+      upstreamCommit: f4e66525b1c8329e497b1ff920031cefa997906a
+    contractVersion: prokrust.policy/v3
+    controller:
+      artifactStoreProbeTtlSeconds: 300
+      cancellationGraceSeconds: 30
+      connectionProbeTtlSeconds: 300
+      conversionParallelism: 16
+      workflowRecoveryLimit: 1
+      workflowTtlAfterTerminalSeconds: 86400
+    identities:
+      artifactStoreProbe: prokrust-artifact-store-probe
+      artifactWriter: prokrust-artifact-writer
+      ballistaClusterController: prokrust-ballista-cluster-controller
+      ballistaHealthProbe: prokrust-workflow-executor
+      batchPredictor: prokrust-batch-predictor
+      connectionProbe: prokrust-connection-probe
+      controllerManager: prokrust-application-controller
+      graphMaterializer: prokrust-graph-materializer
+      kserveRuntime: prokrust-kserve-runtime
+      predictionMaterializer: prokrust-prediction-materializer
+      tableMaterializer: prokrust-table-materializer
+      tableStaging: prokrust-table-staging
+      trainer: prokrust-trainer
+      trainingMaterializer: prokrust-training-materializer
+      workflowExecutor: prokrust-workflow-executor
+    images:
+      ballistaExecutor: ar.prokrust.io/prokrust/ballista-executor@sha256:d57e702c0086c2dd9eca8dc37c72c5531eadaed3a656ec3978d2314b9cb7269d
+      ballistaScheduler: ar.prokrust.io/prokrust/ballista-scheduler@sha256:ae826346473fb13733701ee740ded8106d78ee43df5018989539fdb440a23645
+      batchPredictor: ar.prokrust.io/prokrust/batch-predictor@sha256:1a84f9abc224c765b8e947b55fe5d6ef38553f5505b0df4d56f87f572a6e1544
+      dataJob: ar.prokrust.io/prokrust/data-job@sha256:65bfb6fbb828df79a48b9baeca3d721072bd26319135591083b06011e1957581
+      modelServer: ar.prokrust.io/prokrust/model-server@sha256:ba1c037ed22ac69cf40f5a5dca590e68c601fd366413f8f175e519cfc2b7cd50
+      operator: ar.prokrust.io/prokrust/operator@sha256:f0600f2a0552970b788327760f5841688d142d08574edc499b71eb9c02195e8c
+      trainer: ar.prokrust.io/prokrust/trainer@sha256:6f500c234cc66450e4b7e2a61c4c7f25f5f7f0f0b60d187805a6f2d9386777b7
+      trainerCuda: ar.prokrust.io/prokrust/trainer-cuda@sha256:7697b034af65d75e9e22ace78e1de2ffe8902257c701b8b511c9f48a1719eac1
+    programs:
+      graphSnapshot:
+        programId: prokrust.graph-snapshot
+        version: "4"
+      predictionRun:
+        programId: prokrust.prediction-run
+        version: "4"
+      tableSnapshot:
+        programId: prokrust.table-snapshot
+        version: "5"
+      trainingRun:
+        programId: prokrust.training-run
+        version: "4"
+    release:
+      lock:
+        digest: sha256:d6305e42bd38b9ee5b0823a426ccbcb1c3a14f73e857ff7f3f92393173681d06
+        uri: oci://ar.prokrust.io/prokrust/workspace-runtime-lock@sha256:0be0ef0d0bad854460cde58ba5be4af05326664b2f5e46758fe896d330ba32ee
+      mode: Qualification
+    serving:
+      autoscalerClass: HPA
+      clusterLocal: true
+      deploymentMode: Standard
+      runtime:
+        name: prokrust-serving-v1-8b07fe044d93
+        specDigest: sha256:8b07fe044d9351068645a61238dc9a645902bee1d6d7e35230227d22ecaa9a07
+      storageHelperDisabled: true

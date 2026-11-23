@@ -59,3 +59,17 @@ access:
         name: prokrust-ui-admin
       rule: claims['prokrust.ai/role'] == 'admin'
       displayName: Demo admin
+
+workspace:
+  ballistaAccounts: external
+  storage:
+    backend: S3
+    bucket: prokrust-demo-working-390992144652-us-west-2-an
+    prefix: artifacts/thelook-ecommerce/
+    region: us-west-2
+    auth:
+      provider: IRSA
+      roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
+    ballistaAuth:
+      provider: IRSA
+      roleArn: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-ballista-store

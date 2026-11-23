@@ -23,6 +23,4 @@ chart value `workspaceRbacBindings`.
   `harbor-reader` ExternalSecret to report Ready.
 
 After sync, verify the enrollment hook completes and the workspace namespace
-reports `prokrust.ai/enrollment-phase=Ready`. This app provisions workspace
-infrastructure and browser access. Optional tenant defaults (policy, store and
-compute), connector workloads, and example data have separate lifecycles.
+reports `prokrust.ai/enrollment-phase=Ready`. The workspace chart manages the default policy, S3 artifact store, and on-demand Ballista cluster. The existing Ballista service accounts keep their separate IRSA role.
