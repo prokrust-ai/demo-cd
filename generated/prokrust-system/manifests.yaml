@@ -4382,6 +4382,17 @@ metadata:
   name: prokrust-system-connector-platform-workloads
 spec:
   failurePolicy: Fail
+  matchConditions:
+  - expression: |-
+      !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector'
+        && request.namespace == 'thelook-ecommerce'
+        && request.operation == 'UPDATE' && request.subResource == ''
+        && has(oldObject.metadata.deletionTimestamp)
+        && has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers
+        && (has(object.metadata.finalizers) ? object.metadata.finalizers : [])
+           == oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion')
+        && object.spec == oldObject.spec)
+    name: thelook-foreground-deletion
   matchConstraints:
     resourceRules:
     - apiGroups:
