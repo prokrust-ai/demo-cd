@@ -38,7 +38,7 @@ patches:
       group: admissionregistration.k8s.io
       version: v1
       kind: ValidatingAdmissionPolicy
-      name: prokrust-system-connector-platform-workloads
+      name: 'prokrust-system-connector-platform-(workloads|executor)'
     patch: |-
       - op: add
         path: /spec/matchConditions
