@@ -47,7 +47,7 @@ patches:
             expression: >-
               !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector'
                 && request.namespace == 'thelook-ecommerce'
-                && request.operation == 'UPDATE' && request.subResource == ''
+                && request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '')
                 && has(oldObject.metadata.deletionTimestamp)
                 && has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers
                 && (has(object.metadata.finalizers) ? object.metadata.finalizers : [])
