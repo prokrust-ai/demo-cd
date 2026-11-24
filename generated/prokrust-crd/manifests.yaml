@@ -4,7 +4,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -150,6 +150,18 @@ spec:
                 x-kubernetes-validations:
                 - rule: (self.backend == 'S3' && has(self.s3) && !has(self.gcs)) ||
                     (self.backend == 'GCS' && has(self.gcs) && !has(self.s3))
+              probePlacementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               probeResources:
                 maxProperties: 1024
                 nullable: true
@@ -645,7 +657,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -740,12 +752,36 @@ spec:
               executorImage:
                 maxLength: 16384
                 type: string
+              executorPlacementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               executorReplicas:
                 format: int32
                 type: integer
               maxConcurrentProducers:
                 format: int32
                 type: integer
+              probePlacementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               probeResources:
                 maxProperties: 1024
                 nullable: true
@@ -772,6 +808,18 @@ spec:
               schedulerImage:
                 maxLength: 16384
                 type: string
+              schedulerPlacementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               schedulerResources:
                 maxProperties: 1024
                 nullable: true
@@ -1139,7 +1187,14 @@ spec:
             == has(oldSelf.spec.schedulerResources) && (!has(self.spec.schedulerResources)
             || self.spec.schedulerResources == oldSelf.spec.schedulerResources) &&
             has(self.spec.probeResources) == has(oldSelf.spec.probeResources) && (!has(self.spec.probeResources)
-            || self.spec.probeResources == oldSelf.spec.probeResources)
+            || self.spec.probeResources == oldSelf.spec.probeResources) && has(self.spec.schedulerPlacementTemplateRef)
+            == has(oldSelf.spec.schedulerPlacementTemplateRef) && (!has(self.spec.schedulerPlacementTemplateRef)
+            || self.spec.schedulerPlacementTemplateRef == oldSelf.spec.schedulerPlacementTemplateRef)
+            && has(self.spec.executorPlacementTemplateRef) == has(oldSelf.spec.executorPlacementTemplateRef)
+            && (!has(self.spec.executorPlacementTemplateRef) || self.spec.executorPlacementTemplateRef
+            == oldSelf.spec.executorPlacementTemplateRef) && has(self.spec.probePlacementTemplateRef)
+            == has(oldSelf.spec.probePlacementTemplateRef) && (!has(self.spec.probePlacementTemplateRef)
+            || self.spec.probePlacementTemplateRef == oldSelf.spec.probePlacementTemplateRef)
         - rule: self.metadata.name == 'default'
     served: true
     storage: true
@@ -1152,7 +1207,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/provider-crd-sha256: 8ead4421fed772a76f7d99b25879257b9ec84eaf8bd2626008339e2dc239a1d5
+    prokrust.ai/provider-crd-sha256: 4abc29885a94b03820a460ea52706c12d08e9b171b314745c3da4ebb4eaf477d
   name: bigqueryconnections.google.sources.prokrust.ai
 spec:
   group: google.sources.prokrust.ai
@@ -1215,6 +1270,16 @@ spec:
                 minLength: 2
                 pattern: ^[a-z][a-z0-9-]*[a-z0-9]$
                 type: string
+              placementTemplateRef:
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               project:
                 maxLength: 30
                 minLength: 6
@@ -1336,7 +1401,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/provider-crd-sha256: a6e60cb07d0a1e14d3a39b1ae3fac7946df8130b0808f5c5bc5e44cc894a5cc4
+    prokrust.ai/provider-crd-sha256: 371926152648c1f38deedc9ff8ef3ce45965c21ea8ae5fc29f6c6027d539629b
   name: gcsconnections.google.sources.prokrust.ai
 spec:
   group: google.sources.prokrust.ai
@@ -1380,6 +1445,16 @@ spec:
                 minLength: 20
                 pattern: ^[a-z0-9][a-z0-9-]*@[a-z0-9][a-z0-9-]*[.]iam[.]gserviceaccount[.]com$
                 type: string
+              placementTemplateRef:
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               prefix:
                 maxLength: 1024
                 type: string
@@ -1494,7 +1569,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -1826,7 +1901,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -2458,7 +2533,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/provider-crd-sha256: 345b5a6d6e86e6090cd6bb0e0fd85c1299e35d85977524ed3f9837cf7ff38aea
+    prokrust.ai/provider-crd-sha256: e31b16a2b9fc7060ca9357ddfcffcfb89a69f37bb849b82706de9303f8c62769
   name: icebergconnections.apache.sources.prokrust.ai
 spec:
   group: apache.sources.prokrust.ai
@@ -2527,6 +2602,16 @@ spec:
                 maxLength: 1024
                 minLength: 1
                 type: string
+              placementTemplateRef:
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               storage:
                 properties:
                   backend:
@@ -2662,7 +2747,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -2808,6 +2893,19 @@ spec:
                 - rule: self.kind != 'Model' || !has(self.expected) || !has(self.expected.producerUid)
                     || !has(self.expected.output) || !has(self.expected.output.uid)
                     || self.expected.producerUid == self.expected.output.uid
+              placementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               replicas:
                 maxProperties: 1024
                 properties:
@@ -3426,7 +3524,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -3586,7 +3684,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -3993,7 +4091,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/provider-crd-sha256: 23813adf7e7fd4bd73b682b92b1dde649e17b6b90af4fff2a4db95351c4c73b3
+    prokrust.ai/provider-crd-sha256: afa69f2b06695bee562f9512caa97221193a207e82ef136a4f8700910495556d
   name: paimonconnections.apache.sources.prokrust.ai
 spec:
   group: apache.sources.prokrust.ai
@@ -4054,6 +4152,16 @@ spec:
                     maxLength: 253
                     minLength: 1
                     pattern: ^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$
+                    type: string
+                required:
+                - name
+                type: object
+              placementTemplateRef:
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
                     type: string
                 required:
                 - name
@@ -4197,7 +4305,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -4508,7 +4616,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -4868,7 +4976,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -4960,6 +5068,19 @@ spec:
                 - rule: self.kind != 'GraphSnapshot' || !has(self.expected) || !has(self.expected.producerUid)
                     || !has(self.expected.output) || !has(self.expected.output.uid)
                     || self.expected.producerUid == self.expected.output.uid
+              materializationPlacementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               modelSource:
                 maxProperties: 1024
                 properties:
@@ -5124,6 +5245,19 @@ spec:
                 required:
                 - format
                 - partitionCount
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              placementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
               population:
@@ -6148,7 +6282,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -6228,7 +6362,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -7116,6 +7250,1449 @@ spec:
                     - operator
                     - trainer
                     type: object
+                  placementDefaults:
+                    maxProperties: 1024
+                    properties:
+                      artifactStoreProbe:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      ballistaExecutor:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      ballistaProbe:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      ballistaScheduler:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      connectorProbe:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      connectorRuntime:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      materialization:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      predictor:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      serving:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      snapshotGraph:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      snapshotTable:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      trainer:
+                        maxProperties: 1024
+                        properties:
+                          name:
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                        required:
+                        - name
+                        type: object
+                    type: object
+                  placementTemplates:
+                    additionalProperties:
+                      maxProperties: 1024
+                      properties:
+                        affinity:
+                          description: Affinity is a group of affinity scheduling
+                            rules.
+                          maxProperties: 1024
+                          nullable: true
+                          properties:
+                            nodeAffinity:
+                              description: Describes node affinity scheduling rules
+                                for the pod.
+                              maxProperties: 1024
+                              properties:
+                                preferredDuringSchedulingIgnoredDuringExecution:
+                                  description: The scheduler will prefer to schedule
+                                    pods to nodes that satisfy the affinity expressions
+                                    specified by this field, but it may choose a node
+                                    that violates one or more of the expressions.
+                                    The node that is most preferred is the one with
+                                    the greatest sum of weights, i.e. for each node
+                                    that meets all of the scheduling requirements
+                                    (resource request, requiredDuringScheduling affinity
+                                    expressions, etc.), compute a sum by iterating
+                                    through the elements of this field and adding
+                                    "weight" to the sum if the node matches the corresponding
+                                    matchExpressions; the node(s) with the highest
+                                    sum are the most preferred.
+                                  items:
+                                    description: An empty preferred scheduling term
+                                      matches all objects with implicit weight 0 (i.e.
+                                      it's a no-op). A null preferred scheduling term
+                                      matches no objects (i.e. is also a no-op).
+                                    maxProperties: 1024
+                                    properties:
+                                      preference:
+                                        description: A node selector term, associated
+                                          with the corresponding weight.
+                                        maxProperties: 1024
+                                        properties:
+                                          matchExpressions:
+                                            description: A list of node selector requirements
+                                              by node's labels.
+                                            items:
+                                              description: A node selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: The label key that
+                                                    the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: Represents a key's
+                                                    relationship to a set of values.
+                                                    Valid operators are In, NotIn,
+                                                    Exists, DoesNotExist. Gt, and
+                                                    Lt.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: An array of string
+                                                    values. If the operator is In
+                                                    or NotIn, the values array must
+                                                    be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. If
+                                                    the operator is Gt or Lt, the
+                                                    values array must have a single
+                                                    element, which will be interpreted
+                                                    as an integer. This array is replaced
+                                                    during a strategic merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                          matchFields:
+                                            description: A list of node selector requirements
+                                              by node's fields.
+                                            items:
+                                              description: A node selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: The label key that
+                                                    the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: Represents a key's
+                                                    relationship to a set of values.
+                                                    Valid operators are In, NotIn,
+                                                    Exists, DoesNotExist. Gt, and
+                                                    Lt.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: An array of string
+                                                    values. If the operator is In
+                                                    or NotIn, the values array must
+                                                    be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. If
+                                                    the operator is Gt or Lt, the
+                                                    values array must have a single
+                                                    element, which will be interpreted
+                                                    as an integer. This array is replaced
+                                                    during a strategic merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                        type: object
+                                      weight:
+                                        description: Weight associated with matching
+                                          the corresponding nodeSelectorTerm, in the
+                                          range 1-100.
+                                        format: int32
+                                        type: integer
+                                    required:
+                                    - preference
+                                    - weight
+                                    type: object
+                                  maxItems: 256
+                                  type: array
+                                requiredDuringSchedulingIgnoredDuringExecution:
+                                  description: If the affinity requirements specified
+                                    by this field are not met at scheduling time,
+                                    the pod will not be scheduled onto the node. If
+                                    the affinity requirements specified by this field
+                                    cease to be met at some point during pod execution
+                                    (e.g. due to an update), the system may or may
+                                    not try to eventually evict the pod from its node.
+                                  maxProperties: 1024
+                                  properties:
+                                    nodeSelectorTerms:
+                                      description: Required. A list of node selector
+                                        terms. The terms are ORed.
+                                      items:
+                                        description: A null or empty node selector
+                                          term matches no objects. The requirements
+                                          of them are ANDed. The TopologySelectorTerm
+                                          type implements a subset of the NodeSelectorTerm.
+                                        maxProperties: 1024
+                                        properties:
+                                          matchExpressions:
+                                            description: A list of node selector requirements
+                                              by node's labels.
+                                            items:
+                                              description: A node selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: The label key that
+                                                    the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: Represents a key's
+                                                    relationship to a set of values.
+                                                    Valid operators are In, NotIn,
+                                                    Exists, DoesNotExist. Gt, and
+                                                    Lt.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: An array of string
+                                                    values. If the operator is In
+                                                    or NotIn, the values array must
+                                                    be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. If
+                                                    the operator is Gt or Lt, the
+                                                    values array must have a single
+                                                    element, which will be interpreted
+                                                    as an integer. This array is replaced
+                                                    during a strategic merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                          matchFields:
+                                            description: A list of node selector requirements
+                                              by node's fields.
+                                            items:
+                                              description: A node selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: The label key that
+                                                    the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: Represents a key's
+                                                    relationship to a set of values.
+                                                    Valid operators are In, NotIn,
+                                                    Exists, DoesNotExist. Gt, and
+                                                    Lt.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: An array of string
+                                                    values. If the operator is In
+                                                    or NotIn, the values array must
+                                                    be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. If
+                                                    the operator is Gt or Lt, the
+                                                    values array must have a single
+                                                    element, which will be interpreted
+                                                    as an integer. This array is replaced
+                                                    during a strategic merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                        type: object
+                                      maxItems: 256
+                                      type: array
+                                  required:
+                                  - nodeSelectorTerms
+                                  type: object
+                              type: object
+                            podAffinity:
+                              description: Describes pod affinity scheduling rules
+                                (e.g. co-locate this pod in the same node, zone, etc.
+                                as some other pod(s)).
+                              maxProperties: 1024
+                              properties:
+                                preferredDuringSchedulingIgnoredDuringExecution:
+                                  description: The scheduler will prefer to schedule
+                                    pods to nodes that satisfy the affinity expressions
+                                    specified by this field, but it may choose a node
+                                    that violates one or more of the expressions.
+                                    The node that is most preferred is the one with
+                                    the greatest sum of weights, i.e. for each node
+                                    that meets all of the scheduling requirements
+                                    (resource request, requiredDuringScheduling affinity
+                                    expressions, etc.), compute a sum by iterating
+                                    through the elements of this field and adding
+                                    "weight" to the sum if the node has pods which
+                                    matches the corresponding podAffinityTerm; the
+                                    node(s) with the highest sum are the most preferred.
+                                  items:
+                                    description: The weights of all of the matched
+                                      WeightedPodAffinityTerm fields are added per-node
+                                      to find the most preferred node(s)
+                                    maxProperties: 1024
+                                    properties:
+                                      podAffinityTerm:
+                                        description: Required. A pod affinity term,
+                                          associated with the corresponding weight.
+                                        maxProperties: 1024
+                                        properties:
+                                          labelSelector:
+                                            description: A label query over a set
+                                              of resources, in this case pods. If
+                                              it's null, this PodAffinityTerm matches
+                                              with no Pods.
+                                            maxProperties: 1024
+                                            properties:
+                                              matchExpressions:
+                                                description: matchExpressions is a
+                                                  list of label selector requirements.
+                                                  The requirements are ANDed.
+                                                items:
+                                                  description: A label selector requirement
+                                                    is a selector that contains values,
+                                                    a key, and an operator that relates
+                                                    the key and values.
+                                                  maxProperties: 1024
+                                                  properties:
+                                                    key:
+                                                      description: key is the label
+                                                        key that the selector applies
+                                                        to.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    operator:
+                                                      description: operator represents
+                                                        a key's relationship to a
+                                                        set of values. Valid operators
+                                                        are In, NotIn, Exists and
+                                                        DoesNotExist.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    values:
+                                                      description: values is an array
+                                                        of string values. If the operator
+                                                        is In or NotIn, the values
+                                                        array must be non-empty. If
+                                                        the operator is Exists or
+                                                        DoesNotExist, the values array
+                                                        must be empty. This array
+                                                        is replaced during a strategic
+                                                        merge patch.
+                                                      items:
+                                                        maxLength: 16384
+                                                        type: string
+                                                      maxItems: 256
+                                                      type: array
+                                                  required:
+                                                  - key
+                                                  - operator
+                                                  type: object
+                                                maxItems: 256
+                                                type: array
+                                              matchLabels:
+                                                additionalProperties:
+                                                  maxLength: 16384
+                                                  type: string
+                                                description: matchLabels is a map
+                                                  of {key,value} pairs. A single {key,value}
+                                                  in the matchLabels map is equivalent
+                                                  to an element of matchExpressions,
+                                                  whose key field is "key", the operator
+                                                  is "In", and the values array contains
+                                                  only "value". The requirements are
+                                                  ANDed.
+                                                maxProperties: 1024
+                                                type: object
+                                            type: object
+                                          matchLabelKeys:
+                                            description: MatchLabelKeys is a set of
+                                              pod label keys to select which pods
+                                              will be taken into consideration. The
+                                              keys are used to lookup values from
+                                              the incoming pod labels, those key-value
+                                              labels are merged with `labelSelector`
+                                              as `key in (value)` to select the group
+                                              of existing pods which pods will be
+                                              taken into consideration for the incoming
+                                              pod's pod (anti) affinity. Keys that
+                                              don't exist in the incoming pod labels
+                                              will be ignored. The default value is
+                                              empty. The same key is forbidden to
+                                              exist in both matchLabelKeys and labelSelector.
+                                              Also, matchLabelKeys cannot be set when
+                                              labelSelector isn't set.
+                                            items:
+                                              maxLength: 16384
+                                              type: string
+                                            maxItems: 256
+                                            type: array
+                                          mismatchLabelKeys:
+                                            description: MismatchLabelKeys is a set
+                                              of pod label keys to select which pods
+                                              will be taken into consideration. The
+                                              keys are used to lookup values from
+                                              the incoming pod labels, those key-value
+                                              labels are merged with `labelSelector`
+                                              as `key notin (value)` to select the
+                                              group of existing pods which pods will
+                                              be taken into consideration for the
+                                              incoming pod's pod (anti) affinity.
+                                              Keys that don't exist in the incoming
+                                              pod labels will be ignored. The default
+                                              value is empty. The same key is forbidden
+                                              to exist in both mismatchLabelKeys and
+                                              labelSelector. Also, mismatchLabelKeys
+                                              cannot be set when labelSelector isn't
+                                              set.
+                                            items:
+                                              maxLength: 16384
+                                              type: string
+                                            maxItems: 256
+                                            type: array
+                                          namespaceSelector:
+                                            description: A label query over the set
+                                              of namespaces that the term applies
+                                              to. The term is applied to the union
+                                              of the namespaces selected by this field
+                                              and the ones listed in the namespaces
+                                              field. null selector and null or empty
+                                              namespaces list means "this pod's namespace".
+                                              An empty selector ({}) matches all namespaces.
+                                            maxProperties: 1024
+                                            properties:
+                                              matchExpressions:
+                                                description: matchExpressions is a
+                                                  list of label selector requirements.
+                                                  The requirements are ANDed.
+                                                items:
+                                                  description: A label selector requirement
+                                                    is a selector that contains values,
+                                                    a key, and an operator that relates
+                                                    the key and values.
+                                                  maxProperties: 1024
+                                                  properties:
+                                                    key:
+                                                      description: key is the label
+                                                        key that the selector applies
+                                                        to.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    operator:
+                                                      description: operator represents
+                                                        a key's relationship to a
+                                                        set of values. Valid operators
+                                                        are In, NotIn, Exists and
+                                                        DoesNotExist.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    values:
+                                                      description: values is an array
+                                                        of string values. If the operator
+                                                        is In or NotIn, the values
+                                                        array must be non-empty. If
+                                                        the operator is Exists or
+                                                        DoesNotExist, the values array
+                                                        must be empty. This array
+                                                        is replaced during a strategic
+                                                        merge patch.
+                                                      items:
+                                                        maxLength: 16384
+                                                        type: string
+                                                      maxItems: 256
+                                                      type: array
+                                                  required:
+                                                  - key
+                                                  - operator
+                                                  type: object
+                                                maxItems: 256
+                                                type: array
+                                              matchLabels:
+                                                additionalProperties:
+                                                  maxLength: 16384
+                                                  type: string
+                                                description: matchLabels is a map
+                                                  of {key,value} pairs. A single {key,value}
+                                                  in the matchLabels map is equivalent
+                                                  to an element of matchExpressions,
+                                                  whose key field is "key", the operator
+                                                  is "In", and the values array contains
+                                                  only "value". The requirements are
+                                                  ANDed.
+                                                maxProperties: 1024
+                                                type: object
+                                            type: object
+                                          namespaces:
+                                            description: namespaces specifies a static
+                                              list of namespace names that the term
+                                              applies to. The term is applied to the
+                                              union of the namespaces listed in this
+                                              field and the ones selected by namespaceSelector.
+                                              null or empty namespaces list and null
+                                              namespaceSelector means "this pod's
+                                              namespace".
+                                            items:
+                                              maxLength: 16384
+                                              type: string
+                                            maxItems: 256
+                                            type: array
+                                          topologyKey:
+                                            description: This pod should be co-located
+                                              (affinity) or not co-located (anti-affinity)
+                                              with the pods matching the labelSelector
+                                              in the specified namespaces, where co-located
+                                              is defined as running on a node whose
+                                              value of the label with key topologyKey
+                                              matches that of any node on which any
+                                              of the selected pods is running. Empty
+                                              topologyKey is not allowed.
+                                            maxLength: 16384
+                                            type: string
+                                        required:
+                                        - topologyKey
+                                        type: object
+                                      weight:
+                                        description: weight associated with matching
+                                          the corresponding podAffinityTerm, in the
+                                          range 1-100.
+                                        format: int32
+                                        type: integer
+                                    required:
+                                    - podAffinityTerm
+                                    - weight
+                                    type: object
+                                  maxItems: 256
+                                  type: array
+                                requiredDuringSchedulingIgnoredDuringExecution:
+                                  description: If the affinity requirements specified
+                                    by this field are not met at scheduling time,
+                                    the pod will not be scheduled onto the node. If
+                                    the affinity requirements specified by this field
+                                    cease to be met at some point during pod execution
+                                    (e.g. due to a pod label update), the system may
+                                    or may not try to eventually evict the pod from
+                                    its node. When there are multiple elements, the
+                                    lists of nodes corresponding to each podAffinityTerm
+                                    are intersected, i.e. all terms must be satisfied.
+                                  items:
+                                    description: Defines a set of pods (namely those
+                                      matching the labelSelector relative to the given
+                                      namespace(s)) that this pod should be co-located
+                                      (affinity) or not co-located (anti-affinity)
+                                      with, where co-located is defined as running
+                                      on a node whose value of the label with key
+                                      <topologyKey> matches that of any node on which
+                                      a pod of the set of pods is running
+                                    maxProperties: 1024
+                                    properties:
+                                      labelSelector:
+                                        description: A label query over a set of resources,
+                                          in this case pods. If it's null, this PodAffinityTerm
+                                          matches with no Pods.
+                                        maxProperties: 1024
+                                        properties:
+                                          matchExpressions:
+                                            description: matchExpressions is a list
+                                              of label selector requirements. The
+                                              requirements are ANDed.
+                                            items:
+                                              description: A label selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: key is the label key
+                                                    that the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: operator represents
+                                                    a key's relationship to a set
+                                                    of values. Valid operators are
+                                                    In, NotIn, Exists and DoesNotExist.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: values is an array
+                                                    of string values. If the operator
+                                                    is In or NotIn, the values array
+                                                    must be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. This
+                                                    array is replaced during a strategic
+                                                    merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                          matchLabels:
+                                            additionalProperties:
+                                              maxLength: 16384
+                                              type: string
+                                            description: matchLabels is a map of {key,value}
+                                              pairs. A single {key,value} in the matchLabels
+                                              map is equivalent to an element of matchExpressions,
+                                              whose key field is "key", the operator
+                                              is "In", and the values array contains
+                                              only "value". The requirements are ANDed.
+                                            maxProperties: 1024
+                                            type: object
+                                        type: object
+                                      matchLabelKeys:
+                                        description: MatchLabelKeys is a set of pod
+                                          label keys to select which pods will be
+                                          taken into consideration. The keys are used
+                                          to lookup values from the incoming pod labels,
+                                          those key-value labels are merged with `labelSelector`
+                                          as `key in (value)` to select the group
+                                          of existing pods which pods will be taken
+                                          into consideration for the incoming pod's
+                                          pod (anti) affinity. Keys that don't exist
+                                          in the incoming pod labels will be ignored.
+                                          The default value is empty. The same key
+                                          is forbidden to exist in both matchLabelKeys
+                                          and labelSelector. Also, matchLabelKeys
+                                          cannot be set when labelSelector isn't set.
+                                        items:
+                                          maxLength: 16384
+                                          type: string
+                                        maxItems: 256
+                                        type: array
+                                      mismatchLabelKeys:
+                                        description: MismatchLabelKeys is a set of
+                                          pod label keys to select which pods will
+                                          be taken into consideration. The keys are
+                                          used to lookup values from the incoming
+                                          pod labels, those key-value labels are merged
+                                          with `labelSelector` as `key notin (value)`
+                                          to select the group of existing pods which
+                                          pods will be taken into consideration for
+                                          the incoming pod's pod (anti) affinity.
+                                          Keys that don't exist in the incoming pod
+                                          labels will be ignored. The default value
+                                          is empty. The same key is forbidden to exist
+                                          in both mismatchLabelKeys and labelSelector.
+                                          Also, mismatchLabelKeys cannot be set when
+                                          labelSelector isn't set.
+                                        items:
+                                          maxLength: 16384
+                                          type: string
+                                        maxItems: 256
+                                        type: array
+                                      namespaceSelector:
+                                        description: A label query over the set of
+                                          namespaces that the term applies to. The
+                                          term is applied to the union of the namespaces
+                                          selected by this field and the ones listed
+                                          in the namespaces field. null selector and
+                                          null or empty namespaces list means "this
+                                          pod's namespace". An empty selector ({})
+                                          matches all namespaces.
+                                        maxProperties: 1024
+                                        properties:
+                                          matchExpressions:
+                                            description: matchExpressions is a list
+                                              of label selector requirements. The
+                                              requirements are ANDed.
+                                            items:
+                                              description: A label selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: key is the label key
+                                                    that the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: operator represents
+                                                    a key's relationship to a set
+                                                    of values. Valid operators are
+                                                    In, NotIn, Exists and DoesNotExist.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: values is an array
+                                                    of string values. If the operator
+                                                    is In or NotIn, the values array
+                                                    must be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. This
+                                                    array is replaced during a strategic
+                                                    merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                          matchLabels:
+                                            additionalProperties:
+                                              maxLength: 16384
+                                              type: string
+                                            description: matchLabels is a map of {key,value}
+                                              pairs. A single {key,value} in the matchLabels
+                                              map is equivalent to an element of matchExpressions,
+                                              whose key field is "key", the operator
+                                              is "In", and the values array contains
+                                              only "value". The requirements are ANDed.
+                                            maxProperties: 1024
+                                            type: object
+                                        type: object
+                                      namespaces:
+                                        description: namespaces specifies a static
+                                          list of namespace names that the term applies
+                                          to. The term is applied to the union of
+                                          the namespaces listed in this field and
+                                          the ones selected by namespaceSelector.
+                                          null or empty namespaces list and null namespaceSelector
+                                          means "this pod's namespace".
+                                        items:
+                                          maxLength: 16384
+                                          type: string
+                                        maxItems: 256
+                                        type: array
+                                      topologyKey:
+                                        description: This pod should be co-located
+                                          (affinity) or not co-located (anti-affinity)
+                                          with the pods matching the labelSelector
+                                          in the specified namespaces, where co-located
+                                          is defined as running on a node whose value
+                                          of the label with key topologyKey matches
+                                          that of any node on which any of the selected
+                                          pods is running. Empty topologyKey is not
+                                          allowed.
+                                        maxLength: 16384
+                                        type: string
+                                    required:
+                                    - topologyKey
+                                    type: object
+                                  maxItems: 256
+                                  type: array
+                              type: object
+                            podAntiAffinity:
+                              description: Describes pod anti-affinity scheduling
+                                rules (e.g. avoid putting this pod in the same node,
+                                zone, etc. as some other pod(s)).
+                              maxProperties: 1024
+                              properties:
+                                preferredDuringSchedulingIgnoredDuringExecution:
+                                  description: The scheduler will prefer to schedule
+                                    pods to nodes that satisfy the anti-affinity expressions
+                                    specified by this field, but it may choose a node
+                                    that violates one or more of the expressions.
+                                    The node that is most preferred is the one with
+                                    the greatest sum of weights, i.e. for each node
+                                    that meets all of the scheduling requirements
+                                    (resource request, requiredDuringScheduling anti-affinity
+                                    expressions, etc.), compute a sum by iterating
+                                    through the elements of this field and subtracting
+                                    "weight" from the sum if the node has pods which
+                                    matches the corresponding podAffinityTerm; the
+                                    node(s) with the highest sum are the most preferred.
+                                  items:
+                                    description: The weights of all of the matched
+                                      WeightedPodAffinityTerm fields are added per-node
+                                      to find the most preferred node(s)
+                                    maxProperties: 1024
+                                    properties:
+                                      podAffinityTerm:
+                                        description: Required. A pod affinity term,
+                                          associated with the corresponding weight.
+                                        maxProperties: 1024
+                                        properties:
+                                          labelSelector:
+                                            description: A label query over a set
+                                              of resources, in this case pods. If
+                                              it's null, this PodAffinityTerm matches
+                                              with no Pods.
+                                            maxProperties: 1024
+                                            properties:
+                                              matchExpressions:
+                                                description: matchExpressions is a
+                                                  list of label selector requirements.
+                                                  The requirements are ANDed.
+                                                items:
+                                                  description: A label selector requirement
+                                                    is a selector that contains values,
+                                                    a key, and an operator that relates
+                                                    the key and values.
+                                                  maxProperties: 1024
+                                                  properties:
+                                                    key:
+                                                      description: key is the label
+                                                        key that the selector applies
+                                                        to.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    operator:
+                                                      description: operator represents
+                                                        a key's relationship to a
+                                                        set of values. Valid operators
+                                                        are In, NotIn, Exists and
+                                                        DoesNotExist.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    values:
+                                                      description: values is an array
+                                                        of string values. If the operator
+                                                        is In or NotIn, the values
+                                                        array must be non-empty. If
+                                                        the operator is Exists or
+                                                        DoesNotExist, the values array
+                                                        must be empty. This array
+                                                        is replaced during a strategic
+                                                        merge patch.
+                                                      items:
+                                                        maxLength: 16384
+                                                        type: string
+                                                      maxItems: 256
+                                                      type: array
+                                                  required:
+                                                  - key
+                                                  - operator
+                                                  type: object
+                                                maxItems: 256
+                                                type: array
+                                              matchLabels:
+                                                additionalProperties:
+                                                  maxLength: 16384
+                                                  type: string
+                                                description: matchLabels is a map
+                                                  of {key,value} pairs. A single {key,value}
+                                                  in the matchLabels map is equivalent
+                                                  to an element of matchExpressions,
+                                                  whose key field is "key", the operator
+                                                  is "In", and the values array contains
+                                                  only "value". The requirements are
+                                                  ANDed.
+                                                maxProperties: 1024
+                                                type: object
+                                            type: object
+                                          matchLabelKeys:
+                                            description: MatchLabelKeys is a set of
+                                              pod label keys to select which pods
+                                              will be taken into consideration. The
+                                              keys are used to lookup values from
+                                              the incoming pod labels, those key-value
+                                              labels are merged with `labelSelector`
+                                              as `key in (value)` to select the group
+                                              of existing pods which pods will be
+                                              taken into consideration for the incoming
+                                              pod's pod (anti) affinity. Keys that
+                                              don't exist in the incoming pod labels
+                                              will be ignored. The default value is
+                                              empty. The same key is forbidden to
+                                              exist in both matchLabelKeys and labelSelector.
+                                              Also, matchLabelKeys cannot be set when
+                                              labelSelector isn't set.
+                                            items:
+                                              maxLength: 16384
+                                              type: string
+                                            maxItems: 256
+                                            type: array
+                                          mismatchLabelKeys:
+                                            description: MismatchLabelKeys is a set
+                                              of pod label keys to select which pods
+                                              will be taken into consideration. The
+                                              keys are used to lookup values from
+                                              the incoming pod labels, those key-value
+                                              labels are merged with `labelSelector`
+                                              as `key notin (value)` to select the
+                                              group of existing pods which pods will
+                                              be taken into consideration for the
+                                              incoming pod's pod (anti) affinity.
+                                              Keys that don't exist in the incoming
+                                              pod labels will be ignored. The default
+                                              value is empty. The same key is forbidden
+                                              to exist in both mismatchLabelKeys and
+                                              labelSelector. Also, mismatchLabelKeys
+                                              cannot be set when labelSelector isn't
+                                              set.
+                                            items:
+                                              maxLength: 16384
+                                              type: string
+                                            maxItems: 256
+                                            type: array
+                                          namespaceSelector:
+                                            description: A label query over the set
+                                              of namespaces that the term applies
+                                              to. The term is applied to the union
+                                              of the namespaces selected by this field
+                                              and the ones listed in the namespaces
+                                              field. null selector and null or empty
+                                              namespaces list means "this pod's namespace".
+                                              An empty selector ({}) matches all namespaces.
+                                            maxProperties: 1024
+                                            properties:
+                                              matchExpressions:
+                                                description: matchExpressions is a
+                                                  list of label selector requirements.
+                                                  The requirements are ANDed.
+                                                items:
+                                                  description: A label selector requirement
+                                                    is a selector that contains values,
+                                                    a key, and an operator that relates
+                                                    the key and values.
+                                                  maxProperties: 1024
+                                                  properties:
+                                                    key:
+                                                      description: key is the label
+                                                        key that the selector applies
+                                                        to.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    operator:
+                                                      description: operator represents
+                                                        a key's relationship to a
+                                                        set of values. Valid operators
+                                                        are In, NotIn, Exists and
+                                                        DoesNotExist.
+                                                      maxLength: 16384
+                                                      type: string
+                                                    values:
+                                                      description: values is an array
+                                                        of string values. If the operator
+                                                        is In or NotIn, the values
+                                                        array must be non-empty. If
+                                                        the operator is Exists or
+                                                        DoesNotExist, the values array
+                                                        must be empty. This array
+                                                        is replaced during a strategic
+                                                        merge patch.
+                                                      items:
+                                                        maxLength: 16384
+                                                        type: string
+                                                      maxItems: 256
+                                                      type: array
+                                                  required:
+                                                  - key
+                                                  - operator
+                                                  type: object
+                                                maxItems: 256
+                                                type: array
+                                              matchLabels:
+                                                additionalProperties:
+                                                  maxLength: 16384
+                                                  type: string
+                                                description: matchLabels is a map
+                                                  of {key,value} pairs. A single {key,value}
+                                                  in the matchLabels map is equivalent
+                                                  to an element of matchExpressions,
+                                                  whose key field is "key", the operator
+                                                  is "In", and the values array contains
+                                                  only "value". The requirements are
+                                                  ANDed.
+                                                maxProperties: 1024
+                                                type: object
+                                            type: object
+                                          namespaces:
+                                            description: namespaces specifies a static
+                                              list of namespace names that the term
+                                              applies to. The term is applied to the
+                                              union of the namespaces listed in this
+                                              field and the ones selected by namespaceSelector.
+                                              null or empty namespaces list and null
+                                              namespaceSelector means "this pod's
+                                              namespace".
+                                            items:
+                                              maxLength: 16384
+                                              type: string
+                                            maxItems: 256
+                                            type: array
+                                          topologyKey:
+                                            description: This pod should be co-located
+                                              (affinity) or not co-located (anti-affinity)
+                                              with the pods matching the labelSelector
+                                              in the specified namespaces, where co-located
+                                              is defined as running on a node whose
+                                              value of the label with key topologyKey
+                                              matches that of any node on which any
+                                              of the selected pods is running. Empty
+                                              topologyKey is not allowed.
+                                            maxLength: 16384
+                                            type: string
+                                        required:
+                                        - topologyKey
+                                        type: object
+                                      weight:
+                                        description: weight associated with matching
+                                          the corresponding podAffinityTerm, in the
+                                          range 1-100.
+                                        format: int32
+                                        type: integer
+                                    required:
+                                    - podAffinityTerm
+                                    - weight
+                                    type: object
+                                  maxItems: 256
+                                  type: array
+                                requiredDuringSchedulingIgnoredDuringExecution:
+                                  description: If the anti-affinity requirements specified
+                                    by this field are not met at scheduling time,
+                                    the pod will not be scheduled onto the node. If
+                                    the anti-affinity requirements specified by this
+                                    field cease to be met at some point during pod
+                                    execution (e.g. due to a pod label update), the
+                                    system may or may not try to eventually evict
+                                    the pod from its node. When there are multiple
+                                    elements, the lists of nodes corresponding to
+                                    each podAffinityTerm are intersected, i.e. all
+                                    terms must be satisfied.
+                                  items:
+                                    description: Defines a set of pods (namely those
+                                      matching the labelSelector relative to the given
+                                      namespace(s)) that this pod should be co-located
+                                      (affinity) or not co-located (anti-affinity)
+                                      with, where co-located is defined as running
+                                      on a node whose value of the label with key
+                                      <topologyKey> matches that of any node on which
+                                      a pod of the set of pods is running
+                                    maxProperties: 1024
+                                    properties:
+                                      labelSelector:
+                                        description: A label query over a set of resources,
+                                          in this case pods. If it's null, this PodAffinityTerm
+                                          matches with no Pods.
+                                        maxProperties: 1024
+                                        properties:
+                                          matchExpressions:
+                                            description: matchExpressions is a list
+                                              of label selector requirements. The
+                                              requirements are ANDed.
+                                            items:
+                                              description: A label selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: key is the label key
+                                                    that the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: operator represents
+                                                    a key's relationship to a set
+                                                    of values. Valid operators are
+                                                    In, NotIn, Exists and DoesNotExist.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: values is an array
+                                                    of string values. If the operator
+                                                    is In or NotIn, the values array
+                                                    must be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. This
+                                                    array is replaced during a strategic
+                                                    merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                          matchLabels:
+                                            additionalProperties:
+                                              maxLength: 16384
+                                              type: string
+                                            description: matchLabels is a map of {key,value}
+                                              pairs. A single {key,value} in the matchLabels
+                                              map is equivalent to an element of matchExpressions,
+                                              whose key field is "key", the operator
+                                              is "In", and the values array contains
+                                              only "value". The requirements are ANDed.
+                                            maxProperties: 1024
+                                            type: object
+                                        type: object
+                                      matchLabelKeys:
+                                        description: MatchLabelKeys is a set of pod
+                                          label keys to select which pods will be
+                                          taken into consideration. The keys are used
+                                          to lookup values from the incoming pod labels,
+                                          those key-value labels are merged with `labelSelector`
+                                          as `key in (value)` to select the group
+                                          of existing pods which pods will be taken
+                                          into consideration for the incoming pod's
+                                          pod (anti) affinity. Keys that don't exist
+                                          in the incoming pod labels will be ignored.
+                                          The default value is empty. The same key
+                                          is forbidden to exist in both matchLabelKeys
+                                          and labelSelector. Also, matchLabelKeys
+                                          cannot be set when labelSelector isn't set.
+                                        items:
+                                          maxLength: 16384
+                                          type: string
+                                        maxItems: 256
+                                        type: array
+                                      mismatchLabelKeys:
+                                        description: MismatchLabelKeys is a set of
+                                          pod label keys to select which pods will
+                                          be taken into consideration. The keys are
+                                          used to lookup values from the incoming
+                                          pod labels, those key-value labels are merged
+                                          with `labelSelector` as `key notin (value)`
+                                          to select the group of existing pods which
+                                          pods will be taken into consideration for
+                                          the incoming pod's pod (anti) affinity.
+                                          Keys that don't exist in the incoming pod
+                                          labels will be ignored. The default value
+                                          is empty. The same key is forbidden to exist
+                                          in both mismatchLabelKeys and labelSelector.
+                                          Also, mismatchLabelKeys cannot be set when
+                                          labelSelector isn't set.
+                                        items:
+                                          maxLength: 16384
+                                          type: string
+                                        maxItems: 256
+                                        type: array
+                                      namespaceSelector:
+                                        description: A label query over the set of
+                                          namespaces that the term applies to. The
+                                          term is applied to the union of the namespaces
+                                          selected by this field and the ones listed
+                                          in the namespaces field. null selector and
+                                          null or empty namespaces list means "this
+                                          pod's namespace". An empty selector ({})
+                                          matches all namespaces.
+                                        maxProperties: 1024
+                                        properties:
+                                          matchExpressions:
+                                            description: matchExpressions is a list
+                                              of label selector requirements. The
+                                              requirements are ANDed.
+                                            items:
+                                              description: A label selector requirement
+                                                is a selector that contains values,
+                                                a key, and an operator that relates
+                                                the key and values.
+                                              maxProperties: 1024
+                                              properties:
+                                                key:
+                                                  description: key is the label key
+                                                    that the selector applies to.
+                                                  maxLength: 16384
+                                                  type: string
+                                                operator:
+                                                  description: operator represents
+                                                    a key's relationship to a set
+                                                    of values. Valid operators are
+                                                    In, NotIn, Exists and DoesNotExist.
+                                                  maxLength: 16384
+                                                  type: string
+                                                values:
+                                                  description: values is an array
+                                                    of string values. If the operator
+                                                    is In or NotIn, the values array
+                                                    must be non-empty. If the operator
+                                                    is Exists or DoesNotExist, the
+                                                    values array must be empty. This
+                                                    array is replaced during a strategic
+                                                    merge patch.
+                                                  items:
+                                                    maxLength: 16384
+                                                    type: string
+                                                  maxItems: 256
+                                                  type: array
+                                              required:
+                                              - key
+                                              - operator
+                                              type: object
+                                            maxItems: 256
+                                            type: array
+                                          matchLabels:
+                                            additionalProperties:
+                                              maxLength: 16384
+                                              type: string
+                                            description: matchLabels is a map of {key,value}
+                                              pairs. A single {key,value} in the matchLabels
+                                              map is equivalent to an element of matchExpressions,
+                                              whose key field is "key", the operator
+                                              is "In", and the values array contains
+                                              only "value". The requirements are ANDed.
+                                            maxProperties: 1024
+                                            type: object
+                                        type: object
+                                      namespaces:
+                                        description: namespaces specifies a static
+                                          list of namespace names that the term applies
+                                          to. The term is applied to the union of
+                                          the namespaces listed in this field and
+                                          the ones selected by namespaceSelector.
+                                          null or empty namespaces list and null namespaceSelector
+                                          means "this pod's namespace".
+                                        items:
+                                          maxLength: 16384
+                                          type: string
+                                        maxItems: 256
+                                        type: array
+                                      topologyKey:
+                                        description: This pod should be co-located
+                                          (affinity) or not co-located (anti-affinity)
+                                          with the pods matching the labelSelector
+                                          in the specified namespaces, where co-located
+                                          is defined as running on a node whose value
+                                          of the label with key topologyKey matches
+                                          that of any node on which any of the selected
+                                          pods is running. Empty topologyKey is not
+                                          allowed.
+                                        maxLength: 16384
+                                        type: string
+                                    required:
+                                    - topologyKey
+                                    type: object
+                                  maxItems: 256
+                                  type: array
+                              type: object
+                          type: object
+                        allowedRoles:
+                          items:
+                            enum:
+                            - trainer
+                            - materialization
+                            - predictor
+                            - snapshotTable
+                            - snapshotGraph
+                            - serving
+                            - ballistaScheduler
+                            - ballistaExecutor
+                            - ballistaProbe
+                            - artifactStoreProbe
+                            - connectorRuntime
+                            - connectorProbe
+                            maxLength: 16384
+                            type: string
+                          maxItems: 12
+                          minItems: 1
+                          type: array
+                        nodeSelector:
+                          additionalProperties:
+                            maxLength: 16384
+                            type: string
+                          maxProperties: 1024
+                          type: object
+                        tolerations:
+                          items:
+                            description: The pod this Toleration is attached to tolerates
+                              any taint that matches the triple <key,value,effect>
+                              using the matching operator <operator>.
+                            maxProperties: 1024
+                            properties:
+                              effect:
+                                description: Effect indicates the taint effect to
+                                  match. Empty means match all taint effects. When
+                                  specified, allowed values are NoSchedule, PreferNoSchedule
+                                  and NoExecute.
+                                maxLength: 16384
+                                type: string
+                              key:
+                                description: Key is the taint key that the toleration
+                                  applies to. Empty means match all taint keys. If
+                                  the key is empty, operator must be Exists; this
+                                  combination means to match all values and all keys.
+                                maxLength: 16384
+                                type: string
+                              operator:
+                                description: Operator represents a key's relationship
+                                  to the value. Valid operators are Exists, Equal,
+                                  Lt, and Gt. Defaults to Equal. Exists is equivalent
+                                  to wildcard for value, so that a pod can tolerate
+                                  all taints of a particular category. Lt and Gt perform
+                                  numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+                                maxLength: 16384
+                                type: string
+                              tolerationSeconds:
+                                description: TolerationSeconds represents the period
+                                  of time the toleration (which must be of effect
+                                  NoExecute, otherwise this field is ignored) tolerates
+                                  the taint. By default, it is not set, which means
+                                  tolerate the taint forever (do not evict). Zero
+                                  and negative values will be treated as 0 (evict
+                                  immediately) by the system.
+                                format: int64
+                                type: integer
+                              value:
+                                description: Value is the taint value the toleration
+                                  matches to. If the operator is Exists, the value
+                                  should be empty, otherwise just a regular string.
+                                maxLength: 16384
+                                type: string
+                            type: object
+                          maxItems: 256
+                          type: array
+                      required:
+                      - allowedRoles
+                      type: object
+                    maxProperties: 1024
+                    type: object
                   programs:
                     maxProperties: 1024
                     properties:
@@ -7422,7 +8999,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/provider-crd-sha256: 11fa550e2d9dbe0e7cc56af76a2f2f43b1ec0e3b5104a1157a3f8249516bb2e1
+    prokrust.ai/provider-crd-sha256: 94e80b34d351d5dd77b00189c62435c80ad5d4d6f12de145fd61e4e1d48283b6
   name: s3connections.aws.sources.prokrust.ai
 spec:
   group: aws.sources.prokrust.ai
@@ -7460,6 +9037,16 @@ spec:
                 maxLength: 2048
                 minLength: 20
                 type: string
+              placementTemplateRef:
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               prefix:
                 maxLength: 1024
                 type: string
@@ -7578,7 +9165,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -7624,6 +9211,18 @@ spec:
                     format: uint32
                     minimum: 1
                     type: integer
+                  placementTemplateRef:
+                    maxProperties: 1024
+                    nullable: true
+                    properties:
+                      name:
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                        type: string
+                    required:
+                    - name
+                    type: object
                   preparation:
                     maxProperties: 1024
                     nullable: true
@@ -8373,7 +9972,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -8505,6 +10104,19 @@ spec:
                     maxAttempts: 3
                 maxProperties: 1024
                 properties:
+                  graphPlacementTemplateRef:
+                    maxProperties: 1024
+                    nullable: true
+                    properties:
+                      name:
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                        type: string
+                    required:
+                    - name
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
                   graphResources:
                     maxProperties: 1024
                     nullable: true
@@ -8534,6 +10146,19 @@ spec:
                     maximum: 64
                     minimum: 1
                     type: integer
+                  placementTemplateRef:
+                    maxProperties: 1024
+                    nullable: true
+                    properties:
+                      name:
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                        type: string
+                    required:
+                    - name
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
                   retryPolicy:
                     default:
                       maxAttempts: 3
@@ -8603,6 +10228,19 @@ spec:
                 additionalProperties:
                   maxProperties: 1024
                   properties:
+                    placementTemplateRef:
+                      maxProperties: 1024
+                      nullable: true
+                      properties:
+                        name:
+                          maxLength: 63
+                          minLength: 1
+                          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                          type: string
+                      required:
+                      - name
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
                     snapshotRef:
                       maxProperties: 1024
                       nullable: true
@@ -9236,7 +10874,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/provider-crd-sha256: bfc29bf8cf937adbb99acd58876deb3c84fb19f7a7e3955e4c46494d773408e8
+    prokrust.ai/provider-crd-sha256: e7cbdb30b5297bf90a49ad2b3b6b3fd04e7182be0e2ad7acb5940d07a2e703f7
   name: syntheticconnections.sources.prokrust.ai
 spec:
   group: sources.prokrust.ai
@@ -9256,6 +10894,16 @@ spec:
                 maximum: 100000
                 minimum: 1
                 type: integer
+              placementTemplateRef:
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
               rowsPerPartition:
                 maximum: 100000
                 minimum: 0
@@ -9371,7 +11019,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -9495,7 +11143,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -10250,7 +11898,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -10901,7 +12549,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -11042,6 +12690,19 @@ spec:
                 - rule: self.kind != 'GraphSnapshot' || !has(self.expected) || !has(self.expected.producerUid)
                     || !has(self.expected.output) || !has(self.expected.output.uid)
                     || self.expected.producerUid == self.expected.output.uid
+              materializationPlacementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               model:
                 maxProperties: 1024
                 properties:
@@ -11125,6 +12786,19 @@ spec:
                 - learningRate
                 - maxEpochs
                 - temporalStrategy
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              placementTemplateRef:
+                maxProperties: 1024
+                nullable: true
+                properties:
+                  name:
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                    type: string
+                required:
+                - name
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
               queryRef:
@@ -12160,7 +13834,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false,ServerSideApply=true
     helm.sh/resource-policy: keep
-    prokrust.ai/crd-bundle-sha256: 5a1536205b4519785829fc3400bed5346c3bcf4509072d8e5f87b98799c0fba8
+    prokrust.ai/crd-bundle-sha256: cd4d394c02ab9c6ded8020b2f866587145ed76cf20588f5a9713a1d43d31ed12
   labels:
     app.kubernetes.io/managed-by: prokrust-crdgen
     app.kubernetes.io/name: prokrust
@@ -12475,6 +14149,19 @@ spec:
                         !has(self.expected.producerUid) || !has(self.expected.output)
                         || !has(self.expected.output.uid) || self.expected.producerUid
                         == self.expected.output.uid
+                  materializationPlacementTemplateRef:
+                    maxProperties: 1024
+                    nullable: true
+                    properties:
+                      name:
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                        type: string
+                    required:
+                    - name
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
                   model:
                     maxProperties: 1024
                     properties:
@@ -12558,6 +14245,19 @@ spec:
                     - learningRate
                     - maxEpochs
                     - temporalStrategy
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  placementTemplateRef:
+                    maxProperties: 1024
+                    nullable: true
+                    properties:
+                      name:
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                        type: string
+                    required:
+                    - name
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
                   queryRef:
