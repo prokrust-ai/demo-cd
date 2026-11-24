@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: prokrust-crds
     repo: oci://ar.prokrust.io/charts
-    version: 0.23.0-rc.1
+    version: 0.24.0-rc.1
     releaseName: prokrust-crd
     includeCRDs: true
     valuesFile: values.yaml
