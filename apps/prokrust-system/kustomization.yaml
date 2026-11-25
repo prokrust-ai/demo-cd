@@ -7,7 +7,7 @@ resources:
 helmCharts:
   - name: prokrust-system
     repo: oci://ar.prokrust.io/charts
-    version: 0.28.0-rc.1
+    version: 0.29.0-rc.1
     releaseName: prokrust-system
     namespace: prokrust-system
     valuesFile: values.yaml
@@ -34,22 +34,3 @@ patches:
                 && request.name in ['prokrust-connector-runtime-bigquery', 'prokrust-connector-runtime-gcs',
                                     'prokrust-connector-runtime-iceberg', 'prokrust-connector-runtime-paimon',
                                     'prokrust-connector-runtime-s3', 'prokrust-connector-runtime-synthetic'])
-  - target:
-      group: admissionregistration.k8s.io
-      version: v1
-      kind: ValidatingAdmissionPolicy
-      name: 'prokrust-system-connector-platform-(workloads|executor)'
-    patch: |-
-      - op: add
-        path: /spec/matchConditions
-        value:
-          - name: thelook-foreground-deletion
-            expression: >-
-              !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector'
-                && request.namespace == 'thelook-ecommerce'
-                && request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '')
-                && has(oldObject.metadata.deletionTimestamp)
-                && has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers
-                && (has(object.metadata.finalizers) ? object.metadata.finalizers : [])
-                   == oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion')
-                && object.spec == oldObject.spec)

@@ -1295,7 +1295,7 @@ data:
   ballista.chartVersion: 0.4.1-rc.1
   ballista.version: 0.4.1-rc.1
   batch-predictor.version: 0.12.0-rc.1
-  compositionVersion: 0.28.0-rc.1
+  compositionVersion: 0.29.0-rc.1
   data-job.version: 0.14.0-rc.1
   serving.version: 0.12.0-rc.1
   trainer.version: 0.12.0-rc.1
@@ -1305,7 +1305,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -2086,7 +2086,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -2196,7 +2196,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -2429,7 +2429,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -4282,15 +4282,21 @@ spec:
   failurePolicy: Fail
   matchConditions:
   - expression: |-
-      !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector'
-        && request.namespace == 'thelook-ecommerce'
-        && request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '')
-        && has(oldObject.metadata.deletionTimestamp)
-        && has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers
-        && (has(object.metadata.finalizers) ? object.metadata.finalizers : [])
-           == oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion')
-        && object.spec == oldObject.spec)
-    name: thelook-foreground-deletion
+      !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector' &&
+
+        request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '') &&
+        has(oldObject.metadata.deletionTimestamp) &&
+        has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers &&
+        (has(object.metadata.finalizers) ? object.metadata.finalizers : []) ==
+          oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion') &&
+        has(object.metadata.labels) == has(oldObject.metadata.labels) &&
+        (!has(object.metadata.labels) || object.metadata.labels == oldObject.metadata.labels) &&
+        has(object.metadata.annotations) == has(oldObject.metadata.annotations) &&
+        (!has(object.metadata.annotations) || object.metadata.annotations == oldObject.metadata.annotations) &&
+        has(object.metadata.ownerReferences) == has(oldObject.metadata.ownerReferences) &&
+        (!has(object.metadata.ownerReferences) || object.metadata.ownerReferences == oldObject.metadata.ownerReferences) &&
+        dyn(object).spec == dyn(oldObject).spec)
+    name: exclude-garbage-collector-foreground-cleanup
   matchConstraints:
     resourceRules:
     - apiGroups:
@@ -4395,15 +4401,21 @@ spec:
   failurePolicy: Fail
   matchConditions:
   - expression: |-
-      !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector'
-        && request.namespace == 'thelook-ecommerce'
-        && request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '')
-        && has(oldObject.metadata.deletionTimestamp)
-        && has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers
-        && (has(object.metadata.finalizers) ? object.metadata.finalizers : [])
-           == oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion')
-        && object.spec == oldObject.spec)
-    name: thelook-foreground-deletion
+      !(request.userInfo.username == 'system:serviceaccount:kube-system:generic-garbage-collector' &&
+
+        request.operation == 'UPDATE' && (!has(request.subResource) || request.subResource == '') &&
+        has(oldObject.metadata.deletionTimestamp) &&
+        has(oldObject.metadata.finalizers) && 'foregroundDeletion' in oldObject.metadata.finalizers &&
+        (has(object.metadata.finalizers) ? object.metadata.finalizers : []) ==
+          oldObject.metadata.finalizers.filter(f, f != 'foregroundDeletion') &&
+        has(object.metadata.labels) == has(oldObject.metadata.labels) &&
+        (!has(object.metadata.labels) || object.metadata.labels == oldObject.metadata.labels) &&
+        has(object.metadata.annotations) == has(oldObject.metadata.annotations) &&
+        (!has(object.metadata.annotations) || object.metadata.annotations == oldObject.metadata.annotations) &&
+        has(object.metadata.ownerReferences) == has(oldObject.metadata.ownerReferences) &&
+        (!has(object.metadata.ownerReferences) || object.metadata.ownerReferences == oldObject.metadata.ownerReferences) &&
+        dyn(object).spec == dyn(oldObject).spec)
+    name: exclude-garbage-collector-foreground-cleanup
   matchConstraints:
     resourceRules:
     - apiGroups:
@@ -5821,7 +5833,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -5844,7 +5856,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -5919,7 +5931,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -5998,7 +6010,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -6311,7 +6323,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.28.0-rc.1
+    helm.sh/chart: prokrust-system-0.29.0-rc.1
   name: default
   namespace: prokrust-system
 spec:
