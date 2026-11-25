@@ -2033,7 +2033,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:b17f9a8204c997076685e8f487429e102e95a725eab1573de92a5e4adc6b7308","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2001:4860:4840::/45"}},{"ipBlock":{"cidr":"2607:f8b0::/32"}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2600:1f70:4000::/56"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae10::41fe/128"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae20::beb5/128"}}]}],"maxAttemptSeconds":900,"partitionConcurrency":1,"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"1Gi"},"requests":{"cpu":"100m","memory":"256Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-bigquery@sha256:934da09e24ac96a4ea4ec93bba993be9a95d16d416b94135f2681c269113e71c","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-bigquery","runtimeSourceTokenAudience":"https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:b17f9a8204c997076685e8f487429e102e95a725eab1573de92a5e4adc6b7308","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2001:4860:4840::/45"}},{"ipBlock":{"cidr":"2607:f8b0::/32"}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2600:1f70:4000::/56"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae10::41fe/128"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae20::beb5/128"}}]}],"maxAttemptSeconds":900,"partitionConcurrency":1,"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"1Gi"},"requests":{"cpu":"100m","memory":"256Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-bigquery@sha256:934da09e24ac96a4ea4ec93bba993be9a95d16d416b94135f2681c269113e71c","runtimeNodeSelector":{"kubernetes.io/arch":"arm64","kubernetes.io/os":"linux"},"runtimeServiceAccountName":"prokrust-connector-runtime-bigquery","runtimeSourceTokenAudience":"https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-bigquery-settings
@@ -2558,7 +2558,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: 3a19d72e6a6aae00f0c9fe7b944feb256f5fd5b57bed24b01f85b86da7e6d455
+        prokrust.ai/settings-digest: 7de7791154efe12479604245a7bf1be41ddad79a232fdcb044123ba4fbf86f55
       labels:
         app.kubernetes.io/name: prokrust-system-connector-bigquery
     spec:

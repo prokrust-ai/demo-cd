@@ -18,6 +18,9 @@ connectors:
       controllerApiServerEndpoints:
         - cidr: fd8e:1cf8:6673::1/128
           port: 443
+    runtimeNodeSelector:
+      <<: *connectorNodes
+      kubernetes.io/os: linux
     runtimeServiceAccountName: prokrust-connector-runtime-bigquery
     runtimeSourceTokenAudience: &googleAudience https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks
     runtimeTokenAudiences: [*googleAudience, sts.amazonaws.com]
