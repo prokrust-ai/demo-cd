@@ -27,6 +27,16 @@ metadata:
 ---
 apiVersion: v1
 automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  annotations:
+    workflows.argoproj.io/rbac-rule: '''guest'' in groups || ''admin'' in groups'
+    workflows.argoproj.io/rbac-rule-precedence: "10"
+  name: argo-oidc-viewer
+  namespace: thelook-ecommerce
+---
+apiVersion: v1
+automountServiceAccountToken: false
 imagePullSecrets:
 - name: harbor-reader
 kind: ServiceAccount
@@ -298,6 +308,67 @@ rules:
   - configmaps
   verbs:
   - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-oidc-viewer
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-server-sso
+  namespace: thelook-ecommerce
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resourceNames:
+  - argo-oidc-viewer.service-account-token
+  resources:
+  - secrets
+  verbs:
+  - get
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  - workflowtemplates
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -1288,6 +1359,34 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  name: argo-oidc-viewer
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argo-oidc-viewer
+subjects:
+- kind: ServiceAccount
+  name: argo-oidc-viewer
+  namespace: thelook-ecommerce
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-server-sso
+  namespace: thelook-ecommerce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argo-server-sso
+subjects:
+- kind: ServiceAccount
+  name: argo-server-sso
+  namespace: argo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
   labels:
@@ -1558,6 +1657,15 @@ metadata:
     helm.sh/chart: prokrust-workspace-0.25.0-rc.1
   name: prokrust-trainer-images
   namespace: thelook-ecommerce
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: argo-oidc-viewer
+  name: argo-oidc-viewer.service-account-token
+  namespace: thelook-ecommerce
+type: kubernetes.io/service-account-token
 ---
 apiVersion: v1
 kind: LimitRange
