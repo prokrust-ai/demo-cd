@@ -113,6 +113,9 @@ imagePullSecrets:
 - name: harbor-reader
 kind: ServiceAccount
 metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390992144652:role/prokrust-demo-connector-bigquery-staging
+    eks.amazonaws.com/sts-regional-endpoints: "true"
   name: prokrust-connector-runtime-bigquery
   namespace: thelook-ecommerce
 ---
