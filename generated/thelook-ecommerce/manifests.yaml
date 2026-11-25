@@ -1659,15 +1659,6 @@ metadata:
   namespace: thelook-ecommerce
 ---
 apiVersion: v1
-kind: Secret
-metadata:
-  annotations:
-    kubernetes.io/service-account.name: argo-oidc-viewer
-  name: argo-oidc-viewer.service-account-token
-  namespace: thelook-ecommerce
-type: kubernetes.io/service-account-token
----
-apiVersion: v1
 kind: LimitRange
 metadata:
   labels:
