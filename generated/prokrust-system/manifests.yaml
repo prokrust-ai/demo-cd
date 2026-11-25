@@ -1295,7 +1295,7 @@ data:
   ballista.chartVersion: 0.4.1-rc.1
   ballista.version: 0.4.1-rc.1
   batch-predictor.version: 0.12.0-rc.1
-  compositionVersion: 0.29.0-rc.1
+  compositionVersion: 0.30.0-rc.1
   data-job.version: 0.14.0-rc.1
   serving.version: 0.12.0-rc.1
   trainer.version: 0.12.0-rc.1
@@ -1305,7 +1305,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -1450,8 +1450,8 @@ data:
       ]
     }
   descriptor.json: |
-    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"BigQueryConnection","plural":"bigqueryconnections","schema":{"file":"connection-v1.json","sha256":"sha256:a3f00e768a032bdc4c1e8c296fe4cf51f700be88550b31d4011fc9214e1d1eb7"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/bigquery","providerMajor":1,"release":"1.4.0-rc.1","runtimeImages":[{"digest":"sha256:934da09e24ac96a4ea4ec93bba993be9a95d16d416b94135f2681c269113e71c","role":"runtime"},{"digest":"sha256:934da09e24ac96a4ea4ec93bba993be9a95d16d416b94135f2681c269113e71c","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:deda40edb62827f121d1b9784319fd9b6790902310255cf2c48af75e50dc3100"}],"ui":{"displayName":"Google BigQuery"}}
-  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:b17f9a8204c997076685e8f487429e102e95a725eab1573de92a5e4adc6b7308"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}'
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"BigQueryConnection","plural":"bigqueryconnections","schema":{"file":"connection-v1.json","sha256":"sha256:a3f00e768a032bdc4c1e8c296fe4cf51f700be88550b31d4011fc9214e1d1eb7"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/bigquery","providerMajor":1,"release":"1.5.0-rc.1","runtimeImages":[{"digest":"sha256:ae8bbabfab18742db84984ab60dd0bd35d1f7f8ee189927291ee3d1deaeacbae","role":"runtime"},{"digest":"sha256:ae8bbabfab18742db84984ab60dd0bd35d1f7f8ee189927291ee3d1deaeacbae","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:deda40edb62827f121d1b9784319fd9b6790902310255cf2c48af75e50dc3100"}],"ui":{"displayName":"Google BigQuery"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:b0870e9d462f8e38757d845dc6708ee81d416fc3753f69838f9f8a22b415e29c"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.5.0-rc.1","tlsProfile":"installation-ca"}'
   selector-v1.json: |
     {
       "type": "object",
@@ -1571,8 +1571,8 @@ data:
       ]
     }
   descriptor.json: |
-    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"GCSConnection","plural":"gcsconnections","schema":{"file":"connection-v1.json","sha256":"sha256:97cce151e225a4423b80890ce6624ae6584df8d99d3f5dfd7c843be2d9a5f9c9"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/gcs","providerMajor":1,"release":"1.3.0-rc.1","runtimeImages":[{"digest":"sha256:24137ceb587b18c582c0c7ea27c4ae87b99e543427b5c799c589142809b03d2b","role":"runtime"},{"digest":"sha256:24137ceb587b18c582c0c7ea27c4ae87b99e543427b5c799c589142809b03d2b","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Google Cloud Storage"}}
-  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:ee35655f5881c2eb1bbacea02cc581fe6b56e213bbb57200194effc1187d3d4a"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}'
+    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"google.sources.prokrust.ai/v1beta1","kind":"GCSConnection","plural":"gcsconnections","schema":{"file":"connection-v1.json","sha256":"sha256:97cce151e225a4423b80890ce6624ae6584df8d99d3f5dfd7c843be2d9a5f9c9"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/gcs","providerMajor":1,"release":"1.4.0-rc.1","runtimeImages":[{"digest":"sha256:ad97985c8a2236d598a3904d6408f3e071f073fd70e731905cc37f71749aee1c","role":"runtime"},{"digest":"sha256:ad97985c8a2236d598a3904d6408f3e071f073fd70e731905cc37f71749aee1c","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Google Cloud Storage"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:d4b1108131dd838359cfcff2a182607cbfaca6b4bf7dfb79247959a138bbbdc9"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}'
   selector-v1.json: |
     {"type":"object","properties":{"kind":{"type":"string","enum":["prefix","object"]},"path":{"type":"string","maxLength":1024}},"required":["kind","path"],"additionalProperties":false}
 kind: ConfigMap
@@ -1725,8 +1725,8 @@ data:
       ]
     }
   descriptor.json: |
-    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"IcebergConnection","plural":"icebergconnections","schema":{"file":"connection-v1.json","sha256":"sha256:ebb88cc18074d2516ca3c40f4cbc00a2efac1afa4ecdc8857b7ea0bbd9f6b331"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/iceberg","providerMajor":1,"release":"1.3.0-rc.1","runtimeImages":[{"digest":"sha256:eda0ab109ab752e375a2afe5ef23dbade43b3732eebceb7f0dcc86f02c2e87cc","role":"runtime"},{"digest":"sha256:eda0ab109ab752e375a2afe5ef23dbade43b3732eebceb7f0dcc86f02c2e87cc","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:022501059ec277779b0b0eb2afb7195366b656a5c8a21959e75a4580f16cdfce"}],"ui":{"displayName":"Apache Iceberg"}}
-  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:76f5edbf7c0e4446666b3890c54a7aea559f9aa4e53638aa2154905b13f0ffb9"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}'
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"IcebergConnection","plural":"icebergconnections","schema":{"file":"connection-v1.json","sha256":"sha256:ebb88cc18074d2516ca3c40f4cbc00a2efac1afa4ecdc8857b7ea0bbd9f6b331"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/iceberg","providerMajor":1,"release":"1.4.0-rc.1","runtimeImages":[{"digest":"sha256:a8204c79fb934865e9511c527ed6f90eba779d719184f3daf0b8347e72943760","role":"runtime"},{"digest":"sha256:a8204c79fb934865e9511c527ed6f90eba779d719184f3daf0b8347e72943760","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:022501059ec277779b0b0eb2afb7195366b656a5c8a21959e75a4580f16cdfce"}],"ui":{"displayName":"Apache Iceberg"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:30ca74bb1d17f5768bb3955b60f0a11186fdfff3de882e2734823d34fced2aa9"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}'
   selector-v1.json: |
     {
       "type": "object",
@@ -1919,8 +1919,8 @@ data:
       ]
     }
   descriptor.json: |
-    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"PaimonConnection","plural":"paimonconnections","schema":{"file":"connection-v1.json","sha256":"sha256:670f4d9ea13c8c3e63f898d6bc9ddfbe918ca735fe63ca4f32569c3b43f980b7"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/paimon","providerMajor":1,"release":"1.3.0-rc.1","runtimeImages":[{"digest":"sha256:4cf0d33ac64107ed51dd5dc6830e60846b99ace55c94b9027d6c4742e773347b","role":"runtime"},{"digest":"sha256:4cf0d33ac64107ed51dd5dc6830e60846b99ace55c94b9027d6c4742e773347b","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:85d827bf44b4213e697ea49d863d60271510cf022cc1100362f3d2cc6b3b20d1"}],"ui":{"displayName":"Apache Paimon"}}
-  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:4fc723fcaf2979b48aa7d09d5f5ec538d2fa289887855241df7f517426b3196a"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}'
+    {"capabilities":["atomic-source-snapshot","browse","inspect","logical-rows","probe","projection","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"apache.sources.prokrust.ai/v1beta1","kind":"PaimonConnection","plural":"paimonconnections","schema":{"file":"connection-v1.json","sha256":"sha256:670f4d9ea13c8c3e63f898d6bc9ddfbe918ca735fe63ca4f32569c3b43f980b7"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/paimon","providerMajor":1,"release":"1.4.0-rc.1","runtimeImages":[{"digest":"sha256:620dd23be35d37dd4534ff66871fad3eb43436403db66f4143f19dc2cc7c5151","role":"runtime"},{"digest":"sha256:620dd23be35d37dd4534ff66871fad3eb43436403db66f4143f19dc2cc7c5151","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:85d827bf44b4213e697ea49d863d60271510cf022cc1100362f3d2cc6b3b20d1"}],"ui":{"displayName":"Apache Paimon"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:9b9efe0a92045c6f5ae8ced57666305d910fa012f948d52f270b1c090f9d045a"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}'
   selector-v1.json: |
     {
       "type": "object",
@@ -1962,7 +1962,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  registry.json: '{"providers":[{"controllerNamespace":"prokrust-system","descriptor":{"file":"bigquery/descriptor.json","sha256":"sha256:b17f9a8204c997076685e8f487429e102e95a725eab1573de92a5e4adc6b7308"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.4.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"gcs/descriptor.json","sha256":"sha256:ee35655f5881c2eb1bbacea02cc581fe6b56e213bbb57200194effc1187d3d4a"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.3.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"iceberg/descriptor.json","sha256":"sha256:76f5edbf7c0e4446666b3890c54a7aea559f9aa4e53638aa2154905b13f0ffb9"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.3.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"paimon/descriptor.json","sha256":"sha256:4fc723fcaf2979b48aa7d09d5f5ec538d2fa289887855241df7f517426b3196a"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.3.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"s3/descriptor.json","sha256":"sha256:005ccfa04e71a69c919c02a75a3fa123bcf762586cc961c43c5c7ebced2d7fb8"},"enabled":true,"id":"prokrust.ai/s3","release":"1.3.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"synthetic/descriptor.json","sha256":"sha256:3f2a465643da1047da0f9c042d481f46bb639c747ccec3cbfcdc6433390062a1"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}]}'
+  registry.json: '{"providers":[{"controllerNamespace":"prokrust-system","descriptor":{"file":"bigquery/descriptor.json","sha256":"sha256:b0870e9d462f8e38757d845dc6708ee81d416fc3753f69838f9f8a22b415e29c"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.5.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"gcs/descriptor.json","sha256":"sha256:d4b1108131dd838359cfcff2a182607cbfaca6b4bf7dfb79247959a138bbbdc9"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.4.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"iceberg/descriptor.json","sha256":"sha256:30ca74bb1d17f5768bb3955b60f0a11186fdfff3de882e2734823d34fced2aa9"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.4.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"paimon/descriptor.json","sha256":"sha256:9b9efe0a92045c6f5ae8ced57666305d910fa012f948d52f270b1c090f9d045a"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.4.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"s3/descriptor.json","sha256":"sha256:9bbb0356ef410110eebdfe5379518dee7263283efc2d2ebaf17e2a9aeae689b2"},"enabled":true,"id":"prokrust.ai/s3","release":"1.4.0-rc.1","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"synthetic/descriptor.json","sha256":"sha256:75d588d83c269c3003421d5a6db97870cba64557d1aa3dc9471eb48f5836b03e"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}]}'
 kind: ConfigMap
 metadata:
   annotations:
@@ -1975,8 +1975,8 @@ data:
   connection-v1.json: |
     {"type":"object","properties":{"placementTemplateRef":{"type":"object","additionalProperties":false,"required":["name"],"properties":{"name":{"type":"string","minLength":1,"maxLength":63,"pattern":"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"}}},"bucket":{"type":"string","minLength":3,"maxLength":63,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$"},"region":{"type":"string","minLength":3,"maxLength":32,"pattern":"^[a-z0-9-]+$"},"prefix":{"type":"string","maxLength":1024},"bucketOwner":{"type":"string","pattern":"^[0-9]{12}$"},"expectedPrincipalArn":{"type":"string","minLength":20,"maxLength":2048},"credentialsSecretRef":{"type":"object","properties":{"name":{"type":"string","minLength":1,"maxLength":253,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"}},"required":["name"],"additionalProperties":false}},"required":["bucket","region","prefix","bucketOwner","expectedPrincipalArn","credentialsSecretRef"],"additionalProperties":false}
   descriptor.json: |
-    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"aws.sources.prokrust.ai/v1beta1","kind":"S3Connection","plural":"s3connections","schema":{"file":"connection-v1.json","sha256":"sha256:09abe49c627dad659d15bffc4098539033a59cc6230d6bc0dc22f892118eb916"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/s3","providerMajor":1,"release":"1.3.0-rc.1","runtimeImages":[{"digest":"sha256:b890745e02da6bab67e345d051eab31b44e73c1a69a41626a73d14dcfabe007a","role":"runtime"},{"digest":"sha256:b890745e02da6bab67e345d051eab31b44e73c1a69a41626a73d14dcfabe007a","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Amazon S3"}}
-  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:005ccfa04e71a69c919c02a75a3fa123bcf762586cc961c43c5c7ebced2d7fb8"},"enabled":true,"id":"prokrust.ai/s3","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}'
+    {"capabilities":["browse","inspect","original-files","probe","source-byte-budget","source-request-budget","staged-byte-budget","versioned-membership"],"connectionKinds":[{"apiVersion":"aws.sources.prokrust.ai/v1beta1","kind":"S3Connection","plural":"s3connections","schema":{"file":"connection-v1.json","sha256":"sha256:09abe49c627dad659d15bffc4098539033a59cc6230d6bc0dc22f892118eb916"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/s3","providerMajor":1,"release":"1.4.0-rc.1","runtimeImages":[{"digest":"sha256:21550e07f294b604fb56b1de5416a94ef889ffb45f594697a8c180e5b7e2608a","role":"runtime"},{"digest":"sha256:21550e07f294b604fb56b1de5416a94ef889ffb45f594697a8c180e5b7e2608a","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:0d2df14a4347ca4122632e4e37402c3853a97093f1a09f4a463474a146e8450e"}],"ui":{"displayName":"Amazon S3"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:9bbb0356ef410110eebdfe5379518dee7263283efc2d2ebaf17e2a9aeae689b2"},"enabled":true,"id":"prokrust.ai/s3","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}'
   selector-v1.json: |
     {"type":"object","properties":{"kind":{"type":"string","enum":["prefix","object"]},"path":{"type":"string","maxLength":1024}},"required":["kind","path"],"additionalProperties":false}
 kind: ConfigMap
@@ -1989,8 +1989,8 @@ data:
   connection-v1.json: |
     {"type":"object","properties":{"placementTemplateRef":{"type":"object","additionalProperties":false,"required":["name"],"properties":{"name":{"type":"string","minLength":1,"maxLength":63,"pattern":"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"}}},"seed":{"type":"integer","minimum":0,"maximum":999999},"partitions":{"type":"integer","minimum":1,"maximum":100000},"rowsPerPartition":{"type":"integer","minimum":0,"maximum":100000}},"required":["seed","partitions","rowsPerPartition"],"additionalProperties":false}
   descriptor.json: |
-    {"capabilities":["atomic-source-snapshot","browse","inspect","original-files","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"sources.prokrust.ai/v1beta1","kind":"SyntheticConnection","plural":"syntheticconnections","schema":{"file":"connection-v1.json","sha256":"sha256:c285f4c11553d13a7813d96a1c9e7a181b45dcd24e98a5f1631bd176f472f49d"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/synthetic","providerMajor":1,"release":"1.3.0-rc.1","runtimeImages":[{"digest":"sha256:21fc1e0192739c4e989acce3782b0f2ec6b993ca8a918c40a43d9f65fe7dcc65","role":"runtime"},{"digest":"sha256:21fc1e0192739c4e989acce3782b0f2ec6b993ca8a918c40a43d9f65fe7dcc65","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:f2bc86898d3d2d182032758d99f06eb270cbc5b68b30e469b5b9b82461d2d07b"}],"ui":{"displayName":"Synthetic Events"}}
-  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:3f2a465643da1047da0f9c042d481f46bb639c747ccec3cbfcdc6433390062a1"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.3.0-rc.1","tlsProfile":"installation-ca"}'
+    {"capabilities":["atomic-source-snapshot","browse","inspect","original-files","probe","source-byte-budget","source-request-budget","source-row-budget","staged-byte-budget"],"connectionKinds":[{"apiVersion":"sources.prokrust.ai/v1beta1","kind":"SyntheticConnection","plural":"syntheticconnections","schema":{"file":"connection-v1.json","sha256":"sha256:c285f4c11553d13a7813d96a1c9e7a181b45dcd24e98a5f1631bd176f472f49d"},"scope":"Namespaced"}],"connectorProtocolMajor":1,"formatVersion":1,"providerId":"prokrust.ai/synthetic","providerMajor":1,"release":"1.4.0-rc.1","runtimeImages":[{"digest":"sha256:581438179c7b3bf0cd5ef6fbb56b35cc117399fa3bed4b05ae7db6c3cfcaed60","role":"runtime"},{"digest":"sha256:581438179c7b3bf0cd5ef6fbb56b35cc117399fa3bed4b05ae7db6c3cfcaed60","role":"controller"}],"selectorSchemas":[{"defaultForNew":true,"file":"selector-v1.json","schemaVersion":"v1","sha256":"sha256:f2bc86898d3d2d182032758d99f06eb270cbc5b68b30e469b5b9b82461d2d07b"}],"ui":{"displayName":"Synthetic Events"}}
+  registration.json: '{"controllerNamespace":"prokrust-system","descriptor":{"file":"descriptor.json","sha256":"sha256:75d588d83c269c3003421d5a6db97870cba64557d1aa3dc9471eb48f5836b03e"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.4.0-rc.1","tlsProfile":"installation-ca"}'
   selector-v1.json: |
     {"type":"object","properties":{"dataset":{"type":"string","const":"events"}},"required":["dataset"],"additionalProperties":false}
 kind: ConfigMap
@@ -2033,7 +2033,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:b17f9a8204c997076685e8f487429e102e95a725eab1573de92a5e4adc6b7308","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2001:4860:4840::/45"}},{"ipBlock":{"cidr":"2607:f8b0::/32"}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2600:1f70:4000::/56"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae10::41fe/128"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae20::beb5/128"}}]}],"maxAttemptSeconds":900,"partitionConcurrency":1,"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"1Gi"},"requests":{"cpu":"100m","memory":"256Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-bigquery@sha256:934da09e24ac96a4ea4ec93bba993be9a95d16d416b94135f2681c269113e71c","runtimeNodeSelector":{"kubernetes.io/arch":"arm64","kubernetes.io/os":"linux"},"runtimeServiceAccountName":"prokrust-connector-runtime-bigquery","runtimeSourceTokenAudience":"https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:b0870e9d462f8e38757d845dc6708ee81d416fc3753f69838f9f8a22b415e29c","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2001:4860:4840::/45"}},{"ipBlock":{"cidr":"2607:f8b0::/32"}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"2600:1f70:4000::/56"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae10::41fe/128"}},{"ipBlock":{"cidr":"2600:1f13:db0:ae20::beb5/128"}}]}],"maxAttemptSeconds":900,"partitionConcurrency":1,"release":"1.5.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"1Gi"},"requests":{"cpu":"100m","memory":"256Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-bigquery@sha256:ae8bbabfab18742db84984ab60dd0bd35d1f7f8ee189927291ee3d1deaeacbae","runtimeNodeSelector":{"kubernetes.io/arch":"arm64","kubernetes.io/os":"linux"},"runtimeServiceAccountName":"prokrust-connector-runtime-bigquery","runtimeSourceTokenAudience":"https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-bigquery-settings
@@ -2041,7 +2041,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:ee35655f5881c2eb1bbacea02cc581fe6b56e213bbb57200194effc1187d3d4a","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.3.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-gcs@sha256:24137ceb587b18c582c0c7ea27c4ae87b99e543427b5c799c589142809b03d2b","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-gcs","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:d4b1108131dd838359cfcff2a182607cbfaca6b4bf7dfb79247959a138bbbdc9","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-gcs@sha256:ad97985c8a2236d598a3904d6408f3e071f073fd70e731905cc37f71749aee1c","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-gcs","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-gcs-settings
@@ -2049,7 +2049,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:76f5edbf7c0e4446666b3890c54a7aea559f9aa4e53638aa2154905b13f0ffb9","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"providerConfig":{"catalogEndpointPolicies":{}},"release":"1.3.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-iceberg@sha256:eda0ab109ab752e375a2afe5ef23dbade43b3732eebceb7f0dcc86f02c2e87cc","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-iceberg","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:30ca74bb1d17f5768bb3955b60f0a11186fdfff3de882e2734823d34fced2aa9","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"providerConfig":{"catalogEndpointPolicies":{}},"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-iceberg@sha256:a8204c79fb934865e9511c527ed6f90eba779d719184f3daf0b8347e72943760","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-iceberg","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-iceberg-settings
@@ -2057,7 +2057,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:4fc723fcaf2979b48aa7d09d5f5ec538d2fa289887855241df7f517426b3196a","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"providerConfig":{"catalogEndpointPolicies":{}},"release":"1.3.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-paimon@sha256:4cf0d33ac64107ed51dd5dc6830e60846b99ace55c94b9027d6c4742e773347b","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-paimon","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:9b9efe0a92045c6f5ae8ced57666305d910fa012f948d52f270b1c090f9d045a","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"providerConfig":{"catalogEndpointPolicies":{}},"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-paimon@sha256:620dd23be35d37dd4534ff66871fad3eb43436403db66f4143f19dc2cc7c5151","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-paimon","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-paimon-settings
@@ -2065,7 +2065,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:005ccfa04e71a69c919c02a75a3fa123bcf762586cc961c43c5c7ebced2d7fb8","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.3.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-s3@sha256:b890745e02da6bab67e345d051eab31b44e73c1a69a41626a73d14dcfabe007a","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-s3","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:9bbb0356ef410110eebdfe5379518dee7263283efc2d2ebaf17e2a9aeae689b2","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-s3@sha256:21550e07f294b604fb56b1de5416a94ef889ffb45f594697a8c180e5b7e2608a","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-s3","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-s3-settings
@@ -2073,7 +2073,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:3f2a465643da1047da0f9c042d481f46bb639c747ccec3cbfcdc6433390062a1","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.3.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-synthetic@sha256:21fc1e0192739c4e989acce3782b0f2ec6b993ca8a918c40a43d9f65fe7dcc65","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-synthetic","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
+  settings.json: '{"cleanupGraceSeconds":30,"controlConcurrency":2,"descriptorDigest":"sha256:75d588d83c269c3003421d5a6db97870cba64557d1aa3dc9471eb48f5836b03e","egress":[{"ports":[{"port":53,"protocol":"UDP"},{"port":53,"protocol":"TCP"}],"to":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}}}]}],"maxAttemptSeconds":900,"partitionConcurrency":4,"release":"1.4.0-rc.1","replicas":2,"resources":{"limits":{"cpu":"2","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"runtimeImage":"ar.prokrust.io/prokrust/connector-synthetic@sha256:581438179c7b3bf0cd5ef6fbb56b35cc117399fa3bed4b05ae7db6c3cfcaed60","runtimeNodeSelector":{"kubernetes.io/arch":"arm64"},"runtimeServiceAccountName":"prokrust-connector-runtime-synthetic","runtimeTolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]}'
 kind: ConfigMap
 metadata:
   name: prokrust-system-connector-synthetic-settings
@@ -2086,7 +2086,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -2196,7 +2196,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -2209,7 +2209,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/connector-registry-checksum: ff04643b0ba122e1f7fbd4be9857e771ae6d179b40e3aa445e7df8f58c7ced2a
+        prokrust.ai/connector-registry-checksum: e123ef6904fead63c8346e4b81ae1d1eb792e1218a887ebbd59db7617db2a993
       labels:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: prokrust-application-controller
@@ -2280,7 +2280,7 @@ spec:
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         - name: RP_ARTIFACT_AUTH_MODE
           value: workload-identity
-        image: ar.prokrust.io/prokrust/operator@sha256:87dfbff2d4256f998a20bcce29640471d019b69de78a6b146a1216ecfc6bd1df
+        image: ar.prokrust.io/prokrust/operator@sha256:76c31547d07a21b1f8d1c7258f90e75481276b40cf7995659abd08993ccc99cc
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -2429,7 +2429,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -2487,7 +2487,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/operator@sha256:87dfbff2d4256f998a20bcce29640471d019b69de78a6b146a1216ecfc6bd1df
+        image: ar.prokrust.io/prokrust/operator@sha256:76c31547d07a21b1f8d1c7258f90e75481276b40cf7995659abd08993ccc99cc
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -2558,7 +2558,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: 7de7791154efe12479604245a7bf1be41ddad79a232fdcb044123ba4fbf86f55
+        prokrust.ai/settings-digest: 5f884f56881a8793bdc5e20b8bc76ed6ad06343c6a58d23993ee1fc4ece75d35
       labels:
         app.kubernetes.io/name: prokrust-system-connector-bigquery
     spec:
@@ -2570,7 +2570,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ar.prokrust.io/prokrust/connector-bigquery@sha256:934da09e24ac96a4ea4ec93bba993be9a95d16d416b94135f2681c269113e71c
+        image: ar.prokrust.io/prokrust/connector-bigquery@sha256:ae8bbabfab18742db84984ab60dd0bd35d1f7f8ee189927291ee3d1deaeacbae
         name: controller
         resources:
           limits:
@@ -2625,7 +2625,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: e7cc813243eef22f104d2521aa3f401bb9ccc06f1b57c3bf8f06dfb34f3ff710
+        prokrust.ai/settings-digest: 38fdeb9427847d0c8c5f8371e04757c73a37ed1866ee3e2a4c4da4eaed824df6
       labels:
         app.kubernetes.io/name: prokrust-system-connector-gcs
     spec:
@@ -2637,7 +2637,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ar.prokrust.io/prokrust/connector-gcs@sha256:24137ceb587b18c582c0c7ea27c4ae87b99e543427b5c799c589142809b03d2b
+        image: ar.prokrust.io/prokrust/connector-gcs@sha256:ad97985c8a2236d598a3904d6408f3e071f073fd70e731905cc37f71749aee1c
         name: controller
         resources:
           limits:
@@ -2692,7 +2692,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: d00a823d677106d7e2d5dde3f658b714a1f32bd5373218b09a7993e0806101e9
+        prokrust.ai/settings-digest: 2e78498ae4e8157aa218b269aa415b596987ad8954479f81a9ecbb5b07be4865
       labels:
         app.kubernetes.io/name: prokrust-system-connector-iceberg
     spec:
@@ -2704,7 +2704,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ar.prokrust.io/prokrust/connector-iceberg@sha256:eda0ab109ab752e375a2afe5ef23dbade43b3732eebceb7f0dcc86f02c2e87cc
+        image: ar.prokrust.io/prokrust/connector-iceberg@sha256:a8204c79fb934865e9511c527ed6f90eba779d719184f3daf0b8347e72943760
         name: controller
         resources:
           limits:
@@ -2759,7 +2759,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: a12c5d8779d58e5a9d3aa133316c0e9e4b35abdac4500133388399506fc3d7d5
+        prokrust.ai/settings-digest: 3b1fe4e671779ae75cc99cb996b88e49ecbc40d7cfb814b5ca4eef11a6dff2a1
       labels:
         app.kubernetes.io/name: prokrust-system-connector-paimon
     spec:
@@ -2771,7 +2771,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ar.prokrust.io/prokrust/connector-paimon@sha256:4cf0d33ac64107ed51dd5dc6830e60846b99ace55c94b9027d6c4742e773347b
+        image: ar.prokrust.io/prokrust/connector-paimon@sha256:620dd23be35d37dd4534ff66871fad3eb43436403db66f4143f19dc2cc7c5151
         name: controller
         resources:
           limits:
@@ -2826,7 +2826,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: 92b6b3442578fdc2f44b9e20c8e2ac053b2a145a2d1370f1166a85e49e612b16
+        prokrust.ai/settings-digest: ba800dd72bf6f11be7d297b4f40979eba865260f930a659f8c45004cf3a24b8d
       labels:
         app.kubernetes.io/name: prokrust-system-connector-s3
     spec:
@@ -2838,7 +2838,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ar.prokrust.io/prokrust/connector-s3@sha256:b890745e02da6bab67e345d051eab31b44e73c1a69a41626a73d14dcfabe007a
+        image: ar.prokrust.io/prokrust/connector-s3@sha256:21550e07f294b604fb56b1de5416a94ef889ffb45f594697a8c180e5b7e2608a
         name: controller
         resources:
           limits:
@@ -2893,7 +2893,7 @@ spec:
   template:
     metadata:
       annotations:
-        prokrust.ai/settings-digest: 4818988e0afa9643f8ab8a8cdbc597d5928334e47df6b2b23bb55a53395a7669
+        prokrust.ai/settings-digest: eaed93a1d489c7d9ac22ff6cf949d8169f74d02719b73061d2ee502e52a5df44
       labels:
         app.kubernetes.io/name: prokrust-system-connector-synthetic
     spec:
@@ -2905,7 +2905,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ar.prokrust.io/prokrust/connector-synthetic@sha256:21fc1e0192739c4e989acce3782b0f2ec6b993ca8a918c40a43d9f65fe7dcc65
+        image: ar.prokrust.io/prokrust/connector-synthetic@sha256:581438179c7b3bf0cd5ef6fbb56b35cc117399fa3bed4b05ae7db6c3cfcaed60
         name: controller
         resources:
           limits:
@@ -2965,7 +2965,7 @@ spec:
     metadata:
       annotations:
         prokrust.ai/auth-revision: "6"
-        prokrust.ai/connector-registry-checksum: ff04643b0ba122e1f7fbd4be9857e771ae6d179b40e3aa445e7df8f58c7ced2a
+        prokrust.ai/connector-registry-checksum: e123ef6904fead63c8346e4b81ae1d1eb792e1218a887ebbd59db7617db2a993
       labels:
         app.kubernetes.io/component: api
         app.kubernetes.io/name: prokrust-web-api
@@ -5833,7 +5833,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -5856,7 +5856,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -5931,7 +5931,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -6010,7 +6010,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -6323,7 +6323,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.29.0-rc.1
+    helm.sh/chart: prokrust-system-0.30.0-rc.1
   name: default
   namespace: prokrust-system
 spec:
