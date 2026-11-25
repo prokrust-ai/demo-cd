@@ -2,6 +2,16 @@ installation:
   namespace: prokrust-system
 connectors:
   enabled: true
+  artifactAccess:
+    bigquery:
+      serviceAccount:
+        name: prokrust-connector-runtime-bigquery
+        create: false
+      auth:
+        provider: IRSA
+        roleArn: arn:aws:iam::390992144652:role/prokrust-demo-connector-bigquery-staging
+  artifactNetworkPolicy:
+    enabled: false
   connectionResources:
   - {apiGroup: google.sources.prokrust.ai, resource: bigqueryconnections}
   - {apiGroup: google.sources.prokrust.ai, resource: gcsconnections}

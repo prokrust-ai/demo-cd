@@ -20,6 +20,8 @@ service-account token directly with Google STS. Each connector uses
 `harbor-reader` and disable automatic API-token mounting. Only BigQuery projects
 the configured Google workload identity audience. BigQuery also uses its dedicated AWS staging role to read versioned connector control objects and write staged artifacts. New pods receive separate Google and regional AWS STS token projections. Its runtime egress permits DNS and HTTPS to the configured Google APIs, regional STS and S3 endpoint addresses.
 
+The workspace declares the BigQuery artifact binding under `connectors.artifactAccess.bigquery`. The service account and its IRSA annotation are managed in `connector-runtime-accounts.yaml`. The BigQuery controller owns the network policy for each connection, so `connectors.artifactNetworkPolicy.enabled` is false.
+
 ## Before syncing
 
 - Apply the Demo-managed `prokrust` AppProject update. It authorizes Argo CD to
