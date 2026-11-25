@@ -18,8 +18,7 @@ BigQuery pods run as `prokrust-connector-runtime-bigquery` and exchange a projec
 service-account token directly with Google STS. Each connector uses
 `prokrust-connector-runtime-<provider>`. All six accounts reference
 `harbor-reader` and disable automatic API-token mounting. Only BigQuery projects
-the configured Google workload identity audience. Its runtime can reach cluster
-DNS and the approved Google API networks over HTTPS.
+the configured Google workload identity audience. BigQuery also uses its dedicated AWS staging role to read versioned connector control objects and write staged artifacts. New pods receive separate Google and regional AWS STS token projections. Its runtime egress permits DNS and HTTPS to the configured Google APIs, regional STS and S3 endpoint addresses.
 
 ## Before syncing
 
