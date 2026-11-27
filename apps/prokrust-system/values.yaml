@@ -8,6 +8,16 @@ global:
   awsRegion: us-west-2
   networkFamily: IPv6
   workloadPlacementProfile: arm64
+  placementTemplates:
+    gpu-training:
+      allowedRoles: [trainer]
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        karpenter.sh/nodepool: performance-qualification-gpu
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
   imagePullSecrets:
   - name: harbor-reader
   networkPolicy:

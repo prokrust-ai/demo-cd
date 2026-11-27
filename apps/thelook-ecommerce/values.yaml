@@ -71,6 +71,16 @@ access:
       displayName: Demo admin
 
 workspace:
+  placementTemplates:
+    gpu-training:
+      allowedRoles: [trainer]
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        karpenter.sh/nodepool: performance-qualification-gpu
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
   ballistaAccounts: external
   storage:
     backend: S3
