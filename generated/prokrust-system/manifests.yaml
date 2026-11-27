@@ -60,6 +60,14 @@ metadata:
   namespace: prokrust-system
 ---
 apiVersion: v1
+imagePullSecrets:
+- name: harbor-reader
+kind: ServiceAccount
+metadata:
+  name: prokrust-license-uninstall
+  namespace: prokrust-system
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: prokrust-system-connector-bigquery
@@ -106,9 +114,24 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.31.0-rc.3
+    helm.sh/chart: web-api-0.32.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-license-uninstall-11c50d8075e9
+  namespace: argocd
+rules:
+- apiGroups:
+  - argoproj.io
+  resourceNames:
+  - prokrust-system
+  resources:
+  - applications
+  verbs:
+  - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -227,6 +250,26 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  name: prokrust-connector-registry-writer
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-connector-bigquery-registry
+  - prokrust-connector-gcs-registry
+  - prokrust-connector-iceberg-registry
+  - prokrust-connector-paimon-registry
+  - prokrust-connector-s3-registry
+  - prokrust-connector-synthetic-registry
+  resources:
+  - configmaps
+  verbs:
+  - register
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
   name: prokrust-installation-activation-reader
   namespace: prokrust-system
 rules:
@@ -293,6 +336,7 @@ rules:
   - licenseactivations
   verbs:
   - get
+  - patch
 - apiGroups:
   - platform.prokrust.ai
   resourceNames:
@@ -301,6 +345,40 @@ rules:
   - licenseactivations/status
   verbs:
   - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prokrust-license-uninstall
+  namespace: prokrust-system
+rules:
+- apiGroups:
+  - platform.prokrust.ai
+  resourceNames:
+  - default
+  resources:
+  - licenseactivations
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-installation-identity
+  resources:
+  - secrets
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resourceNames:
+  - prokrust-license-entitlement
+  - prokrust-license-challenge
+  resources:
+  - secrets
+  verbs:
+  - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -881,6 +959,20 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  name: prokrust-license-uninstall-11c50d8075e9
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-license-uninstall-11c50d8075e9
+subjects:
+- kind: ServiceAccount
+  name: prokrust-license-uninstall
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
   name: prokrust-application-controller
   namespace: prokrust-system
 roleRef:
@@ -976,6 +1068,20 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prokrust-application-controller
+  namespace: prokrust-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prokrust-license-uninstall
+  namespace: prokrust-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prokrust-license-uninstall
+subjects:
+- kind: ServiceAccount
+  name: prokrust-license-uninstall
   namespace: prokrust-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -1295,17 +1401,17 @@ data:
   ballista.chartVersion: 0.4.1-rc.1
   ballista.version: 0.4.1-rc.1
   batch-predictor.version: 0.12.0-rc.1
-  compositionVersion: 0.31.0-rc.1
+  compositionVersion: 0.32.0-rc.1
   data-job.version: 0.14.0-rc.1
   serving.version: 0.12.0-rc.1
   trainer.version: 0.12.0-rc.1
-  web-api.version: 0.31.0-rc.3
+  web-api.version: 0.32.0-rc.1
 kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -1962,16 +2068,6 @@ metadata:
 ---
 apiVersion: v1
 data:
-  registry.json: '{"providers":[{"controllerNamespace":"prokrust-system","descriptor":{"file":"bigquery/descriptor.json","sha256":"sha256:fcccc56d9bf5c61a4f5423063faba652a24ae684ebd0bb7a873d6da76bf1490e"},"enabled":true,"id":"prokrust.ai/bigquery","release":"1.5.0-rc.2","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"gcs/descriptor.json","sha256":"sha256:54c38cfa14f4fcb9e33517ba9d3cc2121e1918a2032b437be35262b21b03ba08"},"enabled":true,"id":"prokrust.ai/gcs","release":"1.4.0-rc.2","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"iceberg/descriptor.json","sha256":"sha256:5911f2a188e877a276b422af40fbc75e1b27bee0555141c435037316ab5daffb"},"enabled":true,"id":"prokrust.ai/iceberg","release":"1.4.0-rc.2","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"paimon/descriptor.json","sha256":"sha256:c0b6ce07440129920cffd38612c927ca1cf2044738d2855994aaf3df3cc62f94"},"enabled":true,"id":"prokrust.ai/paimon","release":"1.4.0-rc.2","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"s3/descriptor.json","sha256":"sha256:82ab6da81b93a94c57da07141f8f1c949b16aafd00d60e573d77dc9a374f1c0d"},"enabled":true,"id":"prokrust.ai/s3","release":"1.4.0-rc.2","tlsProfile":"installation-ca"},{"controllerNamespace":"prokrust-system","descriptor":{"file":"synthetic/descriptor.json","sha256":"sha256:2e2f4d8c6216ee5dd70632295d4a3e4683ce6b36f5e4fa21719e3daba02909dd"},"enabled":true,"id":"prokrust.ai/synthetic","release":"1.4.0-rc.2","tlsProfile":"installation-ca"}]}'
-kind: ConfigMap
-metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
-  name: prokrust-connector-registry-index
-  namespace: prokrust-system
----
-apiVersion: v1
-data:
   connection-v1.json: |
     {"type":"object","properties":{"placementTemplateRef":{"type":"object","additionalProperties":false,"required":["name"],"properties":{"name":{"type":"string","minLength":1,"maxLength":63,"pattern":"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"}}},"bucket":{"type":"string","minLength":3,"maxLength":63,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$"},"region":{"type":"string","minLength":3,"maxLength":32,"pattern":"^[a-z0-9-]+$"},"prefix":{"type":"string","maxLength":1024},"bucketOwner":{"type":"string","pattern":"^[0-9]{12}$"},"expectedPrincipalArn":{"type":"string","minLength":20,"maxLength":2048},"credentialsSecretRef":{"type":"object","properties":{"name":{"type":"string","minLength":1,"maxLength":253,"pattern":"^[a-z0-9][a-z0-9.-]*[a-z0-9]$|^[a-z0-9]$"}},"required":["name"],"additionalProperties":false}},"required":["bucket","region","prefix","bucketOwner","expectedPrincipalArn","credentialsSecretRef"],"additionalProperties":false}
   descriptor.json: |
@@ -2086,7 +2182,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -2173,7 +2269,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.31.0-rc.3
+    helm.sh/chart: web-api-0.32.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2196,7 +2292,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -2208,8 +2304,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        prokrust.ai/connector-registry-checksum: ddcc99ad6e6466f3138a67c9011123b711a11571c855d9dbefe91d454f249364
       labels:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: prokrust-application-controller
@@ -2233,7 +2327,11 @@ spec:
         - name: AWS_DEFAULT_REGION
           value: us-west-2
         - name: PROKRUST_CONNECTOR_CONFIG
-          value: /etc/prokrust/connectors/registry.json
+          value: /etc/prokrust/connectors
+        - name: PROKRUST_SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: PROKRUST_SERVING_ENABLED
           value: "false"
         - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
@@ -2280,7 +2378,7 @@ spec:
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         - name: RP_ARTIFACT_AUTH_MODE
           value: workload-identity
-        image: ar.prokrust.io/prokrust/operator@sha256:34742e704eed5124b0f4e47a3645512a8568c302f7a2e4387c6cbbabf4730be8
+        image: ar.prokrust.io/prokrust/operator@sha256:d1b3d0a21b02d151af9d5e9650e6fc302efb6b7c76f1c155f58849fad881370c
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -2318,8 +2416,23 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
-        - mountPath: /etc/prokrust/connectors
-          name: connector-registry
+        - mountPath: /etc/prokrust/connectors/bigquery
+          name: connector-registry-0
+          readOnly: true
+        - mountPath: /etc/prokrust/connectors/gcs
+          name: connector-registry-1
+          readOnly: true
+        - mountPath: /etc/prokrust/connectors/iceberg
+          name: connector-registry-2
+          readOnly: true
+        - mountPath: /etc/prokrust/connectors/paimon
+          name: connector-registry-3
+          readOnly: true
+        - mountPath: /etc/prokrust/connectors/s3
+          name: connector-registry-4
+          readOnly: true
+        - mountPath: /etc/prokrust/connectors/synthetic
+          name: connector-registry-5
           readOnly: true
         - mountPath: /tmp
           name: tmp
@@ -2347,68 +2460,30 @@ spec:
         operator: Equal
         value: arm64
       volumes:
-      - name: connector-registry
-        projected:
-          sources:
-          - configMap:
-              items:
-              - key: registry.json
-                path: registry.json
-              name: prokrust-connector-registry-index
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: bigquery/descriptor.json
-              - key: connection-v1.json
-                path: bigquery/connection-v1.json
-              - key: selector-v1.json
-                path: bigquery/selector-v1.json
-              name: prokrust-connector-bigquery-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: gcs/descriptor.json
-              - key: connection-v1.json
-                path: gcs/connection-v1.json
-              - key: selector-v1.json
-                path: gcs/selector-v1.json
-              name: prokrust-connector-gcs-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: iceberg/descriptor.json
-              - key: connection-v1.json
-                path: iceberg/connection-v1.json
-              - key: selector-v1.json
-                path: iceberg/selector-v1.json
-              name: prokrust-connector-iceberg-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: paimon/descriptor.json
-              - key: connection-v1.json
-                path: paimon/connection-v1.json
-              - key: selector-v1.json
-                path: paimon/selector-v1.json
-              name: prokrust-connector-paimon-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: s3/descriptor.json
-              - key: connection-v1.json
-                path: s3/connection-v1.json
-              - key: selector-v1.json
-                path: s3/selector-v1.json
-              name: prokrust-connector-s3-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: synthetic/descriptor.json
-              - key: connection-v1.json
-                path: synthetic/connection-v1.json
-              - key: selector-v1.json
-                path: synthetic/selector-v1.json
-              name: prokrust-connector-synthetic-registry
+      - configMap:
+          name: prokrust-connector-bigquery-registry
+          optional: true
+        name: connector-registry-0
+      - configMap:
+          name: prokrust-connector-gcs-registry
+          optional: true
+        name: connector-registry-1
+      - configMap:
+          name: prokrust-connector-iceberg-registry
+          optional: true
+        name: connector-registry-2
+      - configMap:
+          name: prokrust-connector-paimon-registry
+          optional: true
+        name: connector-registry-3
+      - configMap:
+          name: prokrust-connector-s3-registry
+          optional: true
+        name: connector-registry-4
+      - configMap:
+          name: prokrust-connector-synthetic-registry
+          optional: true
+        name: connector-registry-5
       - name: startup-tls
         secret:
           defaultMode: 288
@@ -2429,7 +2504,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -2487,7 +2562,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/operator@sha256:34742e704eed5124b0f4e47a3645512a8568c302f7a2e4387c6cbbabf4730be8
+        image: ar.prokrust.io/prokrust/operator@sha256:d1b3d0a21b02d151af9d5e9650e6fc302efb6b7c76f1c155f58849fad881370c
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -2953,7 +3028,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-web-api
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.31.0-rc.3
+    helm.sh/chart: web-api-0.32.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2965,7 +3040,6 @@ spec:
     metadata:
       annotations:
         prokrust.ai/auth-revision: "6"
-        prokrust.ai/connector-registry-checksum: ddcc99ad6e6466f3138a67c9011123b711a11571c855d9dbefe91d454f249364
       labels:
         app.kubernetes.io/component: api
         app.kubernetes.io/name: prokrust-web-api
@@ -2988,7 +3062,7 @@ spec:
         - name: PROKRUST_ARGO_UI_BASE_URL
           value: https://demo.prokrust.ai/argo
         - name: PROKRUST_CONNECTOR_CONFIG
-          value: /var/run/prokrust-connectors/registry.json
+          value: /var/run/prokrust-connectors
         - name: PROKRUST_SYSTEM_NAMESPACE
           value: prokrust-system
         - name: PROKRUST_WEB_API_SERVICE_ACCOUNT_NAMESPACE
@@ -3005,7 +3079,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/web-api@sha256:3e4574b707914f4ea64a04de31e78850cf3c5b719e54acf974f820c0585a1e9c
+        image: ar.prokrust.io/prokrust/web-api@sha256:dde858e66aa745ee468c41682c7bdd7be239686d9fe87b46b25453926902bdbe
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -3037,8 +3111,23 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
-        - mountPath: /var/run/prokrust-connectors
-          name: connector-registry
+        - mountPath: /var/run/prokrust-connectors/bigquery
+          name: connector-0
+          readOnly: true
+        - mountPath: /var/run/prokrust-connectors/gcs
+          name: connector-1
+          readOnly: true
+        - mountPath: /var/run/prokrust-connectors/iceberg
+          name: connector-2
+          readOnly: true
+        - mountPath: /var/run/prokrust-connectors/paimon
+          name: connector-3
+          readOnly: true
+        - mountPath: /var/run/prokrust-connectors/s3
+          name: connector-4
+          readOnly: true
+        - mountPath: /var/run/prokrust-connectors/synthetic
+          name: connector-5
           readOnly: true
         - mountPath: /etc/prokrust
           name: oidc-config
@@ -3062,68 +3151,30 @@ spec:
         operator: Equal
         value: arm64
       volumes:
-      - name: connector-registry
-        projected:
-          sources:
-          - configMap:
-              items:
-              - key: registry.json
-                path: registry.json
-              name: prokrust-connector-registry-index
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: bigquery/descriptor.json
-              - key: connection-v1.json
-                path: bigquery/connection-v1.json
-              - key: selector-v1.json
-                path: bigquery/selector-v1.json
-              name: prokrust-connector-bigquery-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: gcs/descriptor.json
-              - key: connection-v1.json
-                path: gcs/connection-v1.json
-              - key: selector-v1.json
-                path: gcs/selector-v1.json
-              name: prokrust-connector-gcs-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: iceberg/descriptor.json
-              - key: connection-v1.json
-                path: iceberg/connection-v1.json
-              - key: selector-v1.json
-                path: iceberg/selector-v1.json
-              name: prokrust-connector-iceberg-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: paimon/descriptor.json
-              - key: connection-v1.json
-                path: paimon/connection-v1.json
-              - key: selector-v1.json
-                path: paimon/selector-v1.json
-              name: prokrust-connector-paimon-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: s3/descriptor.json
-              - key: connection-v1.json
-                path: s3/connection-v1.json
-              - key: selector-v1.json
-                path: s3/selector-v1.json
-              name: prokrust-connector-s3-registry
-          - configMap:
-              items:
-              - key: descriptor.json
-                path: synthetic/descriptor.json
-              - key: connection-v1.json
-                path: synthetic/connection-v1.json
-              - key: selector-v1.json
-                path: synthetic/selector-v1.json
-              name: prokrust-connector-synthetic-registry
+      - configMap:
+          name: prokrust-connector-bigquery-registry
+          optional: true
+        name: connector-0
+      - configMap:
+          name: prokrust-connector-gcs-registry
+          optional: true
+        name: connector-1
+      - configMap:
+          name: prokrust-connector-iceberg-registry
+          optional: true
+        name: connector-2
+      - configMap:
+          name: prokrust-connector-paimon-registry
+          optional: true
+        name: connector-3
+      - configMap:
+          name: prokrust-connector-s3-registry
+          optional: true
+        name: connector-4
+      - configMap:
+          name: prokrust-connector-synthetic-registry
+          optional: true
+        name: connector-5
       - configMap:
           name: prokrust-oidc-6
         name: oidc-config
@@ -4490,6 +4541,35 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
+  name: prokrust-system-connector-registry-writers
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      - DELETE
+      resources:
+      - configmaps
+      scope: Namespaced
+  validations:
+  - expression: |-
+      !(variables.registryName in ["prokrust-connector-bigquery-registry","prokrust-connector-gcs-registry","prokrust-connector-iceberg-registry","prokrust-connector-paimon-registry","prokrust-connector-s3-registry","prokrust-connector-synthetic-registry"]) || authorizer.group('').resource('configmaps').namespace(request.namespace).name(variables.registryName).check('register').allowed() || (request.operation == 'DELETE' && has(namespaceObject.metadata.deletionTimestamp) &&
+
+        request.userInfo.username in ['system:kube-controller-manager', 'system:serviceaccount:kube-system:namespace-controller'])
+    message: Connector registry updates require the register permission on this ConfigMap
+  variables:
+  - expression: 'object != null ? object.metadata.name : oldObject.metadata.name'
+    name: registryName
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
   name: prokrust-system-connector-s3-roots
 spec:
   failurePolicy: Fail
@@ -5440,6 +5520,19 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
+  name: prokrust-system-connector-registry-writers
+spec:
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: prokrust-system
+  policyName: prokrust-system-connector-registry-writers
+  validationActions:
+  - Deny
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
   name: prokrust-system-connector-s3-roots
 spec:
   matchResources:
@@ -5692,6 +5785,71 @@ spec:
           sizeLimit: 16Mi
         name: tmp
 ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  name: prokrust-license-uninstall
+  namespace: prokrust-system
+spec:
+  activeDeadlineSeconds: 180
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prokrust-license-uninstall
+    spec:
+      containers:
+      - args:
+        - license-deactivate-on-uninstall
+        env:
+        - name: RP_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROKRUST_UNINSTALL_IDENTITY_SECRET
+          value: prokrust-installation-identity
+        - name: PROKRUST_UNINSTALL_ENTITLEMENT_SECRET
+          value: prokrust-license-entitlement
+        - name: PROKRUST_UNINSTALL_ARGO_NAMESPACE
+          value: argocd
+        - name: PROKRUST_UNINSTALL_ARGO_APPLICATION
+          value: prokrust-system
+        image: ar.prokrust.io/prokrust/operator@sha256:d1b3d0a21b02d151af9d5e9650e6fc302efb6b7c76f1c155f58849fad881370c
+        imagePullPolicy: IfNotPresent
+        name: deactivate
+        resources:
+          limits:
+            cpu: 250m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      restartPolicy: Never
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prokrust-license-uninstall
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+  ttlSecondsAfterFinished: 86400
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -5833,7 +5991,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -5856,7 +6014,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -5931,7 +6089,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -5988,6 +6146,40 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: prokrust-license-uninstall
+  namespace: prokrust-system
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: fd8e:1cf8:6673::1/128
+  - ports:
+    - port: 443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prokrust-license-uninstall
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: prokrust-license-webhook-ingress
   namespace: prokrust-system
 spec:
@@ -6010,7 +6202,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -6219,7 +6411,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.31.0-rc.3
+    helm.sh/chart: web-api-0.32.0-rc.1
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -6279,7 +6471,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.31.0-rc.3
+    helm.sh/chart: web-api-0.32.0-rc.1
   name: prokrust-web-api-aws-auth
   namespace: prokrust-system
 spec:
@@ -6323,7 +6515,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.31.0-rc.1
+    helm.sh/chart: prokrust-system-0.32.0-rc.1
   name: default
   namespace: prokrust-system
 spec:

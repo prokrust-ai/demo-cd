@@ -8,15 +8,16 @@ Argo Workflows controller identity. Artifact access uses IRSA; registry and lice
 use the existing `harbor-reader` and `prokrust-license-credential` Secrets.
 Adapt these settings when using another cluster.
 
-Enable a bundled connector with `connectors.<provider>.enabled` in `values.yaml`.
-Demo enables BigQuery, GCS, Iceberg, Paimon, S3 and Synthetic. The providers share
-the Demo pull Secret, ARM64 placement and IPv6 API endpoint through YAML aliases.
-Override a provider’s controller or runtime settings in its map when needed.
+The Kustomization pins each connector chart independently in Harbor. Change the
+provider’s `version` to upgrade it. Keep its connection CRDs enabled in the CRD
+Application. Shared controller and runtime settings live in
+`connectors/common.yaml`. BigQuery’s identity and egress settings live in
+`connectors/bigquery.yaml`. System discovers the registration ConfigMaps that the
+connector charts install in its namespace.
 
-Each enabled provider installs its controller and descriptor ConfigMap in
-`prokrust-system`. The system chart configures the Operator and Web API from the
-same provider map. Upgrade the system chart pin to consume new bundled releases.
-Keep the corresponding connection CRDs enabled in the CRD Application.
+The license deactivation Job runs before a cascading deletion of this System
+Application. Ordinary syncs, individual resource pruning and orphaning the
+Application preserve the activation.
 
 HTTPRoutes, TLS, ExternalSecrets and environment-specific NetworkPolicies are managed
 in the private deployment repository. Browser access uses `https://demo.prokrust.ai`
