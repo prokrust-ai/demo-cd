@@ -7,10 +7,63 @@ resources:
 helmCharts:
   - name: prokrust-system
     repo: oci://ar.prokrust.io/charts
-    version: 0.31.0-rc.1
+    version: 0.32.0-rc.1
     releaseName: prokrust-system
     namespace: prokrust-system
     valuesFile: values.yaml
+  - name: connector-bigquery
+    repo: oci://ar.prokrust.io/charts
+    version: 1.5.0-rc.2
+    releaseName: connector-bigquery
+    namespace: prokrust-system
+    additionalValuesFiles:
+      - connectors/common.yaml
+      - connectors/bigquery.yaml
+  - name: connector-gcs
+    repo: oci://ar.prokrust.io/charts
+    version: 1.4.0-rc.2
+    releaseName: connector-gcs
+    namespace: prokrust-system
+    additionalValuesFiles:
+      - connectors/common.yaml
+    valuesInline:
+      runtimeServiceAccountName: prokrust-connector-runtime-gcs
+  - name: connector-iceberg
+    repo: oci://ar.prokrust.io/charts
+    version: 1.4.0-rc.2
+    releaseName: connector-iceberg
+    namespace: prokrust-system
+    additionalValuesFiles:
+      - connectors/common.yaml
+    valuesInline:
+      runtimeServiceAccountName: prokrust-connector-runtime-iceberg
+  - name: connector-paimon
+    repo: oci://ar.prokrust.io/charts
+    version: 1.4.0-rc.2
+    releaseName: connector-paimon
+    namespace: prokrust-system
+    additionalValuesFiles:
+      - connectors/common.yaml
+    valuesInline:
+      runtimeServiceAccountName: prokrust-connector-runtime-paimon
+  - name: connector-s3
+    repo: oci://ar.prokrust.io/charts
+    version: 1.4.0-rc.2
+    releaseName: connector-s3
+    namespace: prokrust-system
+    additionalValuesFiles:
+      - connectors/common.yaml
+    valuesInline:
+      runtimeServiceAccountName: prokrust-connector-runtime-s3
+  - name: connector-synthetic
+    repo: oci://ar.prokrust.io/charts
+    version: 1.4.0-rc.2
+    releaseName: connector-synthetic
+    namespace: prokrust-system
+    additionalValuesFiles:
+      - connectors/common.yaml
+    valuesInline:
+      runtimeServiceAccountName: prokrust-connector-runtime-synthetic
 
 # Each connector protects its runtime ServiceAccount. Argo reconciles only the
 # ordinary account objects here. TokenRequests continue through the full policy.

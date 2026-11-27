@@ -1,0 +1,27 @@
+runtimeNodeSelector:
+  kubernetes.io/os: linux
+runtimeServiceAccountName: prokrust-connector-runtime-bigquery
+runtimeSourceTokenAudience: &googleAudience https://iam.googleapis.com/projects/544249942092/locations/global/workloadIdentityPools/prokrust-demo-eks/providers/demo-eks
+runtimeTokenAudiences: [*googleAudience, sts.amazonaws.com]
+egress:
+  - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: kube-system
+        podSelector:
+          matchLabels:
+            k8s-app: kube-dns
+    ports:
+      - {protocol: UDP, port: 53}
+      - {protocol: TCP, port: 53}
+  - to:
+      - ipBlock: {cidr: '2001:4860:4840::/45'}
+      - ipBlock: {cidr: '2607:f8b0::/32'}
+    ports:
+      - {protocol: TCP, port: 443}
+  - to:
+      - ipBlock: {cidr: '2600:1f70:4000::/56'}
+      - ipBlock: {cidr: '2600:1f13:db0:ae10::41fe/128'}
+      - ipBlock: {cidr: '2600:1f13:db0:ae20::beb5/128'}
+    ports:
+      - {protocol: TCP, port: 443}
