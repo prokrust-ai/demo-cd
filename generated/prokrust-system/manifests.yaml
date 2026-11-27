@@ -2352,6 +2352,8 @@ spec:
           value: system:serviceaccount:argo:argo
         - name: PROKRUST_WORKFLOW_SCHEDULING_PROFILE
           value: standard
+        - name: PROKRUST_PLACEMENT_TEMPLATES
+          value: '{"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: PROKRUST_WORKFLOW_IMAGE_PULL_SECRETS
@@ -2540,6 +2542,8 @@ spec:
           value: workload-identity
         - name: PROKRUST_NETWORK_FAMILY
           value: IPv6
+        - name: PROKRUST_PLACEMENT_TEMPLATES
+          value: '{"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: RP_POD_NAMESPACE
@@ -3051,6 +3055,8 @@ spec:
       - env:
         - name: PROKRUST_WEB_API_BIND
           value: '[::]:8080'
+        - name: PROKRUST_PLACEMENT_TEMPLATES
+          value: '{"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
         - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
           value: inherit
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE

@@ -2548,6 +2548,17 @@ spec:
       operator: ar.prokrust.io/prokrust/operator@sha256:87dfbff2d4256f998a20bcce29640471d019b69de78a6b146a1216ecfc6bd1df
       trainer: ar.prokrust.io/prokrust/trainer@sha256:26e870db195ac120161ba55aa5063ee0fb484c20b5ddefab111e484c466edf45
       trainerCuda: ar.prokrust.io/prokrust/trainer-cuda@sha256:90db7742c5b2e0f1e204aaa9b0aa6e5041c48f18b1967e2836f3a25d93256735
+    placementTemplates:
+      gpu-training:
+        allowedRoles:
+        - trainer
+        nodeSelector:
+          karpenter.sh/nodepool: performance-qualification-gpu
+          kubernetes.io/arch: amd64
+        tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
     programs:
       graphSnapshot:
         programId: prokrust.graph-snapshot
