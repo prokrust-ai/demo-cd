@@ -9,6 +9,15 @@ global:
   networkFamily: IPv6
   workloadPlacementProfile: arm64
   placementTemplates:
+    cpu-training:
+      allowedRoles: [trainer]
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      tolerations:
+      - key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+        effect: NoSchedule
     gpu-training:
       allowedRoles: [trainer]
       nodeSelector:

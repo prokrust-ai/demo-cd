@@ -72,6 +72,15 @@ access:
 
 workspace:
   placementTemplates:
+    cpu-training:
+      allowedRoles: [trainer]
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      tolerations:
+      - key: kubernetes.io/arch
+        operator: Equal
+        value: arm64
+        effect: NoSchedule
     gpu-training:
       allowedRoles: [trainer]
       nodeSelector:
@@ -81,6 +90,9 @@ workspace:
       - key: nvidia.com/gpu
         operator: Exists
         effect: NoSchedule
+  placementDefaults:
+    trainer:
+      name: cpu-training
   ballistaAccounts: external
   storage:
     backend: S3

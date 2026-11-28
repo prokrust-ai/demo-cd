@@ -114,7 +114,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.32.0-rc.1
+    helm.sh/chart: web-api-0.32.0-rc.2
   name: prokrust-web-api
   namespace: prokrust-system
 ---
@@ -1401,17 +1401,17 @@ data:
   ballista.chartVersion: 0.4.1-rc.1
   ballista.version: 0.4.1-rc.1
   batch-predictor.version: 0.12.0-rc.1
-  compositionVersion: 0.32.0-rc.1
+  compositionVersion: 0.33.0-rc.1
   data-job.version: 0.14.0-rc.1
   serving.version: 0.12.0-rc.1
   trainer.version: 0.12.0-rc.1
-  web-api.version: 0.32.0-rc.1
+  web-api.version: 0.32.0-rc.2
 kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-component-versions
   namespace: prokrust-system
 ---
@@ -2176,13 +2176,21 @@ metadata:
   namespace: prokrust-system
 ---
 apiVersion: v1
+data:
+  performance.json: '{"cpu":false,"cuda":false}'
+kind: ConfigMap
+metadata:
+  name: prokrust-ui-capabilities
+  namespace: prokrust-system
+---
+apiVersion: v1
 kind: Service
 metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-license-metrics
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-license-metrics
   namespace: prokrust-system
 spec:
@@ -2269,7 +2277,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.32.0-rc.1
+    helm.sh/chart: web-api-0.32.0-rc.2
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -2292,7 +2300,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-application-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-application-controller
   namespace: prokrust-system
 spec:
@@ -2353,7 +2361,7 @@ spec:
         - name: PROKRUST_WORKFLOW_SCHEDULING_PROFILE
           value: standard
         - name: PROKRUST_PLACEMENT_TEMPLATES
-          value: '{"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
+          value: '{"cpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"kubernetes.io/arch":"arm64"},"tolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]},"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: PROKRUST_WORKFLOW_IMAGE_PULL_SECRETS
@@ -2380,7 +2388,7 @@ spec:
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
         - name: RP_ARTIFACT_AUTH_MODE
           value: workload-identity
-        image: ar.prokrust.io/prokrust/operator@sha256:d1b3d0a21b02d151af9d5e9650e6fc302efb6b7c76f1c155f58849fad881370c
+        image: ar.prokrust.io/prokrust/operator@sha256:58795e2abfd0e55fda56f99f606094cd6d6b248fca3a8ede9d0ad39976c986a8
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -2506,7 +2514,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-ballista-cluster-controller
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-ballista-cluster-controller
   namespace: prokrust-system
 spec:
@@ -2543,7 +2551,7 @@ spec:
         - name: PROKRUST_NETWORK_FAMILY
           value: IPv6
         - name: PROKRUST_PLACEMENT_TEMPLATES
-          value: '{"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
+          value: '{"cpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"kubernetes.io/arch":"arm64"},"tolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]},"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
           value: arm64
         - name: RP_POD_NAMESPACE
@@ -2566,7 +2574,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/operator@sha256:d1b3d0a21b02d151af9d5e9650e6fc302efb6b7c76f1c155f58849fad881370c
+        image: ar.prokrust.io/prokrust/operator@sha256:58795e2abfd0e55fda56f99f606094cd6d6b248fca3a8ede9d0ad39976c986a8
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -3032,7 +3040,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: prokrust-web-api
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.32.0-rc.1
+    helm.sh/chart: web-api-0.32.0-rc.2
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -3056,7 +3064,7 @@ spec:
         - name: PROKRUST_WEB_API_BIND
           value: '[::]:8080'
         - name: PROKRUST_PLACEMENT_TEMPLATES
-          value: '{"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
+          value: '{"cpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"kubernetes.io/arch":"arm64"},"tolerations":[{"effect":"NoSchedule","key":"kubernetes.io/arch","operator":"Equal","value":"arm64"}]},"gpu-training":{"allowedRoles":["trainer"],"nodeSelector":{"karpenter.sh/nodepool":"performance-qualification-gpu","kubernetes.io/arch":"amd64"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}]}}'
         - name: PROKRUST_SERVING_WORKLOAD_PLACEMENT_PROFILE
           value: inherit
         - name: PROKRUST_WORKLOAD_PLACEMENT_PROFILE
@@ -3085,7 +3093,7 @@ spec:
           value: irsa
         - name: RP_ARTIFACT_AWS_ROLE_ARN
           value: arn:aws:iam::390992144652:role/prokrust-demo-prokrust-working-store
-        image: ar.prokrust.io/prokrust/web-api@sha256:dde858e66aa745ee468c41682c7bdd7be239686d9fe87b46b25453926902bdbe
+        image: ar.prokrust.io/prokrust/web-api@sha256:a0323c77e5d87d0d3483906e11bb680bc4c05289128c49e77896b2f58ceb2d8b
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -3117,6 +3125,9 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /usr/local/share/prokrust/ui/config
+          name: ui-capabilities
+          readOnly: true
         - mountPath: /var/run/prokrust-connectors/bigquery
           name: connector-0
           readOnly: true
@@ -3157,6 +3168,13 @@ spec:
         operator: Equal
         value: arm64
       volumes:
+      - configMap:
+          items:
+          - key: performance.json
+            path: performance.json
+          name: prokrust-ui-capabilities
+          optional: true
+        name: ui-capabilities
       - configMap:
           name: prokrust-connector-bigquery-registry
           optional: true
@@ -5829,7 +5847,7 @@ spec:
           value: argocd
         - name: PROKRUST_UNINSTALL_ARGO_APPLICATION
           value: prokrust-system
-        image: ar.prokrust.io/prokrust/operator@sha256:d1b3d0a21b02d151af9d5e9650e6fc302efb6b7c76f1c155f58849fad881370c
+        image: ar.prokrust.io/prokrust/operator@sha256:58795e2abfd0e55fda56f99f606094cd6d6b248fca3a8ede9d0ad39976c986a8
         imagePullPolicy: IfNotPresent
         name: deactivate
         resources:
@@ -6003,7 +6021,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-aws-auth
   namespace: prokrust-system
 spec:
@@ -6026,7 +6044,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-ballista-controller-egress
   namespace: prokrust-system
 spec:
@@ -6101,7 +6119,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-gcp-control-plane-egress
   namespace: prokrust-system
 spec:
@@ -6214,7 +6232,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: prokrust-operator-egress
   namespace: prokrust-system
 spec:
@@ -6423,7 +6441,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.32.0-rc.1
+    helm.sh/chart: web-api-0.32.0-rc.2
   name: prokrust-web-api
   namespace: prokrust-system
 spec:
@@ -6483,7 +6501,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: web-api-0.32.0-rc.1
+    helm.sh/chart: web-api-0.32.0-rc.2
   name: prokrust-web-api-aws-auth
   namespace: prokrust-system
 spec:
@@ -6527,7 +6545,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: prokrust
-    helm.sh/chart: prokrust-system-0.32.0-rc.1
+    helm.sh/chart: prokrust-system-0.33.0-rc.1
   name: default
   namespace: prokrust-system
 spec:
