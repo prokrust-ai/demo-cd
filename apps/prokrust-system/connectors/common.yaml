@@ -1,5 +1,8 @@
 workspaceRbacBindings:
   - thelook-ecommerce
+runtimeServiceAccountManagers:
+  thelook-ecommerce:
+    - system:serviceaccount:argocd:argocd-application-controller
 imagePullSecrets:
   - name: harbor-reader
 nodeSelector: &connectorNodes
